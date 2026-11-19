@@ -3,7 +3,6 @@ import {
   calculateAffordabilityScore,
   deriveMonthlyFreeCash,
   type AffordabilityScoreResult,
-  type DerivedValue,
 } from "./financial-calculations";
 import type { RequiredInput } from "./input-state";
 import { OUTCOME_DISPOSITION, type Outcome, type Verdict } from "./outcomes";
@@ -18,7 +17,7 @@ import type {
   MissingField,
   VerdictReason,
 } from "./results";
-import type { Rupiah, SignedRupiah } from "./money";
+import type { Rupiah } from "./money";
 import { deriveEffectiveAvailableCash } from "./financial-profile";
 
 export const DECISION_RULE_VERSION = "v1";
@@ -85,9 +84,10 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
   });
   const effectiveCash = deriveEffectiveAvailableCash(profile);
   const cashClass = input.purchase.paymentPlan.financingClass === "cash";
-  const upfront = cashClass
-    ? deriveCashUpfront(input.purchase.purchasePrice, input.purchase.additionalFees)
-    : input.purchase.paymentPlan.upfrontPayment;
+  const cashUpfront = deriveCashUpfront(
+    input.purchase.purchasePrice,
+    input.purchase.additionalFees,
+  );
 
   const financialMissing: MissingField[] = [];
   if (cashClass) {
@@ -113,7 +113,7 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
   let affordabilityCalculation: AffordabilityScoreResult;
   if (effectiveCash.status === "invalid") {
     affordabilityCalculation = calculateAffordabilityScore(cashClass
-      ? { financingClass: "cash", upfront, availableCash: { status: "unknown" }, monthlyFreeCash }
+      ? { financingClass: "cash", upfront: cashUpfront, availableCash: { status: "unknown" }, monthlyFreeCash }
       : {
           financingClass: "financed",
           upfront: input.purchase.paymentPlan.upfrontPayment,
@@ -130,7 +130,7 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
     };
   } else {
     affordabilityCalculation = calculateAffordabilityScore(cashClass
-      ? { financingClass: "cash", upfront, availableCash: safeAvailableCash, monthlyFreeCash }
+      ? { financingClass: "cash", upfront: cashUpfront, availableCash: safeAvailableCash, monthlyFreeCash }
       : {
           financingClass: "financed",
           upfront: input.purchase.paymentPlan.upfrontPayment,
@@ -213,7 +213,6 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
   let outcome: Outcome | null = null;
   const affordabilityScore = affordabilityCalculation.status === "calculated"
     ? affordabilityCalculation.score : null;
-  const upfrontKnown = upfront.status === "known" && effectiveCash.status === "known";
   const upfrontExceeds = affordabilityCalculation.hardPass &&
     (affordabilityCalculation.penalties.cashImpact.status === "hard_pass" ||
       (affordabilityCalculation.penalties.cashImpact.status === "known" &&
