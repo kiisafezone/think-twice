@@ -1,5 +1,6 @@
 export * from "./decision-input";
 export * from "./financial-profile";
+export * from "./financial-calculations";
 export * from "./input-state";
 export * from "./money";
 export * from "./outcomes";
