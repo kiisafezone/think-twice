@@ -33,7 +33,6 @@ export function validFinancialProfile() {
 export function validCashPlan() {
   return {
     financingClass: "cash" as const,
-    upfrontPayment: known(10_000_000),
   };
 }
 
