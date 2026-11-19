@@ -13,11 +13,13 @@ export type CashImpactPenalty =
 
 export type MonthlyBurdenPenalty =
   | { readonly status: "known"; readonly penalty: 0 | 5 | 10 | 20 | 30 | 40 | 50 | 60 }
-  | { readonly status: "unknown" };
+  | { readonly status: "unknown" }
+  | { readonly status: "invalid"; readonly reason: "unsafe_integer_overflow" };
 
 export type FinancialPressurePenalty =
   | { readonly status: "known"; readonly penalty: 0 | 30 | 40 }
-  | { readonly status: "unknown" };
+  | { readonly status: "unknown" }
+  | { readonly status: "invalid"; readonly reason: "unsafe_integer_overflow" };
 
 /**
  * Compare numerator / denominator with an integer percentage threshold.
@@ -25,8 +27,8 @@ export type FinancialPressurePenalty =
  * multiplication from exceeding JavaScript's safe-integer range.
  */
 function isAtMostPercentage(
-  numerator: Rupiah,
-  denominator: Rupiah,
+  numerator: number,
+  denominator: number,
   percentage: number,
 ): boolean {
   return BigInt(numerator) * 100n <= BigInt(denominator) * BigInt(percentage);
@@ -108,11 +110,14 @@ export function calculateMonthlyBurdenPenalty(
   monthlyInstallment: RequiredInput<Rupiah>,
   monthlyFreeCash: DerivedValue<SignedRupiah>,
 ): MonthlyBurdenPenalty {
-  if (
-    monthlyInstallment.status !== "known" ||
-    monthlyFreeCash.status !== "known"
-  ) {
+  if (monthlyInstallment.status !== "known") {
     return { status: "unknown" };
+  }
+  if (monthlyFreeCash.status === "unknown") {
+    return { status: "unknown" };
+  }
+  if (monthlyFreeCash.status === "invalid") {
+    return monthlyFreeCash;
   }
 
   const installment = monthlyInstallment.value;
@@ -121,26 +126,25 @@ export function calculateMonthlyBurdenPenalty(
   if (freeCash <= 0) return { status: "known", penalty: 60 };
   if (installment === 0) return { status: "known", penalty: 0 };
 
-  const denominator = freeCash as unknown as Rupiah;
-  if (isAtMostPercentage(installment, denominator, 10)) {
+  if (isAtMostPercentage(installment, freeCash, 10)) {
     return { status: "known", penalty: 0 };
   }
-  if (isAtMostPercentage(installment, denominator, 20)) {
+  if (isAtMostPercentage(installment, freeCash, 20)) {
     return { status: "known", penalty: 5 };
   }
-  if (isAtMostPercentage(installment, denominator, 30)) {
+  if (isAtMostPercentage(installment, freeCash, 30)) {
     return { status: "known", penalty: 10 };
   }
-  if (isAtMostPercentage(installment, denominator, 40)) {
+  if (isAtMostPercentage(installment, freeCash, 40)) {
     return { status: "known", penalty: 20 };
   }
-  if (isAtMostPercentage(installment, denominator, 50)) {
+  if (isAtMostPercentage(installment, freeCash, 50)) {
     return { status: "known", penalty: 30 };
   }
-  if (isAtMostPercentage(installment, denominator, 75)) {
+  if (isAtMostPercentage(installment, freeCash, 75)) {
     return { status: "known", penalty: 40 };
   }
-  if (isAtMostPercentage(installment, denominator, 100)) {
+  if (isAtMostPercentage(installment, freeCash, 100)) {
     return { status: "known", penalty: 50 };
   }
   return { status: "known", penalty: 60 };
@@ -150,7 +154,8 @@ export function calculateMonthlyBurdenPenalty(
 export function calculateFinancialPressurePenalty(
   monthlyFreeCash: DerivedValue<SignedRupiah>,
 ): FinancialPressurePenalty {
-  if (monthlyFreeCash.status !== "known") return { status: "unknown" };
+  if (monthlyFreeCash.status === "unknown") return { status: "unknown" };
+  if (monthlyFreeCash.status === "invalid") return monthlyFreeCash;
   if (monthlyFreeCash.value < 0) return { status: "known", penalty: 40 };
   if (monthlyFreeCash.value === 0) return { status: "known", penalty: 30 };
   return { status: "known", penalty: 0 };
