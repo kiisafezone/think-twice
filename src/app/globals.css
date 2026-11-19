@@ -435,3 +435,162 @@ input:focus-visible, select:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+
+/* Purchase Decision Assessment */
+.assessment-panel {
+  margin: 34px 0;
+  padding: clamp(22px, 5vw, 42px);
+  border: 1px solid #e1e2dc;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 12px 38px rgb(32 35 33 / 4%);
+}
+.assessment-intro { margin: 28px 0 34px; }
+.assessment-intro h2 {
+  max-width: 650px;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(29px, 5vw, 40px);
+  font-weight: 400;
+  letter-spacing: -.04em;
+  line-height: 1.15;
+}
+.assessment-intro .section-description { max-width: 610px; }
+.assessment-form { display: grid; gap: 30px; }
+.assessment-question {
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 28px;
+  border: 0;
+  border-bottom: 1px solid #e9eae5;
+}
+.assessment-question legend,
+.assessment-question > label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--obsidian);
+  font-size: 14px;
+  font-weight: 700;
+}
+.assessment-description {
+  margin: 0 0 15px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.scale-options {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 9px;
+}
+.scale-option {
+  display: grid;
+  min-height: 48px;
+  place-items: center;
+  border: 1px solid #dfe1da;
+  border-radius: 5px;
+  color: var(--obsidian);
+  cursor: pointer;
+}
+.scale-option.is-selected,
+.assessment-choice.is-selected,
+.binary-option.is-selected {
+  border-color: var(--forest);
+  background: #f5f7f3;
+}
+.scale-option input,
+.assessment-choice input,
+.binary-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.scale-option span { font-size: 14px; font-weight: 700; }
+.scale-anchors {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  color: #777e75;
+  font-size: 11px;
+}
+.assessment-choice-list { display: grid; gap: 9px; }
+.assessment-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid #dfe1da;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.assessment-choice::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  margin-top: 3px;
+  border: 1px solid #aeb5aa;
+  border-radius: 50%;
+  background: #fff;
+}
+.assessment-choice.is-selected::before {
+  border: 5px solid var(--forest);
+}
+.assessment-choice span { display: grid; gap: 3px; }
+.assessment-choice strong { font-size: 13px; }
+.assessment-choice small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+.binary-options { display: flex; flex-wrap: wrap; gap: 10px; }
+.binary-option {
+  display: inline-flex;
+  min-width: 105px;
+  justify-content: center;
+  padding: 11px 18px;
+  border: 1px solid #dfe1da;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.assessment-question textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 13px;
+  border: 1px solid #dfe1da;
+  border-radius: 5px;
+  outline: none;
+  color: var(--obsidian);
+  font: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+.assessment-question textarea:focus {
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgb(53 72 60 / 10%);
+}
+.optional-label {
+  margin-left: 5px;
+  color: #858b83;
+  font-size: 10px;
+  font-weight: 500;
+}
+.assessment-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.assessment-actions p { margin: 0; color: var(--muted); font-size: 11px; }
+.assessment-complete {
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #dfe1da;
+  border-radius: 6px;
+  background: #f5f7f3;
+}
+.assessment-complete p { margin: 6px 0 14px; color: #626961; font-size: 13px; }
+@media (max-width: 560px) {
+  .assessment-panel { padding: 22px 18px; }
+  .assessment-actions { align-items: stretch; flex-direction: column; }
+  .assessment-actions .button-primary { width: 100%; }
+}
