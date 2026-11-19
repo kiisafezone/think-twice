@@ -68,7 +68,7 @@ Evaluate the following rules top-down and stop at the first match:
 
 **Do Not Buy is deliberately financial-only in V1.** Low need, high impulse, social pressure, or low rationality do not independently produce Hard Pass. They may produce Wait & Reassess under the behavioral rules. This preserves a distinction between a financially prohibitive condition and a behavioral concern.
 
-If a required score is null and no Hard Pass or Financially Risky condition is already provable, missing critical data produces Wait & Reassess. Never infer a score or default to a favorable outcome.
+If a required score is null and no Hard Pass or Financially Risky condition is already provable, missing critical data produces Wait & Reassess. In particular, a financed purchase with null monthly free cash produces Wait & Reassess unless another higher-priority financial condition is provable. Never infer a score or default to a favorable outcome.
 
 ## Domain Contracts
 
@@ -93,6 +93,14 @@ All money values are integer Rupiah. Validate non-negative amounts and prevent u
 - Work-hours cost = total cost ÷ net hourly income, only when net hourly income is provided and positive; this is an optional explanatory metric.
 - Utility per use = total cost ÷ expected lifetime uses, only when expected uses is a positive integer; this is an optional explanatory metric.
 
+### Monthly free cash: confirmed zero versus unknown
+
+`M = Y - E - D - C`. Monthly free cash is numeric only when net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`) are all explicitly provided. An expense explicitly confirmed as zero is valid; an omitted or unknown component is `null`, not zero.
+
+Monthly free cash may be treated as exactly zero only when income and essential expenses have been provided and every other expense component in the formula is also known (including an explicitly confirmed zero). If income or any expense component is unknown, set `M = null`; never infer zero from an empty field.
+
+For a financed purchase when `M = null`, the monthly-burden and financial-pressure penalties cannot be established, so affordability is `null`. The verdict is Wait & Reassess unless a Hard Pass or Financially Risky condition is independently provable from known inputs.
+
 ### Available cash and protected savings
 
 Available cash means liquid funds the user can actually use for this purchase, excluding emergency funds, earmarked savings, and other protected savings by default. Credit limits and borrowing capacity are never available cash.
@@ -112,6 +120,15 @@ Safety:
 - Protected savings are excluded unless the user explicitly opts in as described above.
 - Missing inputs yield `null` or explicit unknown, never a fabricated score.
 - Avoid double-counting fees or existing obligations.
+
+### Required inputs and null behavior
+
+A numeric affordability score requires every input used by its payment-method calculation. Do not calculate a partial score or replace an unknown required input with zero.
+
+- **Cash purchase:** upfront amount (`U`), available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`) must all be known. For a cash purchase, `P_m = 0`.
+- **Financed purchase:** all cash-purchase inputs above, plus the new monthly installment amount (`I`), must be known. The installment count and fee treatment are required for total-cost disclosure, but do not replace or infer any affordability-score input.
+
+If any required input for the applicable payment method is unknown, `affordabilityScore = null`. A separately provable Hard Pass or Financially Risky condition may still determine the overall outcome under the precedence rules. For example, known `U > A` remains Hard Pass even if income or expenses are unknown.
 
 ## Affordability Score
 
@@ -152,13 +169,19 @@ For a financed purchase with a new installment and positive monthly free cash `M
 | Above 75% through 100% | 50 |
 | Above 100% | 60 |
 
-For a financed purchase that adds a new installment when monthly free cash is zero or negative, set `P_m = 60`; do not calculate a ratio with a non-positive denominator. For a cash purchase, `P_m = 0`.
+For a financed purchase adding a new installment:
+- If known monthly free cash is positive, calculate `P_m` using the monthly-burden bands.
+- If known monthly free cash is exactly zero or negative, set `P_m = 60`; do not calculate a ratio with a non-positive denominator.
+- If monthly free cash is `null`, `P_m` is unknown and the affordability score is `null`.
+
+For a cash purchase, `P_m = 0` regardless of monthly free cash; however, `P_f` still requires a known monthly free-cash value.
 
 ### Financial-pressure penalty (`P_f`)
 
-- Monthly free cash below zero: 40.
-- Monthly free cash equal to zero: 30.
-- Monthly free cash above zero: 0.
+- Known monthly free cash below zero: 40.
+- Known monthly free cash equal to zero: 30.
+- Known monthly free cash above zero: 0.
+- Monthly free cash is `null`: `P_f` is unknown and the affordability score is `null`.
 
 The negative-free-cash penalty and the Hard Pass rule for a new repayment obligation while monthly free cash is negative are intentionally separate safeguards. The penalty lowers the affordability score; the verdict rule independently prohibits adding a new repayment obligation in that condition.
 
@@ -264,6 +287,14 @@ The UI must display a completeness indicator listing every missing answer and wh
 Show Affordability and Rationality as two separate assessment results, each with its own score or unavailable state, reasons, and completeness information. Never calculate or display a combined health score.
 
 The Safe to Buy cutoff of 80 is a user-facing presentation distinction between Safe to Buy and Buy with Caution. It is not an additional engine score, penalty, or verdict threshold. The engine's favorable-decision threshold remains affordability at least 60 and rationality at least 50, subject to the precedence rules.
+
+## Outcome explanations and next-step guidance
+
+Every result must explain its outcome in clear, non-judgmental Indonesian. The explanation must identify the actual input and rule that caused the outcome; it must not shame, blame, or label the user's behavior or character. If multiple factors apply, show the decisive reason first and supporting factors separately.
+
+For **Do Not Buy**, explain the specific financial constraint without moral judgment. Offer practical alternatives: consider a smaller installment amount, compare a longer tenor only after checking its total repayment and fees, or wait until available cash or monthly free cash improves. Do not imply that extending the tenor is automatically cheaper or safer.
+
+The other four outcomes must also include a reason grounded in the matched rule and a proportionate next step. Never display a generic verdict without its reason.
 
 ## Technology Boundaries
 
