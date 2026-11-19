@@ -134,7 +134,7 @@ For irregular due dates or non-monthly repayment schedules, represent the schedu
 
 Available cash is liquid money the user can actually spend on this purchase, excluding emergency funds, earmarked savings, and other protected savings by default. Credit limits and borrowing capacity are excluded.
 
-Protected savings may be included only after an explicit affirmative opt-in identifying the exact amount designated for this purchase. The UI must visibly disclose the amount being included and that it reduces the balance protected for emergencies or its earmarked purpose. No protected funds are included silently.
+Protected savings may be included only after an explicit opt-in identifying an exact amount no greater than the known protected-savings balance. Unknown or not-applicable balances cannot support an opt-in. The input contract requires an affirmative disclosure acknowledgement; the UI must show the exact amount being included and explain that this reduces funds protected for emergencies or their earmarked purpose before collecting that acknowledgement. Only the designated amount is added to base available cash using checked integer Rupiah addition. If base available cash is unknown, effective available cash remains unknown. No protected funds are included silently.
 
 If the user intends to pay from protected savings without opting in, those funds remain excluded from `A`. If known `U > A`, the Hard Pass condition applies. If `A` is unknown, affordability is null; a separately provable Hard Pass condition still takes precedence.
 
