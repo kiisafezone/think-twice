@@ -9,6 +9,7 @@ Prove that financial calculations, behavioral assessment rules, verdict priority
 | Layer | Tool | Responsibility |
 |---|---|---|
 | Domain unit tests | Vitest | Pure calculations, validation, scoring, verdict priority |
+| Feature unit tests | Vitest | Local-history storage behavior, data minimization, share-summary privacy boundary |
 | Component tests | React Testing Library or equivalent, if adopted | Form behavior, accessible interaction, error states |
 | Integration tests | Vitest | Assessment flow, storage adapter, result rendering |
 | Browser E2E | Playwright, only when adopted | Critical user journeys and responsive behavior |
@@ -53,7 +54,9 @@ Where practical, assert:
 
 - No financial values appear in URLs, logs, analytics payloads, or error messages.
 - Share output excludes sensitive fields by default.
-- Local history can be reviewed and deleted.
+- Local history can be reviewed and deleted; storage corruption or quota failures never report false success or silently overwrite data.
+- Local history persists only the approved summary fields, not raw financial amounts or raw assessment answers.
+- Share preview excludes item identity, scores, raw answers, and financial inputs by default.
 - Invalid user content cannot execute as HTML/script.
 - Storage failures do not silently claim that data was saved.
 - Sensitive content is not included in telemetry or crash reports.
