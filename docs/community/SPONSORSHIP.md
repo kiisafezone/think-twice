@@ -10,6 +10,8 @@ THINK TWICE. is an independently developed Personal Financial Decision Companion
 - Sponsors do not receive ownership, control, or privileged access to the product.
 - A sponsorship is not a purchase of financial advice, a guarantee of product delivery, or an investment.
 
+You can support ongoing development through [GitHub Sponsors](https://github.com/sponsors/kiisafezone).
+
 ## Independence and editorial integrity
 
 Sponsorship must never influence:
@@ -37,7 +39,7 @@ Support does not guarantee that a particular feature, issue, or request will be 
 
 ## Recognition
 
-Sponsors may be acknowledged in [SPONSORS.md](../../SPONSORS.md) with their permission. Recognition is optional; sponsors may remain anonymous or request removal of an acknowledgement.
+Sponsors may be acknowledged in the [Acknowledgements](#acknowledgements) section below with their permission. Recognition is optional; sponsors may remain anonymous or request removal of an acknowledgement.
 
 Recognition does not imply endorsement of a sponsor's products or services by THINK TWICE.
 
@@ -48,3 +50,11 @@ The maintainer should describe material sponsorship relationships when they coul
 ## Changes
 
 This policy may evolve as the project grows. Any change must preserve the independence of financial assessments and the interests and privacy of users.
+
+## Acknowledgements
+
+Thank you to everyone who chooses to support the project.
+
+Sponsors are listed here only when they have agreed to be publicly acknowledged. No sponsor is currently listed.
+
+If you sponsor the project and would like your name or organization included, please open an issue or contact the maintainer through GitHub. You may also choose to remain anonymous.
