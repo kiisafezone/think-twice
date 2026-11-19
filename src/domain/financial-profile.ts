@@ -1,36 +1,62 @@
 import { z } from "zod";
-import { inputStateSchema, requiredInputSchema } from "./input-state";
-import { rupiahSchema } from "./money";
+import { inputStateSchema, requiredInputSchema, type RequiredInput } from "./input-state";
+import { addRupiah, rupiahSchema, type Rupiah } from "./money";
 
-/**
- * Protected savings stay excluded from available cash unless the user
- * explicitly opts in with an exact amount. Credit limits and other borrowing
- * capacity have no field here and are rejected as unknown keys.
- */
-export const protectedSavingsDesignationSchema = z.discriminatedUnion(
-  "status",
-  [
-    z.strictObject({ status: z.literal("not_opted_in") }),
-    z.strictObject({ status: z.literal("opted_in"), amount: rupiahSchema }),
-  ],
-);
-export type ProtectedSavingsDesignation = z.infer<
-  typeof protectedSavingsDesignationSchema
->;
+/** Protected savings require an exact, capped opt-in and disclosure acknowledgement. */
+export const protectedSavingsDesignationSchema = z.discriminatedUnion("status", [
+  z.strictObject({ status: z.literal("not_opted_in") }),
+  z.strictObject({
+    status: z.literal("opted_in"),
+    amount: rupiahSchema,
+    disclosureAcknowledged: z.literal(true),
+  }),
+]);
+export type ProtectedSavingsDesignation = z.infer<typeof protectedSavingsDesignationSchema>;
 
 export const financialProfileSchema = z.strictObject({
-  /** Net monthly income (Y). */
   netMonthlyIncome: requiredInputSchema(rupiahSchema),
-  /** Essential monthly expenses (E). */
   essentialMonthlyExpenses: requiredInputSchema(rupiahSchema),
-  /** Existing monthly debt payments (D). Use known 0 only when confirmed. */
   existingMonthlyDebtPayments: requiredInputSchema(rupiahSchema),
-  /** Other committed monthly expenses (C). Use known 0 only when confirmed. */
   otherCommittedMonthlyExpenses: requiredInputSchema(rupiahSchema),
-  /** Available cash excluding protected savings (before any opt-in). */
   availableCash: requiredInputSchema(rupiahSchema),
-  /** Protected savings, kept separate from available cash. */
   protectedSavings: inputStateSchema(rupiahSchema),
   protectedSavingsDesignation: protectedSavingsDesignationSchema,
+}).superRefine((profile, context) => {
+  const designation = profile.protectedSavingsDesignation;
+  if (designation.status !== "opted_in") return;
+  if (profile.protectedSavings.status !== "known") {
+    context.addIssue({
+      code: "custom",
+      path: ["protectedSavings"],
+      message: "protected_savings_balance_must_be_known_for_opt_in",
+    });
+  } else if (designation.amount > profile.protectedSavings.value) {
+    context.addIssue({
+      code: "custom",
+      path: ["protectedSavingsDesignation", "amount"],
+      message: "protected_savings_designation_exceeds_known_balance",
+    });
+  }
 });
 export type FinancialProfile = z.infer<typeof financialProfileSchema>;
+
+export type EffectiveAvailableCash =
+  | { readonly status: "known"; readonly value: Rupiah }
+  | { readonly status: "unknown" }
+  | { readonly status: "invalid"; readonly reason: "unsafe_integer_overflow" };
+
+/** Adds only the designated protected amount to known base available cash. */
+export function deriveEffectiveAvailableCash(profile: FinancialProfile): EffectiveAvailableCash {
+  if (profile.availableCash.status !== "known") return { status: "unknown" };
+  const designated = profile.protectedSavingsDesignation.status === "opted_in"
+    ? profile.protectedSavingsDesignation.amount
+    : 0;
+  try {
+    return { status: "known", value: addRupiah(profile.availableCash.value, designated) };
+  } catch (error) {
+    if (error instanceof RangeError && error.message === "rupiah_overflow") {
+      return { status: "invalid", reason: "unsafe_integer_overflow" };
+    }
+    throw error;
+  }
+}
