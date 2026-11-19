@@ -160,3 +160,143 @@ export function calculateFinancialPressurePenalty(
   if (monthlyFreeCash.value === 0) return { status: "known", penalty: 30 };
   return { status: "known", penalty: 0 };
 }
+
+export type AffordabilityCalculationInput =
+  | {
+      readonly financingClass: "cash";
+      readonly upfront: DerivedValue<Rupiah>;
+      readonly availableCash: RequiredInput<Rupiah>;
+      readonly monthlyFreeCash: DerivedValue<SignedRupiah>;
+    }
+  | {
+      readonly financingClass: "financed";
+      readonly upfront: RequiredInput<Rupiah>;
+      readonly availableCash: RequiredInput<Rupiah>;
+      readonly monthlyInstallment: RequiredInput<Rupiah>;
+      readonly monthlyFreeCash: DerivedValue<SignedRupiah>;
+    };
+
+export interface AffordabilityPenalties {
+  readonly cashImpact: CashImpactPenalty;
+  readonly monthlyBurden: MonthlyBurdenPenalty;
+  readonly financialPressure: FinancialPressurePenalty;
+}
+
+export type AffordabilityScoreResult =
+  | {
+      readonly status: "calculated";
+      readonly score: number;
+      readonly penalties: AffordabilityPenalties;
+      readonly hardPass: boolean;
+    }
+  | {
+      readonly status: "unavailable";
+      readonly score: null;
+      readonly reason: "missing_required_input" | "cash_impact_hard_pass";
+      readonly penalties: AffordabilityPenalties;
+      readonly hardPass: boolean;
+    }
+  | {
+      readonly status: "invalid";
+      readonly score: null;
+      readonly reason: "unsafe_integer_overflow";
+      readonly penalties: AffordabilityPenalties;
+      readonly hardPass: boolean;
+    };
+
+/**
+ * Aggregate the three approved affordability penalties.
+ *
+ * Unknown required inputs make the score unavailable; no partial score is
+ * produced. Independently proven financial Hard Pass conditions are retained
+ * even when another required input is missing or invalid.
+ */
+export function calculateAffordabilityScore(
+  input: AffordabilityCalculationInput,
+): AffordabilityScoreResult {
+  const cashImpact = calculateCashImpactPenalty(
+    input.upfront,
+    input.availableCash,
+  );
+  const monthlyBurden: MonthlyBurdenPenalty =
+    input.financingClass === "cash"
+      ? { status: "known", penalty: 0 }
+      : calculateMonthlyBurdenPenalty(
+          input.monthlyInstallment,
+          input.monthlyFreeCash,
+        );
+  const financialPressure =
+    calculateFinancialPressurePenalty(input.monthlyFreeCash);
+
+  const penalties: AffordabilityPenalties = {
+    cashImpact,
+    monthlyBurden,
+    financialPressure,
+  };
+
+  const upfrontExceedsAvailableCash =
+    cashImpact.status === "hard_pass" ||
+    (cashImpact.status === "known" && cashImpact.hardPass);
+  const newRepaymentWithNegativeFreeCash =
+    input.financingClass === "financed" &&
+    input.monthlyFreeCash.status === "known" &&
+    input.monthlyFreeCash.value < 0;
+  const hardPass =
+    upfrontExceedsAvailableCash || newRepaymentWithNegativeFreeCash;
+
+  const statuses = [
+    cashImpact.status,
+    monthlyBurden.status,
+    financialPressure.status,
+  ];
+
+  if (statuses.includes("invalid")) {
+    return {
+      status: "invalid",
+      score: null,
+      reason: "unsafe_integer_overflow",
+      penalties,
+      hardPass,
+    };
+  }
+
+  if (cashImpact.status === "hard_pass") {
+    return {
+      status: "unavailable",
+      score: null,
+      reason: "cash_impact_hard_pass",
+      penalties,
+      hardPass: true,
+    };
+  }
+
+  if (
+    cashImpact.status !== "known" ||
+    monthlyBurden.status !== "known" ||
+    financialPressure.status !== "known"
+  ) {
+    return {
+      status: "unavailable",
+      score: null,
+      reason: "missing_required_input",
+      penalties,
+      hardPass,
+    };
+  }
+
+  const score = Math.max(
+    0,
+    100 -
+      cashImpact.penalty -
+      monthlyBurden.penalty -
+      financialPressure.penalty,
+  );
+
+  return {
+    status: "calculated",
+    score,
+    penalties,
+    hardPass,
+  };
+}
+
