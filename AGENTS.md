@@ -14,7 +14,7 @@
 1.  Explicit user decisions.
 2.  `AGENTS.md` for working rules and architecture.
 3.  `SPEC.md` for product behavior and domain rules.
-4.  `docs/STYLE_GUIDE.md` for visual and verbal standards.
+4.  `docs/brand/STYLE_GUIDE.md` for visual and verbal standards.
 5.  `TASKS.md` for roadmap and handoff.
 6.  Existing implementation and tests.
 
@@ -112,7 +112,7 @@ language, and do not install every technology before a feature needs it.
     tracker, loan marketplace, or credit product.
 -   Credit limits are not income or available cash.
 -   Do not shame users or promise guaranteed financial outcomes.
--   Follow `SPEC.md` and `docs/STYLE_GUIDE.md`.
+-   Follow `SPEC.md` and `docs/brand/STYLE_GUIDE.md`.
 
 ## Anti-Slop Rules
 
