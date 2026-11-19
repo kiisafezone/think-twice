@@ -217,4 +217,186 @@ describe("canonical decision engine", () => {
     expect(result.rationality.score).toBe(50);
     expect(result.verdict.outcome).toBe("safe_to_buy");
   });
+
+  it.each([
+    ["purchase price", (input: DecisionInput) => Object.assign(input.purchase, { purchasePrice: unknown })],
+    ["additional fees", (input: DecisionInput) => Object.assign(input.purchase, { additionalFees: unknown })],
+    ["available cash", (input: DecisionInput) => Object.assign(input.financialProfile, { availableCash: unknown })],
+    ["net monthly income", (input: DecisionInput) => Object.assign(input.financialProfile, { netMonthlyIncome: unknown })],
+    ["essential monthly expenses", (input: DecisionInput) => Object.assign(input.financialProfile, { essentialMonthlyExpenses: unknown })],
+    ["existing monthly debt payments", (input: DecisionInput) => Object.assign(input.financialProfile, { existingMonthlyDebtPayments: unknown })],
+    ["other committed monthly expenses", (input: DecisionInput) => Object.assign(input.financialProfile, { otherCommittedMonthlyExpenses: unknown })],
+  ] as const)("returns unavailable affordability for a cash purchase with unknown %s", (_field, makeUnknown) => {
+    const input = cashInput();
+    makeUnknown(input);
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(null);
+    expect(result.affordability.status).toBe("unavailable");
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+  });
+
+  it.each([
+    "netMonthlyIncome",
+    "essentialMonthlyExpenses",
+    "existingMonthlyDebtPayments",
+    "otherCommittedMonthlyExpenses",
+  ] as const)("keeps financed monthly free cash unknown when %s is missing", (field) => {
+    const input = financedInput();
+    Object.assign(input.financialProfile, { [field]: unknown });
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(null);
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+    expect(result.missingFields.some((entry) => entry.field === `financialProfile.${field}`)).toBe(true);
+  });
+
+  it("returns unavailable affordability when a financed monthly installment is unknown", () => {
+    const input = financedInput();
+    input.purchase.paymentPlan.installment.monthlyInstallment = unknown;
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(null);
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+    expect(result.missingFields.some((entry) => entry.field === "purchase.paymentPlan.installment.monthlyInstallment")).toBe(true);
+  });
+
+  it("keeps Financially Risky precedence over missing critical behavioral data", () => {
+    const input = cashInput();
+    input.purchase.purchasePrice = known(money(9_720_000));
+    Object.assign(input.purchaseAssessment, { socialPressure: unknown });
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(60);
+    expect(result.impulseFriction.status).toBe("undetermined");
+    expect(result.verdict.outcome).toBe("financially_risky");
+  });
+
+  it("keeps Financially Risky precedence when a required Rationality dimension is missing", () => {
+    const input = cashInput();
+    input.purchase.purchasePrice = known(money(9_720_000));
+    Object.assign(input.purchaseAssessment, { need: unknown });
+    const result = evaluateDecision(input);
+    expect(result.rationality.score).toBe(null);
+    expect(result.verdict.outcome).toBe("financially_risky");
+  });
+
+  it("returns Do Not Buy when upfront exceeds cash even if another required financial input is missing", () => {
+    const input = financedInput();
+    input.purchase.paymentPlan.upfrontPayment = known(money(13_000_000));
+    Object.assign(input.financialProfile, { essentialMonthlyExpenses: unknown });
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(null);
+    expect(result.verdict.outcome).toBe("do_not_buy");
+    expect(result.verdictReasons[0]?.ruleId).toBe("financial.upfront_exceeds_available_cash");
+  });
+
+  it("returns Do Not Buy for cash use above 100 percent", () => {
+    const input = cashInput();
+    input.purchase.purchasePrice = known(money(12_000_001));
+    const result = evaluateDecision(input);
+    expect(result.verdict.outcome).toBe("do_not_buy");
+    expect(result.verdictReasons.some((reason) => reason.ruleId === "financial.upfront_exceeds_available_cash")).toBe(true);
+  });
+
+  it("keeps cash use above 80 percent financially risky when Rationality is below 50", () => {
+    const input = cashInput();
+    input.purchase.purchasePrice = known(money(9_720_000));
+    Object.assign(input.purchaseAssessment, {
+      need: known(1), urgency: known("can_wait_one_month_or_longer"),
+      alternatives: known(1), utility: known(1), impulseLevel: known(1),
+      socialPressure: known(false),
+    });
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(60);
+    expect(result.rationality.score).toBeLessThan(50);
+    expect(result.verdict.outcome).toBe("financially_risky");
+    expect(result.verdictReasons[0]?.ruleId).toBe("financial.cash_use_above_80_percent");
+  });
+
+  it("applies both zero-free-cash penalties when cash impact is also positive", () => {
+    const input = financedInput();
+    input.purchase.paymentPlan.upfrontPayment = known(money(6_000_000));
+    input.financialProfile.netMonthlyIncome = known(money(4_500_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
+    input.financialProfile.existingMonthlyDebtPayments = known(money(0));
+    input.financialProfile.otherCommittedMonthlyExpenses = known(money(500_000));
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(0);
+    expect(result.verdict.outcome).toBe("do_not_buy");
+  });
+
+  it("uses only explicitly opted-in protected savings in the verdict cash calculation", () => {
+    const input = cashInput();
+    input.purchase.purchasePrice = known(money(12_500_000));
+    const withoutOptIn = evaluateDecision(input);
+    expect(withoutOptIn.verdict.outcome).toBe("do_not_buy");
+
+    input.financialProfile.protectedSavingsDesignation = {
+      status: "opted_in",
+      amount: money(2_000_000),
+      disclosureAcknowledged: true,
+    };
+    const withOptIn = evaluateDecision(input);
+    expect(withOptIn.verdict.outcome).toBe("financially_risky");
+  });
+
+  it("does not silently use protected savings when the user has not opted in", () => {
+    const input = cashInput();
+    input.purchase.purchasePrice = known(money(13_000_000));
+    input.financialProfile.protectedSavings = known(money(20_000_000));
+    input.financialProfile.protectedSavingsDesignation = { status: "not_opted_in" };
+    const result = evaluateDecision(input);
+    expect(result.verdict.outcome).toBe("do_not_buy");
+  });
+
+  it("keeps affordability and Rationality as separate assessments without a combined score", () => {
+    const result = evaluateDecision(cashInput());
+    expect(result.affordability.kind).toBe("affordability");
+    expect(result.rationality.kind).toBe("rationality");
+    expect(result).not.toHaveProperty("combinedScore");
+    expect(result).not.toHaveProperty("healthScore");
+  });
+
+  it.each([
+    ["safe_to_buy", (input: DecisionInput) => input],
+    ["buy_with_caution", (input: DecisionInput) => {
+      input.purchase.purchasePrice = known(money(9_600_000));
+      return input;
+    }],
+    ["wait_and_reassess", (input: DecisionInput) => {
+      Object.assign(input.purchaseAssessment, {
+        need: known(1), urgency: known("can_wait_one_month_or_longer"),
+        alternatives: known(1), utility: known(1), impulseLevel: known(1),
+        socialPressure: known(false),
+      });
+      return input;
+    }],
+    ["financially_risky", (input: DecisionInput) => {
+      input.purchase.purchasePrice = known(money(9_720_000));
+      return input;
+    }],
+    ["do_not_buy", (input: DecisionInput) => {
+      const financed = financedInput();
+      financed.financialProfile.netMonthlyIncome = known(money(3_000_000));
+      financed.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
+      return financed as unknown as DecisionInput;
+    }],
+  ] as const)("provides an evidence-based Indonesian reason and next steps for %s", (outcome, prepare) => {
+    const result = evaluateDecision(prepare(cashInput()));
+    expect(result.verdict.outcome).toBe(outcome);
+    expect(result.verdictReasons.length).toBeGreaterThan(0);
+    expect(result.explanation.decisiveReason).toBe(result.verdictReasons[0]?.explanation);
+    expect(result.explanation.decisiveReason.length).toBeGreaterThan(20);
+    expect(result.nextSteps.length).toBeGreaterThan(0);
+    expect(result.nextSteps.every((step) => step.length > 10)).toBe(true);
+  });
+
+  it("gives Do Not Buy specific and qualified repayment alternatives", () => {
+    const input = financedInput();
+    input.financialProfile.netMonthlyIncome = known(money(3_000_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
+    const result = evaluateDecision(input);
+    expect(result.verdict.outcome).toBe("do_not_buy");
+    expect(result.nextSteps.join(" ")).toContain("nominal cicilan");
+    expect(result.nextSteps.join(" ")).toContain("bandingkan total pembayaran dan seluruh biaya");
+    expect(result.nextSteps.join(" ")).toContain("menunda");
+  });
+
 });
