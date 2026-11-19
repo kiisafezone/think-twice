@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "THINK TWICE.",
+  title: "THINK TWICE. — Pahami sebelum membeli",
   description:
-    "Personal Financial Decision Companion. Think twice today. Thank yourself tomorrow.",
+    "Pahami alasan dan dampak finansial sebelum mengambil keputusan pembelian. Think twice today. Thank yourself tomorrow.",
 };
 
 export default function RootLayout({
