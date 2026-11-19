@@ -594,3 +594,11 @@ input:focus-visible, select:focus-visible {
   .assessment-actions { align-items: stretch; flex-direction: column; }
   .assessment-actions .button-primary { width: 100%; }
 }
+
+.scale-option input { position: absolute; opacity: 0; pointer-events: none; }
+.scale-option:focus-within,
+.assessment-choice:focus-within,
+.binary-option:focus-within {
+  outline: 2px solid var(--forest);
+  outline-offset: 3px;
+}
