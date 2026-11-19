@@ -138,6 +138,7 @@ export default function DecisionResultPanel({
     );
   }
 
+  const decisionResult: DecisionResult = result;
   const outcome = result.verdict.outcome;
   const preview = createShareSummary(result);
   const alreadySaved = savedId.current !== null && history.some((record) => record.id === savedId.current);
@@ -146,7 +147,7 @@ export default function DecisionResultPanel({
     try {
       const store = createDecisionHistoryStore(window.localStorage);
       const id = savedId.current ?? createRecordId();
-      const saved = store.save(makeSavedDecision(id, purchase, result));
+      const saved = store.save(makeSavedDecision(id, purchase, decisionResult));
       if (saved.status === "ok") {
         savedId.current = id;
         setHistory(saved.records);
