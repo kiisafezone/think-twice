@@ -96,7 +96,7 @@ Sponsorship is voluntary. It does not buy influence over product decisions, fina
 
 ## Project status
 
-The repository now includes a Next.js application scaffold, a deterministic TypeScript domain engine, and initial purchase-intake and Purchase Decision Assessment screens. The current UI keeps data in page memory only. Financial Reality Check, protected-savings disclosure UI, Decision Intelligence result presentation, local history, and production deployment are not yet complete. See [TASKS.md](TASKS.md) for the validated state, current handoff, and remaining work.
+The repository now includes the three assessment stages, the deterministic Decision Intelligence engine and result presentation, opt-in local decision history with review/deletion, and a privacy-safe share preview. Financial inputs and raw assessment answers are not persisted; local history stores a limited result summary only after an explicit save action. These latest UI and storage changes still require product-owner Termux validation and manual browser/accessibility review. Production deployment is outside the current implementation milestone. See [TASKS.md](TASKS.md) for the exact handoff and validation status.
 
 ## Official brand identity
 
