@@ -2,23 +2,22 @@
 
 ## Last Session Handoff
 
-- Last Agent Used: Claude
-- Completed: Phase 1 was validated by the product owner on Termux (Android ARM64) at commit `d813547`. This session: (1) reconciled `docs/quality/TEST_STRATEGY.md` with the approved scoring methodology (commit `24890ed`); the authoritative edge-case inventory in `docs/product/DECISION_ENGINE.md` is unchanged. (2) Authored typed domain contracts under `src/domain/` (commit `b751089`): `money.ts`, `input-state.ts`, `outcomes.ts`, `payment.ts`, `purchase.ts`, `purchase-assessment.ts`, `financial-profile.ts`, `decision-input.ts`, `validation.ts`, `results.ts`, `index.ts`. (3) Authored Vitest tests for those contracts under `tests/domain/` (commit `037ed78`): `fixtures.ts`, `money`, `input-state`, `outcomes`, `payment`, `purchase-assessment`, `financial-profile`, `decision-input`. No scoring formula, verdict logic, or explanation copy was implemented.
-- Approved design decisions for the contracts (product owner, this session): (a) `cash` and `financed` are a financing classification for the V1 engine (`paymentPlan.financingClass`), not a payment instrument; the seven variants in `DOMAIN_MODEL.md` stay the broader product model and are not mapped yet. (b) V1 supports monthly installments only; any other `repaymentSchedule` is rejected with the stable code `unsupported_repayment_schedule` and never converted or assumed monthly. (c) Input states are `known`, `unknown`, `not_applicable` (identifier `not_applicable`); `invalid` is a validation result (`validateWith` returns code, path, and message only, never the rejected value) and is never turned into unknown or a default. Raw `null`, `undefined`, and empty strings fail validation. A confirmed zero is `{ status: "known", value: 0 }`. (d) Rationality 49/50 stays a layer-level coverage item in `TEST_STRATEGY.md`, not an addition to the authoritative edge-case inventory; both sides of the boundary (49 and 50) must be tested when the engine exists.
-- Current Bug / Blocker: No specification blocker for the contracts. The contract code and tests were written through the GitHub API without a Node environment. Typecheck, Vitest, and build have NOT been run against them. Zod 4 API usage (`z.strictObject`, `z.discriminatedUnion` with generic option schemas, `z.literal([1, 2, 3, 4, 5])`, `z.literal(..., { error })`, `.brand`) and the exact issue messages asserted in tests are unverified and may need adjustment.
-- Unresolved (documented, not decided; do not resolve by convenience):
-  1. Cash purchases: `DECISION_ENGINE.md` defines total cost as `P + F` and also lists upfront payment `U` as a separate input. Whether `U` is entered or derived for a cash purchase, and whether `U` must equal `P + F`, is undefined. The contract currently takes `U` as an input in both plans.
-  2. Mapping of `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` is undefined. These are rejected as `financingClass` values for now.
-  3. Non-monthly or irregular repayment schedules are unsupported in V1. `TEST_STRATEGY.md` lists this behavior as mandatory coverage; the V1 coverage is the rejection above. A schedule model needs a product decision.
-  4. Validation-only assumptions to confirm: installment count is a whole number >= 1; monthly installment amount is >= 0; no maximum lengths exist for item name, category, or reflection text.
-  5. Protected savings: the contract does not enforce that an opt-in `amount` is at most the known protected savings, and does not record a disclosure acknowledgement. Whether the domain should enforce either is undecided (the UI disclosure is a Phase 3 requirement).
-  6. `results.ts` shapes are provisional: rule identifiers, the explanation vocabulary, the `MetricUnit` set, the metric keys, and the `undetermined` impulse-friction status are not defined by the approved documents and will be fixed when the engine is specified.
-  7. Persistence fields (`id`, `createdAt`) from `DOMAIN_MODEL.md` are intentionally excluded from the engine input and belong to the storage layer.
-  8. Monthly period only: all money inputs are monthly or one-time by field name. Period normalization is not supported; `DOMAIN_MODEL.md` expects explicit periods.
-- Next Exact Step: In a Node >= 20.9 environment run `npm run typecheck`, `npm run test`, and `npm run build`, and send the full output. Fix any failures from actual output only, with focused commits. After they pass, resolve or explicitly defer unresolved item 1 (cash `U` versus `P + F`) before engine work, then begin the decision engine (integer Rupiah helpers, exact ratio comparisons, then penalties) in `src/domain/`, followed by the authoritative edge-case tests. Housekeeping: `src/domain/.gitkeep` and `tests/domain/.gitkeep` are obsolete and can be removed.
-- Tests Run: None by this agent. Phase 1 results reported by the product owner: `npm install` passed, `npm run typecheck` passed, `npm run test` runner passed with no test files, `npm run build` passed (webpack). Those results predate the domain contracts and tests added this session.
-- Files Changed: `docs/quality/TEST_STRATEGY.md`, `src/domain/*` (11 new files), `tests/domain/*` (8 new files), and `TASKS.md`.
-- Implementation Status: Domain contracts and contract tests authored, unverified. The decision engine, the 33-case edge-case suite, and all UI work have not been started.
+- Last Agent Used: ChatGPT
+- Completed: Fetched and inspected the latest `main` state at Claude's Phase 2 domain-contract handoff. The product owner ran `npm ci && npm run typecheck && npm run test && npm run build` in Termux on 2026-11-19. All commands succeeded: npm ci installed 84 packages with 0 vulnerabilities; typecheck passed; Vitest passed 7 files / 132 tests; Next.js 16.4.6 production build completed with Webpack. Vite emitted a non-blocking warning about ESM syntax in `vitest.config.ts` under `configLoader: native`.
+- Completed this session: Accepted the cash-upfront rule: cash purchase `U = P + F`, derived from purchase price and additional fees with no separate upfront input; financed purchase `U` remains explicit. Updated `src/domain/payment.ts`, payment fixtures/tests, `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and recorded the decision in `docs/decisions/ADR-0003-derive-cash-upfront.md`.
+- Current Bug / Blocker: No known blocker in the verified domain contracts. The Vite config warning is non-blocking and should be handled separately only if it becomes necessary. The cash-upfront derivation is specified but its checked integer implementation and engine tests are not yet written.
+- Remaining unresolved product/contract items (do not resolve by convenience):
+  1. Mapping broader payment variants `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remains undefined.
+  2. Non-monthly or irregular repayment schedules remain unsupported in V1 and are rejected.
+  3. Validation assumptions still need explicit product confirmation: installment count is a whole number >= 1; monthly installment amount is >= 0; no maximum lengths exist for item name, category, or reflection text.
+  4. Protected savings: the contract does not enforce that an opt-in amount is at most the known protected savings, nor does it record a disclosure acknowledgement. Domain enforcement remains undecided; UI disclosure is a Phase 3 requirement.
+  5. `results.ts` shapes remain provisional: rule identifiers, explanation vocabulary, the `MetricUnit` set, metric keys, and `undetermined` impulse-friction status need to be finalized when engine behavior is implemented.
+  6. Persistence fields (`id`, `createdAt`) remain excluded from engine input and belong to the storage layer.
+  7. Monthly period only: no period normalization; `DOMAIN_MODEL.md` expects explicit periods.
+- Next Exact Step: Begin pure TypeScript decision-engine implementation in `src/domain/`. First implement safe integer Rupiah addition and derive cash upfront `U = P + F` (unknown source values must propagate; overflow must not silently produce an unsafe number), with focused unit tests. Then implement exact ratio comparisons and cash-impact/monthly-burden penalties, preserving all approved null and precedence rules. Use the authoritative 36-case inventory in `docs/product/DECISION_ENGINE.md`; do not invent a narrower list. Continue on `main`, with no CI, deployment configuration, FastAPI, PostgreSQL, or new dependencies.
+- Tests Run: Product-owner-reported Termux output: `npm ci` passed (84 packages, 0 vulnerabilities); `npm run typecheck` passed; `npm run test` passed (7 files, 132 tests); `npm run build` passed (Next.js 16.4.6, Webpack). ChatGPT did not run these commands independently.
+- Files Changed: `src/domain/payment.ts`, `tests/domain/fixtures.ts`, `tests/domain/payment.test.ts`, `SPEC.md`, `docs/product/DECISION_ENGINE.md`, `docs/decisions/ADR-0003-derive-cash-upfront.md`, and `TASKS.md`.
+- Implementation Status: Domain contracts and contract tests are verified by the product owner on Termux. Cash upfront semantics are decided and documented; engine calculations, authoritative scoring/verdict tests, and UI remain unimplemented.
 
 ## Product Priorities
 
@@ -77,9 +76,9 @@
 - [x] Reconcile the stale statement in `docs/quality/TEST_STRATEGY.md` with the approved, synchronized `SPEC.md` and `DECISION_ENGINE.md` (commit `24890ed`).
 - [x] Author typed purchase, financial-profile, assessment, completeness, and decision-result contracts. (Authored; typecheck, tests, and build not yet run. Output shapes in `results.ts` are provisional.)
 - [x] Author contract tests for input states, money, payment plans, assessment input, financial profile, outcomes, and validation. (Authored; not yet run. These are contract tests, not scoring tests.)
-- [ ] Run and verify `npm run typecheck`, `npm run test`, and `npm run build` for the contracts; fix failures from actual output.
-- [ ] Resolve or explicitly defer the unresolved items listed in the handoff (cash `U` versus `P + F` first).
-- [ ] Implement integer-Rupiah calculations and safe exact-integer intermediate arithmetic.
+- [x] Run and verify `npm run typecheck`, `npm run test`, and `npm run build` for the contracts; product owner validated all three on Termux (132 tests passed, production build passed).
+- [x] Resolve cash `U` versus `P + F`: cash derives `U = P + F`; financed retains explicit `U` (ADR-0003). Other unresolved items remain explicitly documented in the handoff.
+- [ ] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic.
 - [ ] Implement cash-impact and monthly-burden penalties with cross-multiplication only.
 - [ ] Implement protected-savings opt-in and visible disclosure behavior.
 - [ ] Implement integer rationality dimension mappings and weighted formula.
@@ -87,7 +86,7 @@
 - [ ] Implement strict null behavior, confirmed-zero handling, and display-only completeness details.
 - [ ] Implement canonical five-outcome precedence, including null-score/known-Hard-Pass handling.
 - [ ] Implement non-judgmental Indonesian reason and next-step copy for all five outcomes.
-- [ ] Add Vitest tests for the exact authoritative edge-case inventory in `docs/product/DECISION_ENGINE.md`; do not create an agent-specific substitute list.
+- [ ] Add Vitest tests for the exact authoritative 36-case edge-case inventory in `docs/product/DECISION_ENGINE.md`; do not create an agent-specific substitute list.
 - [ ] Add layer-level boundary tests per `TEST_STRATEGY.md`, including both sides of the rationality 49/50 boundary.
 - [ ] Verify `SPEC.md` and `docs/product/DECISION_ENGINE.md` remain aligned.
 
