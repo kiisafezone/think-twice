@@ -166,7 +166,9 @@ function FinancialSummary({
       {profile.protectedSavingsDesignation.status === "opted_in" ? (
         <p className="financial-disclosure-note">
           Kamu memilih menyertakan {formatAmount(profile.protectedSavingsDesignation.amount)} dari dana terlindungi.
-          Jumlah tersebut ditambahkan ke kas yang dihitung dan tidak lagi diperlakukan sebagai dana yang tetap terlindungi untuk keadaan darurat atau tujuan yang ditetapkan.
+          {effectiveCash.status === "known"
+            ? " Nominal tersebut ditambahkan ke kas yang dihitung dan tidak lagi diperlakukan sebagai dana yang tetap terlindungi untuk keadaan darurat atau tujuan yang ditetapkan."
+            : " Nominal tersebut sudah ditandai untuk disertakan, tetapi total kas yang dihitung tetap belum dapat diketahui karena kas tersedia belum diketahui atau perhitungannya melewati batas angka aman."}
         </p>
       ) : (
         <p className="privacy-note">
@@ -346,7 +348,7 @@ export default function FinancialRealityCheckForm({
           />
         </div>
 
-        <fieldset className="protected-savings-fieldset">
+        <fieldset className="protected-savings-fieldset" aria-describedby={errors.protectedSavings ? "protectedSavings-error" : undefined}>
           <legend>Apakah kamu memiliki dana yang dilindungi atau dialokasikan?</legend>
           <p className="section-description">
             Contohnya dana darurat atau tabungan untuk tujuan tertentu. Dana ini tidak masuk ke kas tersedia secara otomatis.
@@ -396,6 +398,8 @@ export default function FinancialRealityCheckForm({
                 <input
                   id="protectedSavingsAmount"
                   type="number"
+                  aria-invalid={Boolean(errors.protectedSavings)}
+                  aria-describedby={errors.protectedSavings ? "protectedSavings-error" : undefined}
                   min="0"
                   step="1"
                   inputMode="numeric"
@@ -437,6 +441,8 @@ export default function FinancialRealityCheckForm({
                 <input
                   id="protectedDesignationAmount"
                   type="number"
+                  aria-invalid={Boolean(errors.protectedSavingsDesignation) || (designationAmount.trim() !== "" && !designationIsValid)}
+                  aria-describedby={errors.protectedSavingsDesignation ? "protectedDesignation-error" : undefined}
                   min="0"
                   step="1"
                   inputMode="numeric"
@@ -450,7 +456,7 @@ export default function FinancialRealityCheckForm({
                 />
               </div>
               {designationAmount.trim() !== "" && !designationIsValid ? (
-                <p className="field-error" role="alert">Nominal harus berupa angka bulat dan tidak boleh melebihi saldo dana terlindungi.</p>
+                <p className="field-error" id="protectedDesignation-error" role="alert">Nominal harus berupa angka bulat dan tidak boleh melebihi saldo dana terlindungi.</p>
               ) : null}
               {designationIsValid ? (
                 <div className="financial-disclosure">
@@ -463,7 +469,10 @@ export default function FinancialRealityCheckForm({
                     <input
                       type="checkbox"
                       checked={disclosureAcknowledged}
-                      onChange={(event) => setDisclosureAcknowledged(event.target.checked)}
+                      onChange={(event) => {
+                        setDisclosureAcknowledged(event.target.checked);
+                        setErrors((current) => ({ ...current, protectedSavingsDesignation: "" }));
+                      }}
                     />
                     <span>Saya memahami dan menyetujui bahwa nominal tersebut akan dihitung sebagai kas yang tersedia.</span>
                   </label>
@@ -471,10 +480,10 @@ export default function FinancialRealityCheckForm({
               ) : (
                 <p className="field-hint">Masukkan nominal yang tidak melebihi saldo dana terlindungi untuk melihat dampaknya sebelum menyetujui.</p>
               )}
-              {errors.protectedSavingsDesignation ? <p className="field-error" role="alert">{errors.protectedSavingsDesignation}</p> : null}
+              {errors.protectedSavingsDesignation ? <p className="field-error" id="protectedDesignation-error" role="alert">{errors.protectedSavingsDesignation}</p> : null}
             </div>
           ) : null}
-          {errors.protectedSavings ? <p className="field-error" role="alert">{errors.protectedSavings}</p> : null}
+          {errors.protectedSavings ? <p className="field-error" id="protectedSavings-error" role="alert">{errors.protectedSavings}</p> : null}
         </div>
 
         {Object.values(errors).some(Boolean) ? (
