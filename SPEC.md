@@ -74,7 +74,7 @@ If a required score is null and no Hard Pass or Financially Risky condition is a
 
 Maintain domain contracts separately from UI and persistence. Core concepts:
 
-- `PurchaseInput`: item, price, category, payment method, upfront amount, installment amount/count, fees, need, urgency, alternatives, utility, impulse level, social-pressure answer, and potential-regret reflection.
+- `PurchaseInput`: item, price, category, payment classification, derived cash upfront (P + F) or explicit financed upfront, installment amount/count, fees, need, urgency, alternatives, utility, impulse level, social-pressure answer, and potential-regret reflection.
 - `FinancialProfile`: net monthly income, essential expenses, existing debt payments, other committed expenses, available cash, and protected savings.
 - `AssessmentResult`: score or `null`, status, reasons, missing fields, completeness details, assumptions, and rule/version identifier.
 - `DecisionResult`: separate affordability and rationality results, canonical outcome, internal disposition, explanation, and next steps.
@@ -85,8 +85,8 @@ Use discriminated unions for payment methods and verdicts. Keep field names alig
 
 All money values are integer Rupiah. Validate non-negative amounts and prevent unsafe integer overflow. Use integer arithmetic for score calculations and ratio-band comparisons. Do not use floating-point ratios or division to determine a band.
 
-- Cash total cost = purchase price + additional fees.
-- Financed total cost = upfront payment + (installment payment × installment count) + additional fees, unless installment payment is explicitly defined as fee-inclusive.
+- Cash total cost = purchase price + additional fees. For a cash purchase, upfront payment (U) is derived automatically as P + F; do not ask the user to enter the same amount separately.
+- Financed total cost = explicit upfront payment + (installment payment × installment count) + additional fees, unless installment payment is explicitly defined as fee-inclusive. For a financed purchase, upfront payment (U) remains a separate user input.
 - Monthly free cash = net monthly income − essential expenses − existing debt payments − other committed expenses.
 - Monthly purchase burden = installment payment for financed purchases; zero for one-time cash purchases.
 - Cash use is the upfront amount compared with available cash.
