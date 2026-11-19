@@ -15,7 +15,7 @@
   6. Monthly period only; no period normalization. Inputs must remain explicit monthly amounts.
 - Next Exact Step: Product owner validates the new test commit on Termux. If validation passes, request a product decision on the unreachable 34/59/79 score examples before declaring the authoritative inventory complete. Then reconcile the authoritative inventory and `SPEC.md` only after approval; continue remaining applicable coverage. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, UI, optional metrics, payment-instrument mappings, or new dependencies.
 - Tests Run: Not run in this GitHub-only test-authoring step. Latest product-owner Termux validation remains `7fcbae6`: typecheck passed, 11 files / 241 tests passed, production build passed. New tests await Termux validation. Current changes await validation.
-- Files Changed this session: `tests/domain/decision-engine.test.ts` (commits `ccd6bc1`, `ab29877`) and `TASKS.md`.
+- Files Changed this session: `tests/domain/decision-engine.test.ts` (commits `ccd6bc1`, `ab29877`, `9321083`, `213dffb`) and `TASKS.md`.
 - Implementation Status: The domain engine passed product-owner validation at `7fcbae6`. Expanded edge-case tests are authored but await Termux validation. Exact score examples 34/59/79 conflict with the discrete five-point score granularity and require product-owner reconciliation. Optional derived metrics and UI remain out of scope; visible protected-savings disclosure belongs to Phase 3.
 
 ## Product Priorities
