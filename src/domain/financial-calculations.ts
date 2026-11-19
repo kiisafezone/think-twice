@@ -214,10 +214,10 @@ export type AffordabilityScoreResult =
 export function calculateAffordabilityScore(
   input: AffordabilityCalculationInput,
 ): AffordabilityScoreResult {
-  const cashImpact = calculateCashImpactPenalty(
-    input.upfront,
-    input.availableCash,
-  );
+  const upfrontInvalid = input.upfront.status === "invalid";
+  const cashImpact: CashImpactPenalty = upfrontInvalid
+    ? { status: "unknown" }
+    : calculateCashImpactPenalty(input.upfront, input.availableCash);
   const monthlyBurden: MonthlyBurdenPenalty =
     input.financingClass === "cash"
       ? { status: "known", penalty: 0 }
@@ -250,7 +250,7 @@ export function calculateAffordabilityScore(
     financialPressure.status,
   ];
 
-  if (statuses.includes("invalid")) {
+  if (upfrontInvalid || statuses.includes("invalid")) {
     return {
       status: "invalid",
       score: null,
