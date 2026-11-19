@@ -357,7 +357,7 @@ export default function PurchaseIntake() {
         </div>
 
         <div className="subsection-divider" />
-        <fieldset className="payment-fieldset">
+        <fieldset className="payment-fieldset" aria-describedby={errors.paymentPlan ? "paymentPlan-error" : undefined}>
           <legend>Bagaimana pola pembayarannya?</legend>
           <p className="field-hint">Pilih berdasarkan kewajiban pembayaran, bukan nama layanan atau penyedia.</p>
           <div className="choice-grid">
