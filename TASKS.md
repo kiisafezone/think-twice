@@ -35,7 +35,7 @@
 - A known Hard Pass condition wins even if affordability score is null. A known Financially Risky condition wins over missing data but never over Hard Pass.
 - Affordability starts at 100 and subtracts P_cash, P_m, and P_f with a floor of zero. Cash-impact and monthly-burden bands and penalties are specified in both scoring documents.
 - Monthly free cash is numeric only when net income and every expense component are explicitly known; unknown income or expenses make it null, never zero. For a new financed installment with confirmed free cash exactly zero, P_m is 60 and P_f is 30. With P_cash = 0, affordability is 10; any positive P_cash makes it lower. Either way, affordability is below 35 and the verdict is Do Not Buy; no exemption applies. For negative free cash, P_m is 60 and P_f is 40, with the separate negative-free-cash Hard Pass rule. For null free cash, financed affordability is null and the outcome is Wait & Reassess unless a higher-priority financial condition is provable.
-- Available cash excludes emergency, earmarked, and protected savings by default. Including protected savings requires explicit, visible opt-in for an exact amount.
+- Available cash excludes emergency, earmarked, and protected savings by default. Opt-in requires an exact designation no greater than the known protected balance and an affirmative disclosure acknowledgement (ADR-0004).
 - Ratio bands use integer cross-multiplication and safe exact-integer intermediate arithmetic; no float or division for band classification.
 - Rationality uses integer dimension scores and integer weights 30/15/15/25/15, with the approved integer formula and half-up adjustment.
 - The two low-urgency bands are merged into one neutral answer, "Can wait one month or longer", scored 50.
@@ -79,15 +79,15 @@
 - [x] Resolve cash `U` versus `P + F`: cash derives `U = P + F`; financed retains explicit `U` (ADR-0003). Other unresolved items remain explicitly documented in the handoff.
 - [x] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic. (Cash helper verified by product owner; new monthly/ratio helpers await Termux validation.)
 - [x] Implement cash-impact and monthly-burden penalties with BigInt cross-multiplication only. (New tests authored; await Termux validation.)
-- [ ] Implement protected-savings opt-in and visible disclosure behavior.
+- [x] Enforce protected-savings opt-in cap, disclosure acknowledgement, and checked effective available cash (ADR-0004); UI disclosure remains Phase 3.
 - [x] Implement integer rationality dimension mappings and weighted formula. (Authored; awaits Termux validation.)
 - [x] Implement required social-pressure input and impulse-friction rules as pure domain helpers. (Authored; awaits Termux validation. Canonical verdict integration remains pending.)
-- [ ] Implement strict null behavior, confirmed-zero handling, and display-only completeness details.
-- [ ] Implement canonical five-outcome precedence, including null-score/known-Hard-Pass handling.
-- [ ] Implement non-judgmental Indonesian reason and next-step copy for all five outcomes.
+- [x] Implement strict null behavior, confirmed-zero handling, and display-only completeness details in the domain engine.
+- [x] Author canonical five-outcome precedence, including null-score/known-Hard-Pass handling; awaits Termux validation.
+- [x] Author non-judgmental Indonesian reason and proportionate next-step copy for all five outcomes; awaits Termux validation.
 - [ ] Add Vitest tests for the exact authoritative 37-case edge-case inventory in `docs/product/DECISION_ENGINE.md`; do not create an agent-specific substitute list.
 - [x] Add layer-level boundary tests per `TEST_STRATEGY.md`, including both sides of the rationality 49/50 boundary. (Authored; awaits Termux validation.)
-- [ ] Verify `SPEC.md` and `docs/product/DECISION_ENGINE.md` remain aligned.
+- [x] Reconcile protected-savings and result-contract rules across `SPEC.md` and `docs/product/DECISION_ENGINE.md`.
 
 ### Separate Backlog (not scheduled; do not expand scaffolding before Phase 2 contract validation passes)
 
