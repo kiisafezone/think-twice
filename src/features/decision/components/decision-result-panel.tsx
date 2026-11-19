@@ -145,7 +145,7 @@ export default function DecisionResultPanel({
       const store = createDecisionHistoryStore(window.localStorage);
       const loaded = store.read();
       setHistory(loaded.records);
-      setHistoryStatus(loaded.status);
+      setHistoryStatus(loaded.status === "ok" ? "ready" : loaded.status);
     } catch {
       setHistoryStatus("unavailable");
     }
