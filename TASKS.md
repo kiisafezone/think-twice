@@ -3,9 +3,9 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT
-- Completed: Product owner validated commit `7fcbae6` on Termux: typecheck passed, 11 files / 241 tests passed, and Next.js 16.4.6 Webpack build passed. The Vite native-config ESM warning remains non-blocking.
-- Completed this session: Expanded `tests/domain/decision-engine.test.ts` with integration coverage for each required cash/financed missing affordability input, each required Rationality dimension, missing-data precedence, cash use above 100%, cash-use risk over behavioral concerns, positive cash impact with zero monthly free cash, protected-savings opt-in versus no opt-in, separate assessments, all five outcomes and their reason/next-step contracts, and reachable score boundaries 30/35/60/75/80.
-- Current Bug / Blocker: The exact score examples 34, 59, and 79 in authoritative inventory cases 1–3 are mathematically unreachable under the approved formula: every penalty in P_cash, P_m, and P_f is a multiple of five, so the resulting affordability score (floored at zero) is always a multiple of five. Do not change formula or inventory without product-owner direction. Coverage now tests the adjacent reachable values around those thresholds (30/35, 55/60, 75/80); the exact inventory remains formally blocked pending reconciliation. Case 19's visible disclosure is a UI requirement and remains Phase 3. Broader payment-instrument mappings and non-monthly schedules remain unsupported/out of scope for the V1 engine input unless explicitly approved.
+- Completed: Product owner validated commit `10a3c4d` on Termux: typecheck passed, 11 files / 277 tests passed, and the Next.js 16.4.6 Webpack production build passed. The Vite native-config ESM warning remains non-blocking.
+- Completed this session: Expanded `tests/domain/decision-engine.test.ts` with integration coverage for required cash/financed missing affordability inputs, each required Rationality dimension, missing-data precedence, cash use above 100%, cash-use risk over behavioral concerns, positive cash impact with zero monthly free cash, protected-savings opt-in versus no opt-in, separate assessments, all five outcomes and their reason/next-step contracts, and reachable score boundaries 30/35, 55/60, and 75/80. Product owner approved replacing unreachable score examples 34/59/79 with these reachable boundary values; `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and `docs/quality/TEST_STRATEGY.md` now state the same rule.
+- Current Bug / Blocker: The unreachable affordability examples have been reconciled without changing the approved formula or verdict thresholds. No scoring blocker remains. Protected-savings visible disclosure and rendered separation of assessment results remain Phase 3 UI requirements. Broader payment-instrument mappings and non-monthly schedules remain unsupported/out of scope for the V1 engine input unless explicitly approved.
 - Remaining unresolved product/contract items (do not resolve by convenience):
   1. Broader payment-instrument mappings `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remain undefined; V1 engine accepts only its existing `cash` / `financed` classification.
   2. Non-monthly or irregular repayment schedules remain unsupported and are rejected.
@@ -13,10 +13,10 @@
   4. Optional work-hours cost and utility-per-use metrics are not required for V1 verdict calculation; omit until source inputs and UI are approved.
   5. Persistence fields `id` and `createdAt` remain storage-layer concerns, excluded from engine input.
   6. Monthly period only; no period normalization. Inputs must remain explicit monthly amounts.
-- Next Exact Step: Product owner validates the new test commit on Termux. If validation passes, request a product decision on the unreachable 34/59/79 score examples before declaring the authoritative inventory complete. Then reconcile the authoritative inventory and `SPEC.md` only after approval; continue remaining applicable coverage. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, UI, optional metrics, payment-instrument mappings, or new dependencies.
-- Tests Run: Not run in this GitHub-only test-authoring step. Latest product-owner Termux validation remains `7fcbae6`: typecheck passed, 11 files / 241 tests passed, production build passed. New tests await Termux validation. Current changes await validation.
+- Next Exact Step: Continue Phase 3 with the assessment experience, beginning with the purchase input flow and preserving the approved domain contracts. Implement the visible protected-savings opt-in disclosure and separate assessment presentation when their UI steps are reached. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, optional metrics, payment-instrument mappings, or new dependencies.
+- Tests Run: Product owner ran `npm run typecheck`, `npm run test`, and `npm run build` at `10a3c4d` on Termux. Typecheck passed; 11 test files / 277 tests passed; Next.js 16.4.6 Webpack production build passed. Documentation reconciliation in this commit does not change executable code.
 - Files Changed this session: `tests/domain/decision-engine.test.ts` (commits `ccd6bc1`, `ab29877`, `9321083`, `213dffb`) and `TASKS.md`.
-- Implementation Status: The domain engine passed product-owner validation at `7fcbae6`. Expanded edge-case tests are authored but await Termux validation. Exact score examples 34/59/79 conflict with the discrete five-point score granularity and require product-owner reconciliation. Optional derived metrics and UI remain out of scope; visible protected-savings disclosure belongs to Phase 3.
+- Implementation Status: The domain engine and expanded test suite passed product-owner validation at `10a3c4d` (277 tests). The 34/59/79 examples have been replaced with reachable boundary pairs 30/35, 55/60, and 75/80; the scoring formula and verdict thresholds are unchanged. UI-specific edge cases remain Phase 3. Optional derived metrics remain out of scope.
 
 ## Product Priorities
 
@@ -77,15 +77,15 @@
 - [x] Author contract tests for input states, money, payment plans, assessment input, financial profile, outcomes, and validation. (Authored; not yet run. These are contract tests, not scoring tests.)
 - [x] Run and verify `npm run typecheck`, `npm run test`, and `npm run build` for the contracts; product owner validated all three on Termux (132 tests passed, production build passed).
 - [x] Resolve cash `U` versus `P + F`: cash derives `U = P + F`; financed retains explicit `U` (ADR-0003). Other unresolved items remain explicitly documented in the handoff.
-- [x] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic. (Cash helper verified by product owner; new monthly/ratio helpers await Termux validation.)
-- [x] Implement cash-impact and monthly-burden penalties with BigInt cross-multiplication only. (New tests authored; await Termux validation.)
+- [x] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic. (Validated by product owner on Termux.)
+- [x] Implement cash-impact and monthly-burden penalties with BigInt cross-multiplication only. (Validated by product owner on Termux.)
 - [x] Enforce protected-savings opt-in cap, disclosure acknowledgement, and checked effective available cash (ADR-0004); UI disclosure remains Phase 3.
-- [x] Implement integer rationality dimension mappings and weighted formula. (Authored; awaits Termux validation.)
-- [x] Implement required social-pressure input and impulse-friction rules as pure domain helpers. (Authored; awaits Termux validation. Canonical verdict integration remains pending.)
+- [x] Implement integer rationality dimension mappings and weighted formula. (Validated by product owner on Termux.)
+- [x] Implement required social-pressure input and impulse-friction rules as pure domain helpers. (Validated by product owner on Termux.)
 - [x] Implement strict null behavior, confirmed-zero handling, and display-only completeness details in the domain engine.
-- [x] Author canonical five-outcome precedence, including null-score/known-Hard-Pass handling; awaits Termux validation.
-- [x] Author non-judgmental Indonesian reason and proportionate next-step copy for all five outcomes; awaits Termux validation.
-- [ ] Add Vitest tests for the exact authoritative 37-case edge-case inventory in `docs/product/DECISION_ENGINE.md`; do not create an agent-specific substitute list.
+- [x] Author canonical five-outcome precedence, including null-score/known-Hard-Pass handling. (Validated by product owner on Termux.)
+- [x] Author non-judgmental Indonesian reason and proportionate next-step copy for all five outcomes. (Validated by product owner on Termux.)
+- [ ] Complete coverage of every applicable case in the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md`; domain-engine coverage has been expanded and validated (277 tests), while UI-specific disclosure and rendered-result assertions remain Phase 3. Do not create an agent-specific substitute list.
 - [x] Add layer-level boundary tests per `TEST_STRATEGY.md`, including both sides of the rationality 49/50 boundary. (Authored; awaits Termux validation.)
 - [x] Reconcile protected-savings and result-contract rules across `SPEC.md` and `docs/product/DECISION_ENGINE.md`.
 
