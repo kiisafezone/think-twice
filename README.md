@@ -13,6 +13,14 @@ This repository contains the brand and product documentation, maintained as four
 3. [Visual Identity & Tone of Voice](docs/brand/03-visual-identity-tone-of-voice.md) — visual direction, color palette, typography, verbal identity, and microcopy.
 4. [Design System & Content Playbook](docs/brand/04-design-system-content-playbook.md) — product experience, assessment architecture, UI foundations, and content guidance.
 
+## Product and engineering references
+
+- [Product Specification](SPEC.md) — V1 scope, domain contracts, financial rules, and acceptance criteria.
+- [Decision Engine Specification](docs/product/DECISION_ENGINE.md) — deterministic calculations, scoring constraints, verdict priority, and safety rules.
+- [Agent & Engineering Instructions](AGENTS.md) — architecture boundaries, coding standards, and delivery rules.
+- [Task Roadmap & Handoff](TASKS.md) — implementation phases, blockers, and shared agent state.
+- [Visual Style Guide](docs/brand/STYLE_GUIDE.md) — visual identity, UI principles, and product voice.
+
 ## Core product architecture
 
 The product keeps three connected systems distinct:
