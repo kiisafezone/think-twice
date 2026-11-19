@@ -179,4 +179,34 @@ describe("canonical decision engine", () => {
     expect(result.rationality.completeness.isComplete).toBe(false);
     expect(result.verdict.outcome).toBe("wait_and_reassess");
   });
+
+  it("pauses at Rationality 49 when no higher financial rule applies", () => {
+    const input = cashInput();
+    Object.assign(input.purchaseAssessment, {
+      need: known(1),
+      urgency: known("can_wait_one_month_or_longer"),
+      alternatives: known(3),
+      utility: known(4),
+      impulseLevel: known(1),
+      socialPressure: known(false),
+    });
+    const result = evaluateDecision(input);
+    expect(result.rationality.score).toBe(49);
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+  });
+
+  it("allows the financial result to proceed at Rationality 50 when no friction applies", () => {
+    const input = cashInput();
+    Object.assign(input.purchaseAssessment, {
+      need: known(1),
+      urgency: known("can_wait_one_month_or_longer"),
+      alternatives: known(5),
+      utility: known(3),
+      impulseLevel: known(1),
+      socialPressure: known(false),
+    });
+    const result = evaluateDecision(input);
+    expect(result.rationality.score).toBe(50);
+    expect(result.verdict.outcome).toBe("safe_to_buy");
+  });
 });
