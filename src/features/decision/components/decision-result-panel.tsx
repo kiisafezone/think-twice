@@ -14,12 +14,6 @@ import {
   type SavedDecision,
 } from "../../history/storage/local-decision-history";
 
-const currency = new Intl.NumberFormat("id-ID", {
-  style: "currency",
-  currency: "IDR",
-  maximumFractionDigits: 0,
-});
-
 const outcomeDescriptions = {
   safe_to_buy: "Data yang diberikan menunjukkan pembelian berada dalam batas keterjangkauan yang dihitung dan tidak memicu aturan penundaan.",
   buy_with_caution: "Pembelian masih berada dalam rentang keterjangkauan, tetapi akan mengurangi ruang keuangan.",
@@ -370,7 +364,7 @@ export default function DecisionResultPanel({
         ) : historyStatus === "ready" ? (
           <p className="decision-empty-history">Belum ada keputusan yang disimpan di browser ini.</p>
         ) : null}
-        {history.length > 0 ? (
+        {history.length > 0 || historyStatus === "corrupt" ? (
           <div className="confirmation-actions">
             {confirmClear ? (
               <>
