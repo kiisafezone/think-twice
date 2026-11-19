@@ -71,28 +71,28 @@ describe("deriveMonthlyFreeCash", () => {
 
 describe("calculateCashImpactPenalty", () => {
   it.each([
-    [100, 0],
-    [101, 5],
-    [250, 5],
-    [251, 10],
-    [400, 10],
-    [401, 20],
-    [600, 20],
-    [601, 30],
-    [800, 30],
-    [801, 40],
-    [1_000, 40],
-    [1_001, 50],
-  ] as const)("uses the approved cash-use boundary for %i / 1000", (upfront, penalty) => {
+    [100, 0, false],
+    [101, 5, false],
+    [250, 5, false],
+    [251, 10, false],
+    [400, 10, false],
+    [401, 20, false],
+    [600, 20, false],
+    [601, 30, false],
+    [800, 30, false],
+    [801, 40, false],
+    [1_000, 40, false],
+    [1_001, 50, true],
+  ] as const)("uses the approved cash-use boundary for %i / 1000", (upfront, penalty, hardPass) => {
     expect(
       calculateCashImpactPenalty(known(money(upfront)), known(money(1_000))),
-    ).toEqual({ status: "known", penalty });
+    ).toEqual({ status: "known", penalty, hardPass });
   });
 
   it("returns zero for zero upfront even when available cash is zero", () => {
     expect(
       calculateCashImpactPenalty(known(money(0)), known(money(0))),
-    ).toEqual({ status: "known", penalty: 0 });
+    ).toEqual({ status: "known", penalty: 0, hardPass: false });
   });
 
   it("returns Hard Pass when positive upfront exceeds zero available cash", () => {
@@ -116,7 +116,7 @@ describe("calculateCashImpactPenalty", () => {
         known(money(Number.MAX_SAFE_INTEGER)),
         known(money(Number.MAX_SAFE_INTEGER)),
       ),
-    ).toEqual({ status: "known", penalty: 40 });
+    ).toEqual({ status: "known", penalty: 40, hardPass: false });
   });
 });
 
