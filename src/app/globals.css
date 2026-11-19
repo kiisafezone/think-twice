@@ -1012,3 +1012,23 @@ input:focus-visible, select:focus-visible {
   .decision-history-item { align-items: flex-start; }
   .decision-history-item .button-secondary { min-height: 40px; padding: 0 12px; }
 }
+
+.decision-history-details {
+  margin-top: 12px;
+  color: #626961;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.decision-history-details summary {
+  color: var(--forest);
+  font-weight: 700;
+  cursor: pointer;
+}
+.decision-history-details p { line-height: 1.6; }
+.decision-history-details ul,
+.decision-history-details ol {
+  display: grid;
+  gap: 5px;
+  padding-left: 19px;
+}
+.decision-history-details > strong { display: block; margin-top: 12px; color: var(--obsidian); }
