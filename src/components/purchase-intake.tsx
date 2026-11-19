@@ -161,7 +161,7 @@ export default function PurchaseIntake() {
     if (!result.success) {
       const nextErrors: FormErrors = {};
       for (const issue of result.error.issues) {
-        const path = String(issue.path.at(-1) ?? "form");
+        const path = String(issue.path[issue.path.length - 1] ?? "form");
         nextErrors[path] =
           issue.code === "too_small"
             ? "Nilai tidak boleh kurang dari nol."
