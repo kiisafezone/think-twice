@@ -174,6 +174,8 @@ For a financed purchase adding a new installment:
 - If known monthly free cash is exactly zero or negative, set `P_m = 60`; do not calculate a ratio with a non-positive denominator.
 - If monthly free cash is `null`, `P_m` is unknown and the affordability score is `null`.
 
+For a financed purchase with confirmed `M = 0`, `P_m = 60` and `P_f = 30`. When `P_cash = 0`, the resulting affordability score is 10; if `P_cash` is positive, the final score is lower. In either case it remains below 35 and produces Do Not Buy. No exemption applies.
+
 For a cash purchase, `P_m = 0` regardless of monthly free cash; however, `P_f` still requires a known monthly free-cash value.
 
 ### Financial-pressure penalty (`P_f`)
