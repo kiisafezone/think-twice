@@ -10,7 +10,13 @@ function cashInput(): DecisionInput {
   return input;
 }
 
-function financedInput(): DecisionInput {
+type FinancedDecisionInput = Omit<DecisionInput, "purchase"> & {
+  purchase: Omit<DecisionInput["purchase"], "paymentPlan"> & {
+    paymentPlan: Extract<DecisionInput["purchase"]["paymentPlan"], { financingClass: "financed" }>;
+  };
+};
+
+function financedInput(): FinancedDecisionInput {
   return validFinancedDecisionInput();
 }
 
