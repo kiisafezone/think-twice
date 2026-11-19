@@ -399,4 +399,69 @@ describe("canonical decision engine", () => {
     expect(result.nextSteps.join(" ")).toContain("menunda");
   });
 
+
+  it.each([
+    ["need", "need"],
+    ["urgency", "urgency"],
+    ["alternatives", "alternatives"],
+    ["utility", "utility"],
+    ["impulse level", "impulseLevel"],
+  ] as const)("returns null Rationality when required %s is unknown", (_label, field) => {
+    const input = cashInput();
+    Object.assign(input.purchaseAssessment, { [field]: unknown });
+    const result = evaluateDecision(input);
+    expect(result.rationality.score).toBe(null);
+    expect(result.rationality.status).toBe("unavailable");
+    expect(result.rationality.completeness.isComplete).toBe(false);
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+    expect(result.missingFields.some((entry) => entry.field === `purchaseAssessment.${field}`)).toBe(true);
+  });
+
+  it("returns Financially Risky at the reachable affordability score 35", () => {
+    const input = financedInput();
+    input.purchase.paymentPlan.upfrontPayment = known(money(2_000_000));
+    input.purchase.paymentPlan.installment.monthlyInstallment = known(money(1_100_000));
+    input.financialProfile.netMonthlyIncome = known(money(8_000_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(7_000_000));
+    input.financialProfile.existingMonthlyDebtPayments = known(money(0));
+    input.financialProfile.otherCommittedMonthlyExpenses = known(money(0));
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(35);
+    expect(result.verdict.outcome).toBe("financially_risky");
+  });
+
+  it("returns Do Not Buy below the 35-point affordability threshold", () => {
+    const input = financedInput();
+    input.purchase.paymentPlan.upfrontPayment = known(money(3_100_000));
+    input.purchase.paymentPlan.installment.monthlyInstallment = known(money(1_100_000));
+    input.financialProfile.netMonthlyIncome = known(money(8_000_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(7_000_000));
+    input.financialProfile.existingMonthlyDebtPayments = known(money(0));
+    input.financialProfile.otherCommittedMonthlyExpenses = known(money(0));
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(30);
+    expect(result.verdict.outcome).toBe("do_not_buy");
+  });
+
+  it("returns Buy with Caution at the reachable affordability score 75", () => {
+    const input = financedInput();
+    input.purchase.paymentPlan.upfrontPayment = known(money(6_000_000));
+    input.purchase.paymentPlan.installment.monthlyInstallment = known(money(150_000));
+    input.financialProfile.netMonthlyIncome = known(money(8_000_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(7_000_000));
+    input.financialProfile.existingMonthlyDebtPayments = known(money(0));
+    input.financialProfile.otherCommittedMonthlyExpenses = known(money(0));
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(75);
+    expect(result.verdict.outcome).toBe("buy_with_caution");
+  });
+
+  it("returns Safe to Buy at the reachable affordability score 80", () => {
+    const input = cashInput();
+    input.purchase.purchasePrice = known(money(6_000_000));
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(80);
+    expect(result.verdict.outcome).toBe("safe_to_buy");
+  });
+
 });
