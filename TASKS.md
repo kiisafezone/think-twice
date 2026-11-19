@@ -72,7 +72,7 @@
 - [x] Resolve cash `U` versus `P + F`: cash derives `U = P + F`; financed retains explicit `U` (ADR-0004). Other unresolved items remain explicitly documented in the handoff.
 - [x] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic. (Validated by product owner on Termux.)
 - [x] Implement cash-impact and monthly-burden penalties with BigInt cross-multiplication only. (Validated by product owner on Termux.)
-- [x] Enforce protected-savings opt-in cap, disclosure acknowledgement, and checked effective available cash (ADR-0005); UI disclosure remains Phase 3.
+- [x] Enforce protected-savings opt-in cap, disclosure acknowledgement, and checked effective available cash (ADR-0005); first UI disclosure slice is implemented and awaits product-owner validation.
 - [x] Implement integer rationality dimension mappings and weighted formula. (Validated by product owner on Termux.)
 - [x] Implement required social-pressure input and impulse-friction rules as pure domain helpers. (Validated by product owner on Termux.)
 - [x] Implement strict null behavior, confirmed-zero handling, and display-only completeness details in the domain engine.

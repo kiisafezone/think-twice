@@ -442,7 +442,7 @@ export default function FinancialRealityCheckForm({
                   id="protectedDesignationAmount"
                   type="number"
                   aria-invalid={Boolean(errors.protectedSavingsDesignation) || (designationAmount.trim() !== "" && !designationIsValid)}
-                  aria-describedby={errors.protectedSavingsDesignation ? "protectedDesignation-error" : undefined}
+                  aria-describedby={errors.protectedSavingsDesignation || (designationAmount.trim() !== "" && !designationIsValid) ? "protectedDesignation-error" : undefined}
                   min="0"
                   step="1"
                   inputMode="numeric"
