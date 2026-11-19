@@ -2,18 +2,12 @@
 
 ## Last Session Handoff
 
--   Last Agent Used: ChatGPT
--   Completed: Brand foundation and initial product/engineering
-    documentation drafted; polyglot technology direction incorporated.
--   Current Bug / Blocker: Application scaffold and installed
-    dependencies are not verified. Affordability penalty coefficients
-    and exact rationality scoring rubrics remain unresolved.
--   Next Exact Step: Inspect repository tree, package manifests, source
-    files, tests, and Git state on `main`. Do not scaffold over existing
-    work.
--   Tests Run: Documentation update only; no application tests run.
--   Files Changed: `AGENTS.md`, `SPEC.md`, `docs/STYLE_GUIDE.md`,
-    `TASKS.md` in this documentation package.
+- Last Agent Used: ChatGPT
+- Completed: Repository governance files are present; brand/product documentation and polyglot architecture guidance are published. Added `docs/product/DECISION_ENGINE.md` and corrected the style-guide path in `AGENTS.md`.
+- Current Bug / Blocker: Application scaffold and installed dependencies remain unverified. Affordability penalty coefficients and rationality answer scales/mappings remain unresolved release blockers.
+- Next Exact Step: Inspect the full repository tree, manifests, source files, tests, and Git state on `main`. Then reconcile approved scoring parameters in `SPEC.md` and `docs/product/DECISION_ENGINE.md` before implementing numeric scores.
+- Tests Run: Documentation-only review; no application tests or builds run.
+- Files Changed: `AGENTS.md`, `TASKS.md`, `docs/product/DECISION_ENGINE.md`.
 
 ## Product Priorities
 
