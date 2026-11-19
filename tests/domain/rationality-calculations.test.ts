@@ -90,6 +90,34 @@ describe("calculateRationalityScore", () => {
   it("keeps the merged low-urgency answer neutral at 50", () => {
     expect(mapUrgency("can_wait_one_month_or_longer")).toBe(50);
   });
+
+  it.each([
+    [
+      {
+        need: known(1 as const),
+        urgency: known("can_wait_one_month_or_longer" as const),
+        alternatives: known(3 as const),
+        utility: known(4 as const),
+        impulseLevel: known(1 as const),
+      },
+      49,
+    ],
+    [
+      {
+        need: known(1 as const),
+        urgency: known("can_wait_one_month_or_longer" as const),
+        alternatives: known(5 as const),
+        utility: known(3 as const),
+        impulseLevel: known(1 as const),
+      },
+      50,
+    ],
+  ] as const)("covers the layer-level rationality boundary at %i", (input, score) => {
+    expect(calculateRationalityScore(input)).toMatchObject({
+      status: "calculated",
+      score,
+    });
+  });
 });
 
 describe("evaluateImpulseFriction", () => {
@@ -125,6 +153,26 @@ describe("evaluateImpulseFriction", () => {
         need: known(2 as const),
         impulseLevel: known(1 as const),
         socialPressure: known(false),
+      }),
+    ).toEqual({ status: "inactive", evidence: [] });
+  });
+
+  it("does not activate impulse friction below raw impulse level 3", () => {
+    expect(
+      evaluateImpulseFriction({
+        need: known(5 as const),
+        impulseLevel: known(2 as const),
+        socialPressure: known(false),
+      }),
+    ).toEqual({ status: "inactive", evidence: [] });
+  });
+
+  it("does not activate the social-pressure rule when Need is above 2", () => {
+    expect(
+      evaluateImpulseFriction({
+        need: known(3 as const),
+        impulseLevel: known(1 as const),
+        socialPressure: known(true),
       }),
     ).toEqual({ status: "inactive", evidence: [] });
   });
