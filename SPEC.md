@@ -125,8 +125,8 @@ Safety:
 
 A numeric affordability score requires every input used by its payment-method calculation. Do not calculate a partial score or replace an unknown required input with zero.
 
-- **Cash purchase:** upfront amount (`U`), available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`) must all be known. For a cash purchase, `P_m = 0`.
-- **Financed purchase:** all cash-purchase inputs above, plus the new monthly installment amount (`I`), must be known. The installment count and fee treatment are required for total-cost disclosure, but do not replace or infer any affordability-score input.
+- **Cash purchase:** derive `U = P + F`; purchase price (`P`) and additional fees (`F`) must both be known, together with available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`). Do not collect a separate upfront amount for cash. `P_m = 0`.
+- **Financed purchase:** explicit upfront amount (`U`), available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), other committed monthly expenses (`C`), and the new monthly installment amount (`I`) must be known. The installment count and fee treatment are required for total-cost disclosure, but do not replace or infer any affordability-score input.
 
 If any required input for the applicable payment method is unknown, `affordabilityScore = null`. A separately provable Hard Pass or Financially Risky condition may still determine the overall outcome under the precedence rules. For example, known `U > A` remains Hard Pass even if income or expenses are unknown.
 
@@ -140,7 +140,7 @@ affordabilityScore = max(0, 100 - P_cash - P_m - P_f)
 
 ### Cash-impact penalty (`P_cash`)
 
-Cash use is `U / A`, where `U` is upfront payment and `A` is available cash. For `A > 0`, use exact integer cross-multiplication to select the first matching upper-bound band:
+Cash use is `U / A`, where `A` is available cash. For cash purchases, derive `U = P + F`; for financed purchases, `U` is the explicit upfront input. For `A > 0`, use exact integer cross-multiplication to select the first matching upper-bound band:
 
 | Cash use | Penalty |
 |---|---:|
