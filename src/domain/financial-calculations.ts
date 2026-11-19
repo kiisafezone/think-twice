@@ -7,7 +7,7 @@ export type DerivedValue<T> =
   | { readonly status: "invalid"; readonly reason: "unsafe_integer_overflow" };
 
 export type CashImpactPenalty =
-  | { readonly status: "known"; readonly penalty: 0 | 5 | 10 | 20 | 30 | 40 | 50 }
+  | { readonly status: "known"; readonly penalty: 0 | 5 | 10 | 20 | 30 | 40 | 50; readonly hardPass: boolean }
   | { readonly status: "unknown" }
   | { readonly status: "hard_pass" };
 
@@ -93,16 +93,16 @@ export function calculateCashImpactPenalty(
   const { value: u } = upfront;
   const { value: a } = availableCash;
 
-  if (u === 0) return { status: "known", penalty: 0 };
+  if (u === 0) return { status: "known", penalty: 0, hardPass: false };
   if (a === 0) return { status: "hard_pass" };
 
-  if (isAtMostPercentage(u, a, 10)) return { status: "known", penalty: 0 };
-  if (isAtMostPercentage(u, a, 25)) return { status: "known", penalty: 5 };
-  if (isAtMostPercentage(u, a, 40)) return { status: "known", penalty: 10 };
-  if (isAtMostPercentage(u, a, 60)) return { status: "known", penalty: 20 };
-  if (isAtMostPercentage(u, a, 80)) return { status: "known", penalty: 30 };
-  if (isAtMostPercentage(u, a, 100)) return { status: "known", penalty: 40 };
-  return { status: "known", penalty: 50 };
+  if (isAtMostPercentage(u, a, 10)) return { status: "known", penalty: 0, hardPass: false };
+  if (isAtMostPercentage(u, a, 25)) return { status: "known", penalty: 5, hardPass: false };
+  if (isAtMostPercentage(u, a, 40)) return { status: "known", penalty: 10, hardPass: false };
+  if (isAtMostPercentage(u, a, 60)) return { status: "known", penalty: 20, hardPass: false };
+  if (isAtMostPercentage(u, a, 80)) return { status: "known", penalty: 30, hardPass: false };
+  if (isAtMostPercentage(u, a, 100)) return { status: "known", penalty: 40, hardPass: false };
+  return { status: "known", penalty: 50, hardPass: true };
 }
 
 /** P_m from I / M; non-positive known M receives the approved fixed penalty. */
