@@ -224,7 +224,7 @@ export default function PurchaseIntake() {
       ? assessmentFieldInfo.filter(({ key }) => validatedAssessment[key].status === "unknown")
       : [];
     const unknownScoredDimensions = unknownAssessmentFields.filter(({ key }) => key !== "socialPressure");
-    const socialPressureUnknown = unknownAssessmentFields.some(({ key }) => key === "socialPressure");
+    const impulseFrictionUnknown = unknownAssessmentFields.some(({ key }) => key === "need" || key === "impulseLevel" || key === "socialPressure");
     return (
       <main className="page-shell">
         <header className="site-header">
@@ -303,8 +303,8 @@ export default function PurchaseIntake() {
                   dari kondisi keuangan dan belum menghasilkan rekomendasi akhir.
                 </p>
               )}
-              {socialPressureUnknown ? (
-                <p>Status impulse friction belum dapat ditentukan karena jawaban tekanan sosial belum diketahui.</p>
+              {impulseFrictionUnknown ? (
+                <p>Status impulse friction belum dapat ditentukan karena data kebutuhan, dorongan membeli, atau tekanan sosial belum diketahui.</p>
               ) : null}
               {unknownAssessmentFields.length > 0 ? (
                 <ul className="assessment-unknown-fields">
