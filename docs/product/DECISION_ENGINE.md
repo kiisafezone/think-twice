@@ -162,6 +162,8 @@ Affordability is an integer from 0 to 100:
 affordabilityScore = max(0, 100 - P_cash - P_m - P_f)
 ```
 
+Every approved penalty is a multiple of five; therefore every reachable affordability score is also a multiple of five. Boundary tests must use the adjacent reachable scores around the verdict cutoffs: 30/35 for the 35-point cutoff, 55/60 for the 60-point cutoff, and 75/80 for the 80-point cutoff. The verdict ranges remain unchanged.
+
 A numeric score requires all inputs needed to calculate the financial assessment. If a required input is missing, return `score: null`; do not emit a partial score. A known Hard Pass or Financially Risky condition may still determine the final outcome while the score is null.
 
 ### Cash-impact penalty: P_cash
@@ -385,9 +387,9 @@ Each of the other four outcomes also requires a reason and a proportionate next 
 
 This is the authoritative V1 edge-case test inventory. Implement and test every applicable case; agents must not invent a replacement list, silently omit cases, or narrow coverage.
 
-1. Affordability 34 produces Do Not Buy; 35 produces Financially Risky.
-2. Affordability 59 produces Financially Risky; 60 may proceed to behavioral checks.
-3. Affordability 79 produces Buy with Caution; 80 produces Safe to Buy only if no earlier rule applies.
+1. Affordability 30 produces Do Not Buy; 35 produces Financially Risky.
+2. Affordability 55 produces Financially Risky; 60 may proceed to behavioral checks.
+3. Affordability 75 produces Buy with Caution; 80 produces Safe to Buy only if no earlier rule applies.
 4. Cash use exactly 80% does not trigger the above-80% rule; any value strictly above 80% does.
 5. Cash use above 80% with Rationality below 50 produces Financially Risky because financial pressure has higher precedence.
 6. Cash use above 100% produces Do Not Buy, not Financially Risky.
