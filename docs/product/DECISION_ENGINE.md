@@ -23,8 +23,9 @@ The domain layer receives validated, typed inputs. UI form state is not an engin
 At minimum:
 - Item name and category.
 - Purchase price and additional fees.
-- Payment method: cash or financed.
-- Upfront payment.
+- Financing classification: cash or financed.
+- Cash purchase upfront amount is derived as purchase price plus additional fees (U = P + F); it is not a separate user input.
+- Financed purchase upfront amount (U) is an explicit user input.
 - Installment amount and number of installments when financed.
 - Whether installment amount already includes fees.
 - Need answer (1–5).
@@ -91,7 +92,10 @@ Cash purchase:
 
 ```text
 totalCost = P + F
+U = totalCost
 ```
+
+For cash purchases, U is derived automatically from the known purchase price and additional fees. It is not collected as a separate input, and there is no independently editable upfront amount that can conflict with P + F.
 
 Financed purchase, when installment amount excludes fees:
 
@@ -387,6 +391,9 @@ This is the authoritative V1 edge-case test inventory. Implement and test every 
 16. Cash purchase with negative monthly free cash applies `P_m = 0` and `P_f = 40`; it does not trigger the new-repayment Hard Pass rule.
 17. Zero available cash and positive upfront produce Do Not Buy without division by zero.
 18. Zero available cash and zero upfront produce `P_cash = 0` without division by zero.
+34. For a cash purchase, derive upfront `U` exactly as `P + F`; no separate upfront input is accepted.
+35. If purchase price or additional fees are unknown for a cash purchase, derived `U` is unknown and cash-use checks cannot be calculated; do not substitute zero.
+36. A cash plan containing a separately supplied upfront amount is invalid; financed plans continue to require explicit upfront `U`.
 19. Protected savings remain excluded without explicit opt-in; an opt-in includes only the explicitly designated amount and is visibly disclosed.
 20. Paying from protected savings without opt-in cannot silently increase available cash; if known available cash is insufficient, Do Not Buy applies.
 21. Every cash-impact and monthly-burden band is tested at its exact lower and upper boundaries using integer cross-multiplication.
@@ -410,7 +417,8 @@ Keep the V1 engine as pure TypeScript domain logic, independent of React, browse
 Before implementation:
 1. Keep this document and `SPEC.md` reconciled.
 2. Implement explicit input, assessment, completeness, and result types.
-3. Implement exact integer Rupiah arithmetic and exact ratio-band comparisons.
+3. Derive cash upfront `U = P + F` with checked integer Rupiah addition; retain explicit `U` only for financed purchases.
+4. Implement exact integer Rupiah arithmetic and exact ratio-band comparisons.
 4. Implement the integer-only rationality formula.
 5. Implement verdict precedence exactly as documented.
 6. Add Vitest coverage for every required formula, boundary, missing-data case, and priority collision in the Required edge-case tests section above. That list is the authoritative test inventory; do not invent a replacement or narrower agent-specific list.
