@@ -9,7 +9,7 @@ Prove that financial calculations, behavioral assessment rules, verdict priority
 | Layer | Tool | Responsibility |
 |---|---|---|
 | Domain unit tests | Vitest | Pure calculations, validation, scoring, verdict priority |
-| Feature unit tests | Vitest | Local-history storage behavior, data minimization, share-summary privacy boundary |
+| Feature unit tests | Vitest | Decision-result rendering, local-history storage behavior, data minimization, share-summary privacy boundary |
 | Component tests | React Testing Library or equivalent, if adopted | Form behavior, accessible interaction, error states |
 | Integration tests | Vitest | Assessment flow, storage adapter, result rendering |
 | Browser E2E | Playwright, only when adopted | Critical user journeys and responsive behavior |
