@@ -48,9 +48,9 @@ export type EffectiveAvailableCash =
 /** Adds only the designated protected amount to known base available cash. */
 export function deriveEffectiveAvailableCash(profile: FinancialProfile): EffectiveAvailableCash {
   if (profile.availableCash.status !== "known") return { status: "unknown" };
-  const designated = profile.protectedSavingsDesignation.status === "opted_in"
+  const designated: Rupiah = profile.protectedSavingsDesignation.status === "opted_in"
     ? profile.protectedSavingsDesignation.amount
-    : 0;
+    : rupiahSchema.parse(0);
   try {
     return { status: "known", value: addRupiah(profile.availableCash.value, designated) };
   } catch (error) {
