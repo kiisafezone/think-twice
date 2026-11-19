@@ -42,8 +42,6 @@ export type InstallmentCount = z.infer<typeof installmentCountSchema>;
 
 export const cashPlanSchema = z.strictObject({
   financingClass: z.literal("cash"),
-  /** Upfront payment (U). Relationship to price + fees is unresolved. */
-  upfrontPayment: requiredInputSchema(rupiahSchema),
 });
 export type CashPlan = z.infer<typeof cashPlanSchema>;
 
@@ -60,7 +58,7 @@ export type InstallmentTerms = z.infer<typeof installmentTermsSchema>;
 
 export const financedPlanSchema = z.strictObject({
   financingClass: z.literal("financed"),
-  /** Upfront payment (U). */
+  /** Explicit upfront payment (U); cash purchases derive U from P + F. */
   upfrontPayment: requiredInputSchema(rupiahSchema),
   installment: installmentTermsSchema,
 });
