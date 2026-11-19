@@ -367,7 +367,7 @@ Each of the other four outcomes also requires a reason and a proportionate next 
 
 ## Required edge-case tests before implementation is considered complete
 
-Test at least the following cases:
+This is the authoritative V1 edge-case test inventory. Implement and test every applicable case; agents must not invent a replacement list, silently omit cases, or narrow coverage.
 
 1. Affordability 34 produces Do Not Buy; 35 produces Financially Risky.
 2. Affordability 59 produces Financially Risky; 60 may proceed to behavioral checks.
@@ -376,30 +376,32 @@ Test at least the following cases:
 5. Cash use above 80% with Rationality below 50 produces Financially Risky because financial pressure has higher precedence.
 6. Cash use above 100% produces Do Not Buy, not Financially Risky.
 7. Upfront exceeds available cash while affordability is null due to another missing field: Do Not Buy still wins.
-8. New installment with negative monthly free cash produces Do Not Buy; the score calculation also applies `P_m = 60` and `P_f = 40` when the required inputs are known.
-9. New installment with confirmed zero monthly free cash applies `P_m = 60` and `P_f = 30`, producing affordability 10 and therefore Do Not Buy through the below-35 Hard Pass rule. No exemption applies. Confirm that zero is used only when income and all expense components are known.
+8. New installment with negative monthly free cash produces Do Not Buy; when inputs are known, the score calculation also applies `P_m = 60` and `P_f = 40`.
+9. New installment with confirmed zero monthly free cash applies `P_m = 60` and `P_f = 30`, producing affordability 10 and therefore Do Not Buy through the below-35 Hard Pass rule. No exemption applies. Zero is valid only when income and every expense component are known.
 10. Missing net monthly income makes monthly free cash null, never zero; a financed purchase has null affordability and returns Wait & Reassess unless a Hard Pass or Financially Risky condition is independently provable.
 11. Missing essential monthly expenses makes monthly free cash null, never zero; a financed purchase has null affordability and returns Wait & Reassess unless a higher-priority condition is provable.
-12. Missing existing debt payments or other committed monthly expenses makes monthly free cash null, never zero; do not silently substitute zero.
-13. A cash purchase with any required affordability input missing returns affordability null; known Hard Pass or Financially Risky conditions still follow precedence.
-10. Cash purchase with negative monthly free cash applies `P_m = 0` and `P_f = 40`; it does not trigger the new-repayment Hard Pass rule.
-11. Zero available cash and positive upfront produce Do Not Buy without division by zero.
-12. Zero available cash and zero upfront produce `P_cash = 0` without division by zero.
-13. Protected savings remain excluded without explicit opt-in; an opt-in includes only the explicitly designated amount and is visibly disclosed.
-14. Paying from protected savings without opt-in cannot silently increase available cash; if known available cash is insufficient, Do Not Buy applies.
-15. Every cash-impact and monthly-burden band is tested at its exact lower and upper boundaries using integer cross-multiplication.
-16. Rationality dimension mappings produce only integer values; impulse levels 1–5 map to 100, 75, 50, 25, and 0.
-17. The rationality formula uses integer weights and the `+50` half-up rule, including a case where the weighted sum is exactly halfway.
-18. The merged low-urgency answer scores 50; low urgency alone does not lower Rationality.
-19. Social pressure = yes with Need = 2 triggers impulse friction; social pressure = no does not trigger that condition.
-20. Raw impulse level 3 or higher triggers impulse friction regardless of social-pressure answer.
-21. Missing social-pressure answer produces Wait & Reassess when no higher-priority condition applies.
-22. Missing any required Rationality dimension yields null, no reweighting, and a completeness explanation.
-23. A missing critical answer does not override a known Hard Pass or Financially Risky condition.
-24. Low Need plus impulse level 5 and low Rationality, without a financial Hard Pass condition, produces Wait & Reassess, not Do Not Buy.
-26. Affordability and Rationality render as separate results; no combined health score is calculated or displayed.
-27. Every one of the five canonical outcomes includes a non-judgmental Indonesian reason tied to the actual matched rule and a proportionate next step.
-28. Do Not Buy explanation identifies the specific financial constraint and suggests a smaller installment, a longer tenor only after comparing total repayment and fees, or waiting for financial capacity to improve.
+12. Missing existing monthly debt payments makes monthly free cash null, never zero; do not silently substitute zero.
+13. Missing other committed monthly expenses makes monthly free cash null, never zero; do not silently substitute zero.
+14. A cash purchase with any required affordability input missing returns affordability null; known Hard Pass or Financially Risky conditions still follow precedence.
+15. A financed purchase with a missing installment amount returns affordability null; known higher-priority conditions still follow precedence.
+16. Cash purchase with negative monthly free cash applies `P_m = 0` and `P_f = 40`; it does not trigger the new-repayment Hard Pass rule.
+17. Zero available cash and positive upfront produce Do Not Buy without division by zero.
+18. Zero available cash and zero upfront produce `P_cash = 0` without division by zero.
+19. Protected savings remain excluded without explicit opt-in; an opt-in includes only the explicitly designated amount and is visibly disclosed.
+20. Paying from protected savings without opt-in cannot silently increase available cash; if known available cash is insufficient, Do Not Buy applies.
+21. Every cash-impact and monthly-burden band is tested at its exact lower and upper boundaries using integer cross-multiplication.
+22. Rationality dimension mappings produce only integer values; impulse levels 1–5 map to 100, 75, 50, 25, and 0.
+23. The rationality formula uses integer weights and the `+50` half-up rule, including a case where the weighted sum is exactly halfway.
+24. The merged low-urgency answer scores 50; low urgency alone does not lower Rationality.
+25. Social pressure = yes with Need = 2 triggers impulse friction; social pressure = no does not trigger that condition.
+26. Raw impulse level 3 or higher triggers impulse friction regardless of social-pressure answer.
+27. Missing social-pressure answer produces Wait & Reassess when no higher-priority condition applies.
+28. Missing any required Rationality dimension yields null, no reweighting, and a completeness explanation.
+29. A missing critical answer does not override a known Hard Pass or Financially Risky condition.
+30. Low Need plus impulse level 5 and low Rationality, without a financial Hard Pass condition, produces Wait & Reassess, not Do Not Buy.
+31. Affordability and Rationality render as separate results; no combined health score is calculated or displayed.
+32. Every one of the five canonical outcomes includes a non-judgmental Indonesian reason tied to the actual matched rule and a proportionate next step.
+33. Do Not Buy explanation identifies the specific financial constraint and suggests a smaller installment, a longer tenor only after comparing total repayment and fees, or waiting for financial capacity to improve.
 
 ## Implementation requirements
 
