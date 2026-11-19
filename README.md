@@ -47,6 +47,8 @@ This repository contains the brand system, product specifications, architecture 
 - [Security Policy](SECURITY.md) — responsible vulnerability reporting.
 - [Code of Conduct](CODE_OF_CONDUCT.md) — community expectations.
 - [Changelog](CHANGELOG.md) — notable project changes.
+- [Sponsorship Policy](docs/community/SPONSORSHIP.md) — sponsorship principles, transparency, and recognition.
+- [Sponsor Acknowledgements](SPONSORS.md) — supporters acknowledged with their permission.
 
 ## Core product architecture
 
@@ -61,6 +63,12 @@ The product keeps three connected systems distinct:
 ## Technology direction
 
 The approved direction is polyglot by responsibility: Next.js, React, strict TypeScript, Tailwind CSS, and Zod for the V1 web application; Python and FastAPI for a future, concrete server-side workload; PostgreSQL only when persistent server-side storage is justified. The V1 decision engine remains deterministic TypeScript. The project does not need every technology installed at the outset.
+
+## Support the project
+
+THINK TWICE. is independently developed. If you find the project useful or want to support its continued development, you can [sponsor the project on GitHub](https://github.com/sponsors/kiisafezone).
+
+Sponsorship is voluntary. It does not buy influence over product decisions, financial assessments, recommendation logic, roadmap priorities, or user data. Read the [Sponsorship Policy](docs/community/SPONSORSHIP.md) for details.
 
 ## Project status
 
