@@ -30,17 +30,18 @@
 ## Journey 4: Review local history
 
 1. User explicitly chooses to save a result.
-2. The application explains that the history is stored in browser localStorage and is not encrypted secure storage.
-3. User can inspect and delete individual or all saved records.
-4. Clearing browser data may remove history; this limitation is disclosed.
+2. The application explains that only the item name, category, timestamp, rule version, separate scores/statuses, explanation, next steps, and missing-field explanations are stored. Raw financial amounts and raw assessment answers are excluded.
+3. The application explains that localStorage is browser-local and not encrypted secure storage.
+4. User can inspect saved summaries, delete individual records, or delete all saved records.
+5. Clearing browser data may remove history; this limitation is disclosed. Corrupt or unavailable storage is not silently overwritten.
 
 ## Journey 5: Share a result
 
 1. User chooses Share.
-2. The application previews the exact summary.
-3. Sensitive financial details and raw answers are excluded by default.
-4. User explicitly confirms the handoff to the chosen sharing target.
-5. The application does not claim control over information after the user shares it.
+2. The application previews the exact summary, containing only the canonical outcome, decisive reason, and next steps.
+3. Item identity, category, scores, financial details, and raw answers are excluded by default.
+4. User explicitly initiates the device share sheet or clipboard handoff.
+5. No public share URL or server transfer is created. The application does not claim control over information after the user shares it.
 
 ## UX rules across journeys
 
