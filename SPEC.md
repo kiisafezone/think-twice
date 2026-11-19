@@ -105,7 +105,7 @@ For a financed purchase when `M = null`, the monthly-burden and financial-pressu
 
 Available cash means liquid funds the user can actually use for this purchase, excluding emergency funds, earmarked savings, and other protected savings by default. Credit limits and borrowing capacity are never available cash.
 
-Protected savings may be included only through an explicit, affirmative opt-in that identifies the exact amount to designate as available for this purchase. The UI must disclose the amount being included and that this reduces the protected balance available for emergencies or its earmarked purpose. No protected amount is included silently.
+Protected savings may be included only through an explicit opt-in that identifies an exact amount no greater than the known protected-savings balance. An opt-in is invalid when that balance is unknown or not applicable. The user must affirmatively acknowledge a disclosure showing the exact amount being included and explaining that this reduces funds protected for emergencies or their earmarked purpose. Only the designated amount is added to base available cash, using checked integer Rupiah addition. If base available cash is unknown, effective available cash remains unknown. No protected amount is included silently.
 
 If the user intends to fund the upfront payment from protected savings but does not opt in, those funds remain excluded. If known available cash is lower than the upfront amount, the Hard Pass condition applies. If available cash cannot be established, affordability is null and the missing-data rule applies unless another Hard Pass condition is already provable.
 
