@@ -164,16 +164,31 @@ export default function PurchaseIntake() {
 
     if (!result.success) {
       const nextErrors: FormErrors = {};
+      const formFields = new Set([
+        "itemName",
+        "category",
+        "purchasePrice",
+        "additionalFees",
+        "paymentPlan",
+        "upfrontPayment",
+        "monthlyInstallment",
+        "installmentCount",
+        "feeTreatment",
+      ]);
       for (const issue of result.error.issues) {
-        const path = String(issue.path[issue.path.length - 1] ?? "form");
+        const path =
+          issue.path.map(String).reverse().find((part) => formFields.has(part)) ??
+          "form";
         nextErrors[path] =
-          issue.code === "too_small"
-            ? "Nilai tidak boleh kurang dari nol."
-            : issue.code === "invalid_type"
-              ? "Masukkan angka bulat yang valid atau tandai belum diketahui."
-              : issue.message === "blank_text"
-                ? "Bagian ini perlu diisi."
-                : "Periksa kembali nilai yang dimasukkan.";
+          issue.code === "too_small" && path === "installmentCount"
+            ? "Jumlah cicilan harus minimal 1 bulan."
+            : issue.code === "too_small"
+              ? "Nilai tidak boleh kurang dari nol."
+              : issue.code === "invalid_type"
+                ? "Masukkan angka bulat yang valid atau tandai belum diketahui."
+                : issue.message === "blank_text"
+                  ? "Bagian ini perlu diisi."
+                  : "Periksa kembali nilai yang dimasukkan.";
       }
       setErrors(nextErrors);
       setValidatedPurchase(null);
