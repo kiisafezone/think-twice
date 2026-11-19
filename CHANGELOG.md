@@ -20,7 +20,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Added the Decision Intelligence result experience, preserving separate affordability and rationality results and displaying canonical outcomes, matched reasons, missing information, assumptions, and next steps.
 - Added opt-in local decision history with a replaceable localStorage adapter, summary-only persistence, review, individual deletion, and clear-all controls.
 - Added a preview-first share summary that excludes item identity, assessment scores, raw answers, and financial inputs; uses the device share sheet or clipboard without creating public links or server transfers.
-- Added feature-level tests for local-history storage behavior and share-summary privacy boundaries.
+- Added feature-level tests for Decision Intelligence result rendering, local-history storage behavior, and share-summary privacy boundaries.
 - Added a chronological decision-record index and a documented source/features/domain repository layout.
 
 ### Changed
