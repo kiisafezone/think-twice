@@ -120,7 +120,9 @@ export default function PurchaseIntake() {
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
-    setErrors((current) => ({ ...current, [key]: "" }));
+    setErrors((current) =>
+      key === "financingClass" ? {} : { ...current, [key]: "" },
+    );
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
