@@ -16,6 +16,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Added repository hygiene configuration: `.editorconfig`, `.gitattributes`, and `.gitignore`.
 - Added the Next.js App Router scaffold and deterministic TypeScript domain contracts, calculations, and decision engine with Vitest coverage.
 - Added purchase-intake and Purchase Decision Assessment screens, including explicit unknown-answer handling and incomplete-assessment disclosure.
+- Added the first separate Financial Reality Check screen with explicit unknown financial inputs, monthly free-cash summary, effective available-cash summary, and protected-savings opt-in disclosure.
 - Added a chronological decision-record index and a documented source/features/domain repository layout.
 
 ### Changed
@@ -26,5 +27,6 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ### Notes
 - The application is in active V1 development; the current UI is an early, in-memory flow and is not a production release.
+- The Financial Reality Check currently validates and summarizes financial inputs; final affordability scoring and Decision Intelligence presentation are separate remaining steps.
 - Financial Reality Check, protected-savings disclosure UI, Decision Intelligence result presentation, local history, and production deployment remain incomplete.
 - Do not infer a released application version from documentation or implementation commits.

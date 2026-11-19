@@ -66,6 +66,8 @@ src/
   features/
     purchase/
       components/         Purchase intake and behavioral assessment UI
+    financial/
+      components/         Financial Reality Check and protected-savings UI
 tests/
   domain/                 Domain and decision-engine tests
 ```

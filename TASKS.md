@@ -2,14 +2,14 @@
 
 ## Last Session Handoff
 
-- Last Agent Used: ChatGPT (GitHub direct edits on `main`).
-- Last Product-Owner Validation: Commit `6316dc2` passed `npm run typecheck`, 277/277 Vitest tests, and `npm run build` on Termux. The Vite native-config ESM warning remained non-blocking.
-- Completed This Session: Added explicit “Belum tahu” options to every required Purchase Decision Assessment question. Unanswered questions still block submission; explicitly unknown answers are stored as `{ status: "unknown" }`. The confirmation state explains unavailable Rationality dimensions and undetermined impulse friction without partial or neutral-default scores. Restructured feature UI under `src/features/purchase/components/`, kept pure domain logic in `src/domain/`, removed empty placeholders and duplicate community/ADR files, corrected ADR numbering, added repository/decision-record navigation, updated `CHANGELOG.md`, and clarified the domain test wording for explicit unknown input states.
-- Current Blocker: These latest UI and repository-structure changes have not yet been validated on Termux. No component-testing dependency is installed; existing automated tests remain domain-level. Financial Reality Check, protected-savings disclosure UI, rendered Decision Intelligence results, and local history remain unimplemented.
+- Last Agent Used: ChatGPT (GitHub direct edits on \`main\`).
+- Last Product-Owner Validation: Commit \`3fdfeba\` passed \`npm run typecheck\`, 277/277 Vitest tests across 11 files, and \`npm run build\` on Termux. The Vite native-config ESM warning remained non-blocking.
+- Completed This Session: Built the first separate Financial Reality Check UI under \`src/features/financial/components/\`. It collects net monthly income, essential expenses, existing debt payments, other committed expenses, and available cash with explicit unknown states. Added protected-savings status and an opt-in flow that requires a known balance, an exact capped designation, a visible consequence disclosure, and affirmative acknowledgement. The validated summary shows monthly free cash and effective available cash separately. Purchase, behavioral, and financial inputs remain in page memory only; no verdict or affordability score is shown at this stage.
+- Current Blocker: The Financial Reality Check UI and its integration have not yet been validated on Termux. No component-testing dependency is installed; automated tests remain domain-level. Decision Intelligence result presentation, local history, and production deployment remain unimplemented.
 - Remaining Unresolved Product/Contract Items: Broader payment-instrument mappings remain undefined; non-monthly schedules remain unsupported; installment and text constraints still require product confirmation; optional work-hours and utility-per-use metrics remain out of scope; persistence metadata remains a storage-layer concern.
-- Next Exact Step: Pull `main` in Termux and run `npm run typecheck && npm run test && npm run build`. Fix only reported failures. After validation, continue with the separate Financial Reality Check, including the approved protected-savings disclosure. Do not change unresolved mappings, scoring rules, dependencies, or service architecture without approval.
-- Tests Run This Session: No tests run after the latest UI and structure changes. The prior baseline at `6316dc2` passed typecheck, 277/277 tests, and production build on Termux.
-- Files Changed This Session: `src/features/purchase/components/purchase-assessment-form.tsx`, `src/features/purchase/components/purchase-intake.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `README.md`, `AGENTS.md`, `TASKS.md`, `docs/decisions/README.md`, and ADR filenames/content, `CHANGELOG.md`, and `tests/domain/purchase-assessment.test.ts`. Removed duplicate policy files and obsolete `.gitkeep` placeholders.
+- Next Exact Step: Pull \`main\` in Termux and run \`npm run typecheck && npm run test && npm run build\`. Fix only reported failures. After validation, review Financial Reality Check usability and accessibility, then connect the three validated inputs to the existing deterministic decision engine and build the separate Decision Intelligence result presentation. Do not change unresolved mappings, scoring rules, dependencies, or service architecture without approval.
+- Tests Run This Session: No tests run after the Financial Reality Check UI changes. The prior baseline at \`3fdfeba\` passed typecheck, 277/277 tests, and production build on Termux.
+- Files Changed This Session: \`src/features/financial/components/financial-reality-check-form.tsx\`, \`src/features/purchase/components/purchase-intake.tsx\`, \`src/app/globals.css\`, \`README.md\`, \`TASKS.md\`, and \`CHANGELOG.md\`.
 
 ## Product Priorities
 
@@ -90,9 +90,9 @@
 
 - [x] Build the purchase-details intake step with schema validation, explicit unknown states, and an in-memory summary; continue the multi-step assessment flow in subsequent work.
 - [x] Build the first Purchase Decision Assessment UI slice with required need, urgency, alternatives, utility, impulse, and social-pressure questions; keep it separate from financial assessment.
-- [ ] Build Financial Reality Check separately.
+- [x] Build the first separate Financial Reality Check UI for financial-profile inputs and transparent derived cash summaries.
 - [x] Explain the purpose of the behavioral questions in the assessment UI.
-- [ ] Add explicit protected-savings opt-in with visible amount and consequence.
+- [x] Add explicit protected-savings opt-in with visible amount, consequence disclosure, exact cap, and acknowledgement.
 - [x] Add the separate social-pressure question and optional potential-regret reflection prompt; potential regret remains qualitative and has no score/verdict effect.
 - [x] Handle incomplete Purchase Decision Assessment data with explicit unknown states; never fabricate partial or neutral-default scores.
 - [ ] Meet accessibility requirements in `docs/quality/ACCESSIBILITY.md`.

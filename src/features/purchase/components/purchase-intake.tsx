@@ -4,6 +4,8 @@ import { useState, type FormEvent } from "react";
 import { purchaseInputSchema, type PurchaseInput } from "../../../domain/purchase";
 import PurchaseAssessmentForm from "./purchase-assessment-form";
 import type { PurchaseAssessmentInput } from "../../../domain/purchase-assessment";
+import FinancialRealityCheckForm from "../../financial/components/financial-reality-check-form";
+import type { FinancialProfile } from "../../../domain/financial-profile";
 
 type AmountField = {
   value: string;
@@ -129,6 +131,7 @@ export default function PurchaseIntake() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [validatedPurchase, setValidatedPurchase] = useState<PurchaseInput | null>(null);
   const [validatedAssessment, setValidatedAssessment] = useState<PurchaseAssessmentInput | null>(null);
+  const [validatedFinancialProfile, setValidatedFinancialProfile] = useState<FinancialProfile | null>(null);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -216,6 +219,7 @@ export default function PurchaseIntake() {
     setErrors({});
     setValidatedPurchase(null);
     setValidatedAssessment(null);
+    setValidatedFinancialProfile(null);
   }
 
   if (validatedPurchase) {
@@ -313,15 +317,22 @@ export default function PurchaseIntake() {
                   ))}
                 </ul>
               ) : null}
-              <button className="button-secondary" type="button" onClick={() => setValidatedAssessment(null)}>Ubah jawaban penilaian</button>
+              <button className="button-secondary" type="button" onClick={() => { setValidatedAssessment(null); setValidatedFinancialProfile(null); }}>Ubah jawaban penilaian</button>
             </div>
+          ) : null}
+          {validatedAssessment ? (
+            <FinancialRealityCheckForm
+              profile={validatedFinancialProfile}
+              onComplete={setValidatedFinancialProfile}
+              onEdit={() => setValidatedFinancialProfile(null)}
+            />
           ) : null}
           <p className="privacy-note">
             <strong>Privasi:</strong> detail ini tidak dikirim ke server dan akan hilang
             ketika halaman dimuat ulang atau ditutup.
           </p>
           <div className="confirmation-actions">
-            <button className="button-primary" type="button" onClick={() => { setValidatedPurchase(null); setValidatedAssessment(null); }}>
+            <button className="button-primary" type="button" onClick={() => { setValidatedPurchase(null); setValidatedAssessment(null); setValidatedFinancialProfile(null); }}>
               Ubah detail
             </button>
             <button className="button-secondary" type="button" onClick={resetForm}>
