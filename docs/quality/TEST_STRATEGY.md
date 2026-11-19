@@ -32,7 +32,7 @@ Do not add a test dependency until the application scaffold is inspected and the
 - Every approved score band and penalty boundary.
 - Rationality dimension weights and approved answer mappings.
 - Impulse-friction conditions on the approved scale.
-- Verdict priority collisions and exact boundaries: 34/35, 59/60, 49/50.
+- Verdict priority collisions and reachable affordability boundaries around the 35, 60, and 80 cutoffs: 30/35, 55/60, and 75/80; Rationality boundary: 49/50.
 - Unresolved or unavailable scores never produce Greenlight.
 - Reasons and missing-field identifiers match the rule that fired.
 
