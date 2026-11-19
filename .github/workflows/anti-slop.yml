@@ -1,0 +1,42 @@
+name: Anti-Slop CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  anti-slop:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 1. Catch hardcoded secrets & dummy API keys left by AI
+      - name: Scan for Hardcoded Secrets (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Catch dead code, unused imports, and empty catch blocks (JS/TS)
+      - name: Run Oxlint (Fast AI-Bloat & Dead Code Linter)
+        run: npx --yes oxlint@latest --deny no-empty --deny no-unused-vars --deny no-constant-condition .
+
+      # 3. Catch hallucinated/unused files, exports, and phantom dependencies (JS/TS)
+      - name: Run Knip (Dead File & Dependency Detector)
+        if: hashFiles('package.json') != ''
+        run: npx --yes knip --no-exit-code
+
+      # 4. Catch Python AI slop (silent except: pass, unused imports, unreachable code)
+      - name: Run Ruff (Python Anti-Slop Linter)
+        if: hashFiles('**/*.py') != ''
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: "check --select E722,F401,F841,B007,W505"
