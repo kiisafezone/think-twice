@@ -9,7 +9,7 @@
 - Remaining Unresolved Product/Contract Items: Broader payment-instrument mappings remain undefined; non-monthly schedules remain unsupported; installment and text constraints still require product confirmation; optional work-hours and utility-per-use metrics remain out of scope; persistence metadata remains a storage-layer concern.
 - Next Exact Step: Pull `main` in Termux and run `npm run typecheck && npm run test && npm run build`. Fix only reported failures. After validation, continue with the separate Financial Reality Check, including the approved protected-savings disclosure. Do not change unresolved mappings, scoring rules, dependencies, or service architecture without approval.
 - Tests Run This Session: No tests run after the latest UI and structure changes. The prior baseline at `6316dc2` passed typecheck, 277/277 tests, and production build on Termux.
-- Files Changed This Session: `src/features/purchase/components/purchase-assessment-form.tsx`, `src/features/purchase/components/purchase-intake.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `README.md`, `AGENTS.md`, `TASKS.md`, `docs/decisions/README.md`, and ADR filenames/content. Removed duplicate policy files and obsolete `.gitkeep` placeholders.
+- Files Changed This Session: `src/features/purchase/components/purchase-assessment-form.tsx`, `src/features/purchase/components/purchase-intake.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `README.md`, `AGENTS.md`, `TASKS.md`, `docs/decisions/README.md`, and ADR filenames/content, `CHANGELOG.md`, and `tests/domain/purchase-assessment.test.ts`. Removed duplicate policy files and obsolete `.gitkeep` placeholders.
 
 ## Product Priorities
 
