@@ -364,6 +364,21 @@ export default function DecisionResultPanel({
                     Keterjangkauan: {record.affordabilityScore === null ? "—" : `${record.affordabilityScore}/100`} ·
                     Rasionalitas: {record.rationalityScore === null ? "—" : `${record.rationalityScore}/100`}
                   </p>
+                  <details className="decision-history-details">
+                    <summary>Lihat alasan dan langkah berikutnya</summary>
+                    <p><strong>Alasan utama:</strong> {record.decisiveReason}</p>
+                    {record.supportingFactors.length > 0 ? (
+                      <ul>{record.supportingFactors.map((factor) => <li key={factor}>{factor}</li>)}</ul>
+                    ) : null}
+                    <strong>Langkah berikutnya</strong>
+                    <ol>{record.nextSteps.map((step) => <li key={step}>{step}</li>)}</ol>
+                    {record.missingFields.length > 0 ? (
+                      <>
+                        <strong>Informasi yang belum tersedia</strong>
+                        <ul>{record.missingFields.map((field) => <li key={`${field.assessment}:${field.field}`}>{field.whyItMatters}</li>)}</ul>
+                      </>
+                    ) : null}
+                  </details>
                 </div>
                 <button className="button-secondary" type="button" onClick={() => deleteRecord(record.id)} aria-label={`Hapus riwayat ${record.itemName}`}>Hapus</button>
               </article>
