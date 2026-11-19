@@ -83,7 +83,9 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
     otherCommittedMonthlyExpenses: profile.otherCommittedMonthlyExpenses,
   });
   const effectiveCash = deriveEffectiveAvailableCash(profile);
-  const cashClass = input.purchase.paymentPlan.financingClass === "cash";
+  const paymentPlan = input.purchase.paymentPlan;
+  const cashClass = paymentPlan.financingClass === "cash";
+  const financedPlan = paymentPlan.financingClass === "financed" ? paymentPlan : null;
   const cashUpfront = deriveCashUpfront(
     input.purchase.purchasePrice,
     input.purchase.additionalFees,
@@ -93,7 +95,7 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
   if (cashClass) {
     if (isUnknown(input.purchase.purchasePrice)) financialMissing.push(missing("affordability", "purchase.purchasePrice"));
     if (isUnknown(input.purchase.additionalFees)) financialMissing.push(missing("affordability", "purchase.additionalFees"));
-  } else if (isUnknown(input.purchase.paymentPlan.upfrontPayment)) {
+  } else if (isUnknown(financedPlan!.upfrontPayment)) {
     financialMissing.push(missing("affordability", "purchase.paymentPlan.upfrontPayment"));
   }
   if (isUnknown(profile.availableCash)) financialMissing.push(missing("affordability", "financialProfile.availableCash"));
@@ -101,7 +103,7 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
   if (isUnknown(profile.essentialMonthlyExpenses)) financialMissing.push(missing("affordability", "financialProfile.essentialMonthlyExpenses"));
   if (isUnknown(profile.existingMonthlyDebtPayments)) financialMissing.push(missing("affordability", "financialProfile.existingMonthlyDebtPayments"));
   if (isUnknown(profile.otherCommittedMonthlyExpenses)) financialMissing.push(missing("affordability", "financialProfile.otherCommittedMonthlyExpenses"));
-  if (!cashClass && isUnknown(input.purchase.paymentPlan.installment.monthlyInstallment)) {
+  if (!cashClass && isUnknown(financedPlan!.installment.monthlyInstallment)) {
     financialMissing.push(missing("affordability", "purchase.paymentPlan.installment.monthlyInstallment"));
   }
 
@@ -116,9 +118,9 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
       ? { financingClass: "cash", upfront: cashUpfront, availableCash: { status: "unknown" }, monthlyFreeCash }
       : {
           financingClass: "financed",
-          upfront: input.purchase.paymentPlan.upfrontPayment,
+          upfront: financedPlan!.upfrontPayment,
           availableCash: { status: "unknown" },
-          monthlyInstallment: input.purchase.paymentPlan.installment.monthlyInstallment,
+          monthlyInstallment: financedPlan!.installment.monthlyInstallment,
           monthlyFreeCash,
         });
     affordabilityCalculation = {
@@ -133,9 +135,9 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
       ? { financingClass: "cash", upfront: cashUpfront, availableCash: safeAvailableCash, monthlyFreeCash }
       : {
           financingClass: "financed",
-          upfront: input.purchase.paymentPlan.upfrontPayment,
+          upfront: financedPlan!.upfrontPayment,
           availableCash: safeAvailableCash,
-          monthlyInstallment: input.purchase.paymentPlan.installment.monthlyInstallment,
+          monthlyInstallment: financedPlan!.installment.monthlyInstallment,
           monthlyFreeCash,
         });
   }
