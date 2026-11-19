@@ -3,11 +3,11 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT
-- Completed: Re-read `AGENTS.md`, `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and `TASKS.md`; reconciled the approved V1 scoring methodology and canonical outcome precedence in the three product documents.
-- Current Bug / Blocker: Application foundation has not been scaffolded. Documentation rules are now approved and recorded; implementation and edge-case tests remain outstanding. No application source, package manifests, or test suite currently exists.
-- Next Exact Step: Begin the approved Phase 1 application foundation on `main`, after inspecting the current repository state and preserving existing files. Establish Next.js App Router, strict TypeScript, Tailwind, Zod, and Vitest only as needed. Do not implement scoring until the app foundation and typed domain contracts are ready; then implement exactly the approved rules in `SPEC.md` and `docs/product/DECISION_ENGINE.md`.
+- Completed: Applied the approved confirmed-zero/null-free-cash rule, payment-method-specific affordability required-input contract, Indonesian outcome-explanation guardrails, and authoritative edge-case test reference. Reconciled `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and `TASKS.md`; recorded the decision in ADR-0003.
+- Current Bug / Blocker: Application foundation has not been scaffolded. The confirmed-zero versus null-free-cash decision is resolved and recorded in `docs/decisions/ADR-0003-confirmed-zero-and-null-financial-inputs.md`. Documentation reconciliation is complete; implementation and edge-case tests remain outstanding. No application source, package manifests, or test suite currently exists.
+- Next Exact Step: Before implementation, re-inspect the current `main` tree and preserve existing files. Then begin the approved Phase 1 application foundation only if no specification blocker remains. Establish Next.js App Router, strict TypeScript, Tailwind, Zod, and Vitest only as needed. Use the exact required edge-case inventory in `docs/product/DECISION_ENGINE.md`; do not invent or reduce it. Do not implement scoring until the app foundation and typed domain contracts are ready, then implement exactly the reconciled rules.
 - Tests Run: Documentation and repository-state reconciliation only. No application tests or builds are available yet.
-- Files Changed: `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and `TASKS.md`.
+- Files Changed: `SPEC.md`, `docs/product/DECISION_ENGINE.md`, `TASKS.md`, and `docs/decisions/ADR-0003-confirmed-zero-and-null-financial-inputs.md`.
 - Implementation Status: Not started. No application code or scoring engine has been written.
 
 ## Product Priorities
@@ -26,13 +26,15 @@
 - Do Not Buy is deliberately financial-only in V1. Behavioral concerns alone produce Wait & Reassess.
 - A known Hard Pass condition wins even if affordability score is null. A known Financially Risky condition wins over missing data but never over Hard Pass.
 - Affordability starts at 100 and subtracts P_cash, P_m, and P_f with a floor of zero. Cash-impact and monthly-burden bands and penalties are specified in both scoring documents.
-- For a new financed installment with monthly free cash at or below zero, P_m is 60. P_f is 40 for negative free cash, 30 for zero, and zero for positive free cash. Negative free cash penalty and Hard Pass are intentionally separate safeguards.
+- Monthly free cash is numeric only when net income and every expense component are explicitly known; unknown income or expenses make it null, never zero. For a new financed installment with confirmed free cash exactly zero, P_m is 60 and P_f is 30, yielding affordability 10 and Do Not Buy through the below-35 Hard Pass rule; no exemption applies. For negative free cash, P_m is 60 and P_f is 40, with the separate negative-free-cash Hard Pass rule. For null free cash, financed affordability is null and the outcome is Wait & Reassess unless a higher-priority financial condition is provable.
 - Available cash excludes emergency, earmarked, and protected savings by default. Including protected savings requires explicit, visible opt-in for an exact amount.
 - Ratio bands use integer cross-multiplication and safe exact-integer intermediate arithmetic; no float or division for band classification.
 - Rationality uses integer dimension scores and integer weights 30/15/15/25/15, with the approved integer formula and half-up adjustment.
 - The two low-urgency bands are merged into one neutral answer, "Can wait one month or longer", scored 50.
 - Social pressure is a separate required yes/no input. Missing social-pressure answer is critical missing data. Potential regret is a separate qualitative reflection prompt, not a numeric score or independent verdict trigger.
-- Any missing required Rationality dimension means null; no neutral defaults, partial scoring, or weight redistribution. UI completeness indicator lists missing answers and why they matter; display-only.
+- Any missing required Rationality dimension means null; no neutral defaults, partial scoring, or weight redistribution. Any unknown required affordability input also makes affordability null. Cash purchases require known U, A, Y, E, D, and C; financed purchases additionally require known I. UI completeness indicator lists missing answers and why they matter; display-only.
+- Every outcome must show a non-judgmental Indonesian reason grounded in the actual matched rule. Do Not Buy guidance suggests a smaller installment, a longer tenor only after comparing total repayment and fees, or waiting.
+- The Required edge-case tests section in docs/product/DECISION_ENGINE.md is the authoritative test list; agents must not invent a replacement list.
 - Show Affordability and Rationality separately. Never show a combined health score. Safe to Buy's 80 cutoff is a presentation distinction, not engine logic.
 
 ## Roadmap
@@ -67,9 +69,10 @@
 - [ ] Implement protected-savings opt-in and visible disclosure contract.
 - [ ] Implement integer rationality dimension mappings and weighted formula.
 - [ ] Implement required social-pressure input and impulse-friction rules.
-- [ ] Implement strict null behavior and display-only completeness details.
+- [ ] Implement strict null behavior, confirmed-zero handling, and display-only completeness details.
 - [ ] Implement canonical five-outcome precedence, including null-score/known-Hard-Pass handling.
-- [ ] Add Vitest tests for all edge cases listed in `docs/product/DECISION_ENGINE.md`.
+- [ ] Implement non-judgmental Indonesian reason and next-step copy for all five outcomes.
+- [ ] Add Vitest tests for the exact authoritative edge-case inventory in `docs/product/DECISION_ENGINE.md`; do not create an agent-specific substitute list.
 - [ ] Verify `SPEC.md` and `docs/product/DECISION_ENGINE.md` remain aligned.
 
 ### Phase 3 — Assessment Experience
@@ -105,7 +108,8 @@
 
 ## Definition of Done
 
-- User-facing behavior matches `SPEC.md`.
+- User-facing behavior matches `SPEC.md` and `docs/product/DECISION_ENGINE.md`.
+- Every outcome includes an evidence-based, non-judgmental Indonesian reason and proportionate next step.
 - Purchase Decision Assessment remains present and meaningful.
 - Behavioral and financial assessments remain distinct.
 - Affordability and Rationality are separate; no combined health score.
