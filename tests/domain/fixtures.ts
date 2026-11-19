@@ -3,6 +3,10 @@
  * are arbitrary examples; they are not expected scores or verdicts.
  */
 
+import { rupiahSchema } from "@/domain/money";
+
+const money = (value: number) => rupiahSchema.parse(value);
+
 export const known = <T>(value: T) => ({ status: "known" as const, value });
 export const unknown = { status: "unknown" as const };
 export const notApplicable = { status: "not_applicable" as const };
@@ -20,12 +24,12 @@ export function validPurchaseAssessment() {
 
 export function validFinancialProfile() {
   return {
-    netMonthlyIncome: known(8_000_000),
-    essentialMonthlyExpenses: known(4_000_000),
-    existingMonthlyDebtPayments: known(0),
-    otherCommittedMonthlyExpenses: known(500_000),
-    availableCash: known(12_000_000),
-    protectedSavings: known(5_000_000),
+    netMonthlyIncome: known(money(8_000_000)),
+    essentialMonthlyExpenses: known(money(4_000_000)),
+    existingMonthlyDebtPayments: known(money(0)),
+    otherCommittedMonthlyExpenses: known(money(500_000)),
+    availableCash: known(money(12_000_000)),
+    protectedSavings: known(money(5_000_000)),
     protectedSavingsDesignation: { status: "not_opted_in" as const },
   };
 }
@@ -39,10 +43,10 @@ export function validCashPlan() {
 export function validFinancedPlan() {
   return {
     financingClass: "financed" as const,
-    upfrontPayment: known(1_000_000),
+    upfrontPayment: known(money(1_000_000)),
     installment: {
       repaymentSchedule: "monthly" as const,
-      monthlyInstallment: known(900_000),
+      monthlyInstallment: known(money(900_000)),
       installmentCount: known(12),
       feeTreatment: known("installment_excludes_fees" as const),
     },
@@ -54,8 +58,8 @@ export function validCashDecisionInput() {
     purchase: {
       itemName: "Laptop",
       category: "electronics",
-      purchasePrice: known(10_000_000),
-      additionalFees: known(0),
+      purchasePrice: known(money(10_000_000)),
+      additionalFees: known(money(0)),
       paymentPlan: validCashPlan(),
     },
     purchaseAssessment: validPurchaseAssessment(),
@@ -68,8 +72,8 @@ export function validFinancedDecisionInput() {
     purchase: {
       itemName: "Laptop",
       category: "electronics",
-      purchasePrice: known(10_000_000),
-      additionalFees: known(0),
+      purchasePrice: known(money(10_000_000)),
+      additionalFees: known(money(0)),
       paymentPlan: validFinancedPlan(),
     },
     purchaseAssessment: validPurchaseAssessment(),
