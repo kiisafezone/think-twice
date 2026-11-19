@@ -3,21 +3,21 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT
-- Completed: Product owner fetched commit `47b3a45` on Termux and reported successful validation: `npm run typecheck` passed; Vitest passed 9 files / 182 tests; `npm run build` completed successfully with Next.js 16.4.6 Webpack. The Vite native-config ESM warning remains non-blocking.
-- Completed this session: Added `calculateAffordabilityScore()` to `src/domain/financial-calculations.ts`. It aggregates the approved cash-impact, monthly-burden, and financial-pressure penalties; floors the score at zero; returns no partial score when required inputs are unknown; preserves invalid overflow status; and retains independently proven Hard Pass conditions (upfront exceeds available cash, or a new financed repayment with negative monthly free cash). Added nine aggregate-level tests in `tests/domain/financial-calculations.test.ts`.
-- Current Bug / Blocker: The aggregate affordability implementation and its eight new tests have NOT yet been run in Termux. Do not claim they pass until fresh local output is supplied.
+- Completed: Product owner fetched commit `7a71298` on Termux and reported successful validation: `npm run typecheck` passed; Vitest passed 9 files / 191 tests; `npm run build` completed successfully with Next.js 16.4.6 Webpack. The Vite native-config ESM warning remains non-blocking.
+- Completed this session: Added `src/domain/rationality-calculations.ts` with the approved Need/Alternatives/Utility mappings, four urgency mappings, inverse impulse-control mapping, integer-only BigInt weighted formula with half-up rounding, strict missing-dimension behavior, and impulse-friction evaluation with explicit social-pressure input. Exported the module from `src/domain/index.ts`. Added `tests/domain/rationality-calculations.test.ts`, including mapping coverage, exact half-up rounding, missing answers, impulse/social-pressure trigger boundaries, and layer-level Rationality 49/50 cases.
+- Current Bug / Blocker: Rationality helpers and their new tests have NOT yet been run in Termux. No claim of passing validation until fresh local output is supplied. The canonical verdict engine and result/explanation integration remain unimplemented.
 - Remaining unresolved product/contract items (do not resolve by convenience):
   1. Mapping broader payment variants `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remains undefined.
   2. Non-monthly or irregular repayment schedules remain unsupported in V1 and are rejected.
   3. Validation assumptions still need explicit product confirmation: installment count is a whole number >= 1; monthly installment amount is >= 0; no maximum lengths exist for item name, category, or reflection text.
   4. Protected savings: the contract does not enforce that an opt-in amount is at most the known protected savings, nor does it record a disclosure acknowledgement. Domain enforcement remains undecided; UI disclosure is a Phase 3 requirement.
-  5. `results.ts` shapes remain provisional: rule identifiers, explanation vocabulary, the `MetricUnit` set, metric keys, and `undetermined` impulse-friction status need to be finalized when engine behavior is implemented.
+  5. `results.ts` shapes remain provisional: rule identifiers, explanation vocabulary, the `MetricUnit` set, metric keys, and final result semantics need to be finalized with the decision engine.
   6. Persistence fields (`id`, `createdAt`) remain excluded from engine input and belong to the storage layer.
   7. Monthly period only: no period normalization; `DOMAIN_MODEL.md` expects explicit periods.
-- Next Exact Step: Fetch latest `main` in Termux and run `npm run typecheck && npm run test && npm run build`; fix only actual failures. Once the aggregate passes, implement the approved integer Rationality dimension mappings and weighted formula. Preserve strict null behavior and use the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md`; do not invent or narrow the test list. Continue on `main`, with no CI, deployment configuration, FastAPI, PostgreSQL, or new dependencies.
-- Tests Run: Product-owner-reported Termux validation at `47b3a45`: `npm run typecheck` passed; `npm run test` passed (9 files / 182 tests); `npm run build` passed. The aggregate affordability code and eight new tests were authored after that validation and remain unverified locally.
-- Files Changed: `src/domain/financial-calculations.ts`, `tests/domain/financial-calculations.test.ts`, and `TASKS.md`.
-- Implementation Status: Cash-upfront derivation and calculation primitives are verified by the product owner at `47b3a45`. Aggregate affordability score is implemented but awaits Termux validation. Rationality score, impulse-friction evaluation, canonical verdict engine, full authoritative edge-case suite, and UI remain unimplemented.
+- Next Exact Step: Fetch latest `main` in Termux and run `npm run typecheck && npm run test && npm run build`; fix only actual failures. If rationality helpers pass, implement the canonical verdict engine with exact precedence, missing-data collisions, and impulse-friction integration. Add tests against every applicable case in the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md`; do not invent or narrow the list. Continue on `main`, with no CI, deployment configuration, FastAPI, PostgreSQL, or new dependencies.
+- Tests Run: Product-owner-reported Termux validation at `7a71298`: `npm run typecheck` passed; `npm run test` passed (9 files / 191 tests); `npm run build` passed. Rationality implementation and its tests were authored after that validation and remain unverified locally.
+- Files Changed: `src/domain/rationality-calculations.ts`, `src/domain/index.ts`, `tests/domain/rationality-calculations.test.ts`, and `TASKS.md`.
+- Implementation Status: Cash-upfront derivation, affordability calculation primitives, and aggregate affordability score are verified by the product owner through `7a71298`. Rationality dimension mappings, score formula, and impulse-friction helper are implemented but await Termux validation. Canonical verdict engine, authoritative edge-case suite integration, Indonesian reason/next-step copy, and UI remain unimplemented.
 
 ## Product Priorities
 
@@ -81,13 +81,13 @@
 - [x] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic. (Cash helper verified by product owner; new monthly/ratio helpers await Termux validation.)
 - [x] Implement cash-impact and monthly-burden penalties with BigInt cross-multiplication only. (New tests authored; await Termux validation.)
 - [ ] Implement protected-savings opt-in and visible disclosure behavior.
-- [ ] Implement integer rationality dimension mappings and weighted formula.
-- [ ] Implement required social-pressure input and impulse-friction rules.
+- [x] Implement integer rationality dimension mappings and weighted formula. (Authored; awaits Termux validation.)
+- [x] Implement required social-pressure input and impulse-friction rules as pure domain helpers. (Authored; awaits Termux validation. Canonical verdict integration remains pending.)
 - [ ] Implement strict null behavior, confirmed-zero handling, and display-only completeness details.
 - [ ] Implement canonical five-outcome precedence, including null-score/known-Hard-Pass handling.
 - [ ] Implement non-judgmental Indonesian reason and next-step copy for all five outcomes.
 - [ ] Add Vitest tests for the exact authoritative 37-case edge-case inventory in `docs/product/DECISION_ENGINE.md`; do not create an agent-specific substitute list.
-- [ ] Add layer-level boundary tests per `TEST_STRATEGY.md`, including both sides of the rationality 49/50 boundary.
+- [x] Add layer-level boundary tests per `TEST_STRATEGY.md`, including both sides of the rationality 49/50 boundary. (Authored; awaits Termux validation.)
 - [ ] Verify `SPEC.md` and `docs/product/DECISION_ENGINE.md` remain aligned.
 
 ### Separate Backlog (not scheduled; do not expand scaffolding before Phase 2 contract validation passes)
