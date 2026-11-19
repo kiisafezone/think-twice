@@ -138,6 +138,8 @@ The affordability score is an integer from 0 to 100. Begin at 100 and subtract t
 affordabilityScore = max(0, 100 - P_cash - P_m - P_f)
 ```
 
+Every approved affordability penalty is a multiple of five, so every reachable affordability score is a multiple of five. Test verdict cutoffs using adjacent reachable scores: 30/35, 55/60, and 75/80. This does not change the verdict thresholds or scoring formula.
+
 ### Cash-impact penalty (`P_cash`)
 
 Cash use is `U / A`, where `A` is available cash. For cash purchases, derive `U = P + F`; for financed purchases, `U` is the explicit upfront input. For `A > 0`, use exact integer cross-multiplication to select the first matching upper-bound band:
