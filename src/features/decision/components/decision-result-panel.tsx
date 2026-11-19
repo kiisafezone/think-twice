@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { decisionInputSchema } from "../../../domain/decision-input";
 import { evaluateDecision } from "../../../domain/decision-engine";
 import { OUTCOME_LABELS } from "../../../domain/outcomes";
+import { createShareSummary } from "../lib/share-summary";
 import type { PurchaseInput } from "../../../domain/purchase";
 import type { PurchaseAssessmentInput } from "../../../domain/purchase-assessment";
 import type { FinancialProfile } from "../../../domain/financial-profile";
@@ -63,24 +64,6 @@ function AssessmentCard({
 
 function createRecordId() {
   return `decision-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function shareText(result: DecisionResult) {
-  const label = OUTCOME_LABELS[result.verdict.outcome];
-  const lines = [
-    "THINK TWICE.",
-    "Hasil Decision Intelligence",
-    `Rekomendasi: ${label}`,
-    "",
-    result.explanation.decisiveReason,
-    "",
-    "Langkah berikutnya:",
-    ...result.nextSteps.map((step) => `• ${step}`),
-    "",
-    "Hasil ini merupakan alat bantu refleksi berdasarkan informasi yang diberikan, bukan jaminan hasil finansial.",
-    "Think twice today. Thank yourself tomorrow.",
-  ];
-  return lines.join("\n");
 }
 
 function makeSavedDecision(
@@ -162,7 +145,7 @@ export default function DecisionResultPanel({
   }
 
   const outcome = result.verdict.outcome;
-  const preview = shareText(result);
+  const preview = createShareSummary(result);
   const alreadySaved = savedId.current !== null && history.some((record) => record.id === savedId.current);
 
   function saveCurrentDecision() {
