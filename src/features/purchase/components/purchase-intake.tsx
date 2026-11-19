@@ -6,6 +6,7 @@ import PurchaseAssessmentForm from "./purchase-assessment-form";
 import type { PurchaseAssessmentInput } from "../../../domain/purchase-assessment";
 import FinancialRealityCheckForm from "../../financial/components/financial-reality-check-form";
 import type { FinancialProfile } from "../../../domain/financial-profile";
+import DecisionResultPanel from "../../decision/components/decision-result-panel";
 
 type AmountField = {
   value: string;
@@ -327,9 +328,17 @@ export default function PurchaseIntake() {
               onEdit={() => setValidatedFinancialProfile(null)}
             />
           ) : null}
+          {validatedPurchase && validatedAssessment && validatedFinancialProfile ? (
+            <DecisionResultPanel
+              purchase={validatedPurchase}
+              purchaseAssessment={validatedAssessment}
+              financialProfile={validatedFinancialProfile}
+            />
+          ) : null}
           <p className="privacy-note">
-            <strong>Privasi:</strong> detail ini tidak dikirim ke server dan akan hilang
-            ketika halaman dimuat ulang atau ditutup.
+            <strong>Privasi:</strong> data penilaian tidak dikirim ke server. Data hanya disimpan
+            di browser jika kamu memilih menyimpan riwayat; tanpa tindakan itu, data formulir
+            akan hilang ketika halaman dimuat ulang atau ditutup.
           </p>
           <div className="confirmation-actions">
             <button className="button-primary" type="button" onClick={() => { setValidatedPurchase(null); setValidatedAssessment(null); setValidatedFinancialProfile(null); }}>
