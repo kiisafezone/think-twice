@@ -316,6 +316,22 @@ The other four outcomes must also include a reason grounded in the matched rule 
 
 V1 excludes bank/e-wallet sync, automatic transaction tracking, full budgeting, credit-bureau scoring, lending/credit brokering, crypto/investment recommendations, mandatory accounts, and LLM-generated financial calculations or verdicts.
 
+### Local decision history
+
+- Saving is explicit and optional; no result is persisted automatically.
+- The replaceable localStorage adapter stores only the item name, category, timestamp, rule version, outcome, separate assessment scores/statuses, explanation, next steps, and missing-field explanations.
+- Raw financial amounts, financial-profile inputs, and raw behavioral answers are not stored in history.
+- Users can review saved summaries, delete an individual record, or delete all records.
+- History remains in the browser profile until the user deletes it or browser data is cleared. It is not encrypted secure storage.
+- Corrupt or unavailable storage must never be silently overwritten or reported as successfully saved.
+
+### Privacy-safe sharing
+
+- Sharing is user-initiated and always shows the exact text preview first.
+- The default summary includes the canonical outcome, decisive reason, and next steps only.
+- It excludes item identity, category, assessment scores, raw answers, income, expenses, available cash, protected savings, debt, installment amounts, and due dates.
+- Sharing uses the device share sheet when available, otherwise clipboard copy. No public share URL or server transfer is created.
+
 Acceptance:
 - Behavioral and financial assessments appear separately.
 - No combined health score is shown.
