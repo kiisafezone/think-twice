@@ -38,7 +38,7 @@ describe("purchase assessment input", () => {
     "utility",
     "impulseLevel",
     "socialPressure",
-  ] as const)("keeps an unanswered %s as unknown", (field) => {
+  ] as const)("accepts an explicit unknown state for %s", (field) => {
     const result = validate({ ...validPurchaseAssessment(), [field]: unknown });
     expect(result.ok).toBe(true);
     if (result.ok) {

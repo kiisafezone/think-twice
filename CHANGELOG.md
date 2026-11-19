@@ -14,12 +14,17 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Added privacy and data-handling guidance, an initial threat model, and incident-response procedure.
 - Added test strategy, accessibility requirements, user journeys, and release-readiness checklist.
 - Added repository hygiene configuration: `.editorconfig`, `.gitattributes`, and `.gitignore`.
+- Added the Next.js App Router scaffold and deterministic TypeScript domain contracts, calculations, and decision engine with Vitest coverage.
+- Added purchase-intake and Purchase Decision Assessment screens, including explicit unknown-answer handling and incomplete-assessment disclosure.
+- Added a chronological decision-record index and a documented source/features/domain repository layout.
 
 ### Changed
 - Clarified product positioning as a Personal Financial Decision Companion.
 - Expanded README navigation and synchronized the engineering handoff with the documentation baseline.
 - Clarified that architecture documents describe target design and do not imply implemented or audited controls.
+- Organized feature-specific UI under `src/features/`, retained pure domain logic under `src/domain/`, removed duplicate policy/decision files, and corrected ADR numbering.
 
 ### Notes
-- The repository remains documentation-led. Application releases and deployment milestones will be recorded here when they exist.
-- Do not infer a released application version from documentation revisions.
+- The application is in active V1 development; the current UI is an early, in-memory flow and is not a production release.
+- Financial Reality Check, protected-savings disclosure UI, Decision Intelligence result presentation, local history, and production deployment remain incomplete.
+- Do not infer a released application version from documentation or implementation commits.
