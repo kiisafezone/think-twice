@@ -348,16 +348,28 @@ Do Not Buy is deliberately financial-only in V1. Low Need, high impulse, social 
 ## Result contract
 
 Return a structured result containing:
-- Engine/rule version.
-- Affordability score or null, status, and reasons.
-- Rationality score or null, status, and reasons.
-- Separate completeness information for each assessment.
-- Derived financial metrics with units and calculation status.
+- Engine/rule version. V1 uses the stable identifier `v1`.
+- Affordability score or null, status, reasons, and its own completeness object.
+- Rationality score or null, status, reasons, and its own completeness object. Social-pressure completeness is included here because it is a behavioral verdict trigger, but it does not alter the numeric Rationality formula.
+- Derived financial metrics. The V1 result contract keeps this as an array; optional work-hours and utility-per-use metrics are omitted until their source inputs are approved.
 - Impulse-friction status and triggering evidence.
 - Canonical five-outcome verdict and internal disposition.
-- Ordered verdict reasons showing the first matching priority rule.
-- Missing fields and unresolved assumptions.
-- Actionable next steps derived from the actual result.
+- Ordered verdict reasons showing every applicable reason at the winning precedence priority, with the first reason decisive.
+- Missing fields, assumptions, and actionable next steps.
+- An assessment may have status `invalid` with a null score when a checked calculation exceeds the safe-integer range. This is not converted to zero or silently treated as a normal unknown; absent a separately proven higher-priority financial rule, it blocks a favorable verdict and produces Wait & Reassess.
+
+V1 rule identifiers are stable machine-readable keys:
+- `financial.affordability_below_35`
+- `financial.new_repayment_with_negative_free_cash`
+- `financial.upfront_exceeds_available_cash`
+- `financial.affordability_35_to_59`
+- `financial.cash_use_above_80_percent`
+- `behavior.rationality_below_50`
+- `behavior.impulse_friction_active`
+- `data.critical_information_missing`
+- `calculation.unsafe_integer_overflow`
+- `greenlight.affordability_at_least_80`
+- `greenlight.affordability_60_to_79`
 
 Do not return only a score or color. Never return a combined health score. Every outcome must be traceable to validated inputs and named rules.
 
