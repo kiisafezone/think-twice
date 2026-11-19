@@ -3,9 +3,9 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT
-- Completed: Product owner validated the cash-upfront decision and helper changes on Termux after fetching commit `9aa7a99`. `npm run typecheck` passed; Vitest passed 8 files / 137 tests; `npm run build` completed successfully with Next.js 16.4.6 Webpack. Vite's `configLoader: native` ESM warning remains non-blocking.
-- Completed this session: Implemented `src/domain/financial-calculations.ts` with exact BigInt cross-multiplication for cash-use and monthly-burden bands; monthly free-cash derivation preserving negative/zero/unknown; financial-pressure penalty; and cash-impact Hard Pass signaling when upfront exceeds available cash. Added boundary, null, zero, negative, overflow, and maximum-safe-integer tests in `tests/domain/financial-calculations.test.ts`. Exported the helpers from `src/domain/index.ts`.
-- Current Bug / Blocker: No known defect from static inspection. The financial-calculation module and its new tests have NOT yet been run in Termux. Do not claim they pass until the product owner supplies fresh command output.
+- Completed: Product owner fetched commit `47b3a45` on Termux and reported successful validation: `npm run typecheck` passed; Vitest passed 9 files / 182 tests; `npm run build` completed successfully with Next.js 16.4.6 Webpack. The Vite native-config ESM warning remains non-blocking.
+- Completed this session: Added `calculateAffordabilityScore()` to `src/domain/financial-calculations.ts`. It aggregates the approved cash-impact, monthly-burden, and financial-pressure penalties; floors the score at zero; returns no partial score when required inputs are unknown; preserves invalid overflow status; and retains independently proven Hard Pass conditions (upfront exceeds available cash, or a new financed repayment with negative monthly free cash). Added eight aggregate-level tests in `tests/domain/financial-calculations.test.ts`.
+- Current Bug / Blocker: The aggregate affordability implementation and its eight new tests have NOT yet been run in Termux. Do not claim they pass until fresh local output is supplied.
 - Remaining unresolved product/contract items (do not resolve by convenience):
   1. Mapping broader payment variants `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remains undefined.
   2. Non-monthly or irregular repayment schedules remain unsupported in V1 and are rejected.
@@ -14,10 +14,10 @@
   5. `results.ts` shapes remain provisional: rule identifiers, explanation vocabulary, the `MetricUnit` set, metric keys, and `undetermined` impulse-friction status need to be finalized when engine behavior is implemented.
   6. Persistence fields (`id`, `createdAt`) remain excluded from engine input and belong to the storage layer.
   7. Monthly period only: no period normalization; `DOMAIN_MODEL.md` expects explicit periods.
-- Next Exact Step: Fetch latest `main` in Termux and run `npm run typecheck && npm run test && npm run build`; provide full output. Fix only actual failures. After these helpers pass, implement the aggregate affordability score with strict null propagation and then the approved rationality dimension mappings/formula. Keep the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md` as the required engine test list. Continue on `main`, with no CI, deployment configuration, FastAPI, PostgreSQL, or new dependencies.
-- Tests Run: Product-owner-reported Termux validation at commit `9aa7a99`: `npm run typecheck` passed; `npm run test` passed (8 files / 137 tests); `npm run build` passed. ChatGPT did not run Termux commands. New financial-calculation tests in this handoff have not yet been executed.
-- Files Changed: `src/domain/financial-calculations.ts`, `src/domain/index.ts`, `tests/domain/financial-calculations.test.ts`, and `TASKS.md`.
-- Implementation Status: Cash-upfront derivation and contract changes are verified by the product owner. Exact monthly free-cash derivation, cash-impact/monthly-burden/financial-pressure penalties are now authored with tests but await local validation. Aggregate affordability score, rationality score, impulse-friction evaluation, canonical verdict engine, authoritative edge-case suite, and UI remain unimplemented.
+- Next Exact Step: Fetch latest `main` in Termux and run `npm run typecheck && npm run test && npm run build`; fix only actual failures. Once the aggregate passes, implement the approved integer Rationality dimension mappings and weighted formula. Preserve strict null behavior and use the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md`; do not invent or narrow the test list. Continue on `main`, with no CI, deployment configuration, FastAPI, PostgreSQL, or new dependencies.
+- Tests Run: Product-owner-reported Termux validation at `47b3a45`: `npm run typecheck` passed; `npm run test` passed (9 files / 182 tests); `npm run build` passed. The aggregate affordability code and eight new tests were authored after that validation and remain unverified locally.
+- Files Changed: `src/domain/financial-calculations.ts`, `tests/domain/financial-calculations.test.ts`, and `TASKS.md`.
+- Implementation Status: Cash-upfront derivation and calculation primitives are verified by the product owner at `47b3a45`. Aggregate affordability score is implemented but awaits Termux validation. Rationality score, impulse-friction evaluation, canonical verdict engine, full authoritative edge-case suite, and UI remain unimplemented.
 
 ## Product Priorities
 
