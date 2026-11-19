@@ -59,6 +59,15 @@ Credit-card limits, PayLater limits, and other credit facilities are borrowing c
 - An unanswered social-pressure input is critical missing data because it feeds the impulse-friction verdict trigger.
 - Missing critical data produces Wait & Reassess only if no higher-priority Hard Pass or Financially Risky condition is already provable.
 
+### Required affordability inputs and null propagation
+
+The affordability formula requires all relevant inputs; no partial score or default-zero substitution is permitted.
+
+- **Cash purchase:** known upfront amount (`U`), available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`). `P_m = 0` for cash purchases.
+- **Financed purchase:** all of the above, plus the new monthly installment amount (`I`). Installment count and fee treatment are additionally required to calculate and disclose total cost, but cannot be used to infer a missing affordability input.
+
+If any required affordability input is unknown, `affordabilityScore = null`. Known facts may still establish an earlier verdict: for example, known `U > A` is Do Not Buy even if `M` is null. A known Financially Risky condition likewise remains effective unless a Hard Pass applies.
+
 ## Deterministic financial calculations
 
 All monetary arithmetic uses integer Rupiah. Do not use binary floating-point arithmetic for money or ratio-band classification.
@@ -99,6 +108,16 @@ M = Y - E - D - C
 ```
 
 Preserve negative values. Never clamp a deficit to zero.
+
+### Confirmed zero versus unknown monthly free cash
+
+`M = Y - E - D - C`. Treat `M` as numeric only when net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`) are all explicitly known. An expense explicitly confirmed as zero is known; a blank, unavailable, or unanswered expense is `null`.
+
+Monthly free cash is exactly zero only when all components are known and the arithmetic result is zero. Unknown income or any unknown expense component makes `M = null`, never zero.
+
+For a financed purchase with `M = null`, `P_m` and `P_f` cannot be calculated, so `affordabilityScore = null`. Return Wait & Reassess unless a Hard Pass or Financially Risky condition is already independently provable from known inputs. Do not treat null as non-positive for the zero/negative installment penalty.
+
+
 
 ### Monthly purchase burden
 
@@ -172,13 +191,19 @@ For a financed purchase with a new installment and positive `M`:
 | Above 75% through 100% | 50 |
 | Above 100% | 60 |
 
-For a financed purchase adding a new installment when `M <= 0`, set `P_m = 60` without calculating a ratio. For a cash purchase, `P_m = 0`.
+For a financed purchase adding a new installment:
+- If known `M > 0`, calculate `P_m` using the monthly-burden bands.
+- If known `M = 0` or `M < 0`, set `P_m = 60` without calculating a ratio.
+- If `M = null`, `P_m` is unknown and the affordability score is `null`.
+
+For a cash purchase, `P_m = 0`; `P_f` still requires known `M`.
 
 ### Financial-pressure penalty: P_f
 
-- `M < 0`: 40.
-- `M = 0`: 30.
-- `M > 0`: 0.
+- Known `M < 0`: 40.
+- Known `M = 0`: 30.
+- Known `M > 0`: 0.
+- `M = null`: `P_f` is unknown; affordability is `null`.
 
 The negative-free-cash penalty and the Hard Pass rule for a new repayment obligation while `M < 0` are intentionally separate safeguards. One affects the numeric score; the other independently determines the verdict.
 
@@ -332,6 +357,14 @@ Return a structured result containing:
 
 Do not return only a score or color. Never return a combined health score. Every outcome must be traceable to validated inputs and named rules.
 
+## User-facing explanations and next steps
+
+Every canonical outcome must include a clear, non-judgmental Indonesian explanation tied to the actual input and matched rule. Explain the decisive reason first; list supporting factors separately. Never shame, blame, or characterize the user's personality.
+
+For Do Not Buy, explain the financial constraint and suggest practical alternatives: reduce the installment amount, consider a longer tenor only after comparing total repayment and fees, or wait until available cash or monthly free cash improves. A longer tenor must never be described as automatically cheaper or safer.
+
+Each of the other four outcomes also requires a reason and a proportionate next step. A verdict without an evidence-based reason is invalid.
+
 ## Required edge-case tests before implementation is considered complete
 
 Test at least the following cases:
@@ -344,7 +377,11 @@ Test at least the following cases:
 6. Cash use above 100% produces Do Not Buy, not Financially Risky.
 7. Upfront exceeds available cash while affordability is null due to another missing field: Do Not Buy still wins.
 8. New installment with negative monthly free cash produces Do Not Buy; the score calculation also applies `P_m = 60` and `P_f = 40` when the required inputs are known.
-9. New installment with zero monthly free cash applies `P_m = 60` and `P_f = 30`, but does not trigger the negative-free-cash Hard Pass rule.
+9. New installment with confirmed zero monthly free cash applies `P_m = 60` and `P_f = 30`, producing affordability 10 and therefore Do Not Buy through the below-35 Hard Pass rule. No exemption applies. Confirm that zero is used only when income and all expense components are known.
+10. Missing net monthly income makes monthly free cash null, never zero; a financed purchase has null affordability and returns Wait & Reassess unless a Hard Pass or Financially Risky condition is independently provable.
+11. Missing essential monthly expenses makes monthly free cash null, never zero; a financed purchase has null affordability and returns Wait & Reassess unless a higher-priority condition is provable.
+12. Missing existing debt payments or other committed monthly expenses makes monthly free cash null, never zero; do not silently substitute zero.
+13. A cash purchase with any required affordability input missing returns affordability null; known Hard Pass or Financially Risky conditions still follow precedence.
 10. Cash purchase with negative monthly free cash applies `P_m = 0` and `P_f = 40`; it does not trigger the new-repayment Hard Pass rule.
 11. Zero available cash and positive upfront produce Do Not Buy without division by zero.
 12. Zero available cash and zero upfront produce `P_cash = 0` without division by zero.
@@ -360,7 +397,9 @@ Test at least the following cases:
 22. Missing any required Rationality dimension yields null, no reweighting, and a completeness explanation.
 23. A missing critical answer does not override a known Hard Pass or Financially Risky condition.
 24. Low Need plus impulse level 5 and low Rationality, without a financial Hard Pass condition, produces Wait & Reassess, not Do Not Buy.
-25. Affordability and Rationality render as separate results; no combined health score is calculated or displayed.
+26. Affordability and Rationality render as separate results; no combined health score is calculated or displayed.
+27. Every one of the five canonical outcomes includes a non-judgmental Indonesian reason tied to the actual matched rule and a proportionate next step.
+28. Do Not Buy explanation identifies the specific financial constraint and suggests a smaller installment, a longer tenor only after comparing total repayment and fees, or waiting for financial capacity to improve.
 
 ## Implementation requirements
 
@@ -372,7 +411,7 @@ Before implementation:
 3. Implement exact integer Rupiah arithmetic and exact ratio-band comparisons.
 4. Implement the integer-only rationality formula.
 5. Implement verdict precedence exactly as documented.
-6. Add Vitest coverage for every required formula, boundary, missing-data case, and priority collision.
+6. Add Vitest coverage for every required formula, boundary, missing-data case, and priority collision in the Required edge-case tests section above. That list is the authoritative test inventory; do not invent a replacement or narrower agent-specific list.
 7. Verify UI copy and completeness behavior against the Brand Foundation.
 
 Do not port or duplicate the decision engine in Python. If a future service needs assessment results, expose a versioned contract and verify parity against the TypeScript engine.
