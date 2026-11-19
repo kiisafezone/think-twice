@@ -209,6 +209,7 @@ export default function DecisionResultPanel({
       const cleared = createDecisionHistoryStore(window.localStorage).clear();
       if (cleared.status === "ok") {
         setHistory([]);
+        setHistoryStatus("ready");
         savedId.current = null;
         setHistoryMessage("Semua riwayat lokal dihapus dari browser ini.");
         setConfirmClear(false);
