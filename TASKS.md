@@ -15,7 +15,7 @@
   6. Monthly period only; no period normalization. Inputs must remain explicit monthly amounts.
 - Next Exact Step: Continue Phase 3 with the assessment experience, beginning with the purchase input flow and preserving the approved domain contracts. Implement the visible protected-savings opt-in disclosure and separate assessment presentation when their UI steps are reached. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, optional metrics, payment-instrument mappings, or new dependencies.
 - Tests Run: Product owner ran `npm run typecheck`, `npm run test`, and `npm run build` at `10a3c4d` on Termux. Typecheck passed; 11 test files / 277 tests passed; Next.js 16.4.6 Webpack production build passed. Documentation reconciliation in this commit does not change executable code.
-- Files Changed this session: `tests/domain/decision-engine.test.ts` (commits `ccd6bc1`, `ab29877`, `9321083`, `213dffb`) and `TASKS.md`.
+- Files Changed this session: `tests/domain/decision-engine.test.ts` (commits `ccd6bc1`, `ab29877`, `9321083`, `213dffb`), `docs/product/DECISION_ENGINE.md`, `SPEC.md`, `docs/quality/TEST_STRATEGY.md`, and `TASKS.md`.
 - Implementation Status: The domain engine and expanded test suite passed product-owner validation at `10a3c4d` (277 tests). The 34/59/79 examples have been replaced with reachable boundary pairs 30/35, 55/60, and 75/80; the scoring formula and verdict thresholds are unchanged. UI-specific edge cases remain Phase 3. Optional derived metrics remain out of scope.
 
 ## Product Priorities
@@ -86,7 +86,7 @@
 - [x] Author canonical five-outcome precedence, including null-score/known-Hard-Pass handling. (Validated by product owner on Termux.)
 - [x] Author non-judgmental Indonesian reason and proportionate next-step copy for all five outcomes. (Validated by product owner on Termux.)
 - [ ] Complete coverage of every applicable case in the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md`; domain-engine coverage has been expanded and validated (277 tests), while UI-specific disclosure and rendered-result assertions remain Phase 3. Do not create an agent-specific substitute list.
-- [x] Add layer-level boundary tests per `TEST_STRATEGY.md`, including both sides of the rationality 49/50 boundary. (Authored; awaits Termux validation.)
+- [x] Add layer-level boundary tests per `TEST_STRATEGY.md`, including both sides of the rationality 49/50 boundary. (Validated by product owner on Termux at `10a3c4d`.)
 - [x] Reconcile protected-savings and result-contract rules across `SPEC.md` and `docs/product/DECISION_ENGINE.md`.
 
 ### Separate Backlog (not scheduled; do not expand scaffolding before Phase 2 contract validation passes)
