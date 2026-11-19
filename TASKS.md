@@ -4,8 +4,8 @@
 
 - Last Agent Used: ChatGPT
 - Completed: Product owner validated `9b3c633` on Termux: typecheck passed, 10 files / 218 tests passed, and Next.js 16.4.6 Webpack build passed. The Vite native-config ESM warning remains non-blocking.
-- Completed this session: Implemented ADR-0004 protected-savings safeguards: exact designation capped by known balance, mandatory disclosure acknowledgement, and checked effective available cash. Updated schema and focused tests; synchronized SPEC and DECISION_ENGINE.
-- Current Bug / Blocker: Protected-savings changes await Termux validation. Canonical verdict engine and finalized result semantics remain unimplemented. Broader payment-instrument mappings and non-monthly schedules remain unsupported/out of scope for the V1 engine input unless explicitly approved.
+- Completed this session: Implemented ADR-0004 protected-savings safeguards and checked effective available cash; synchronized SPEC and DECISION_ENGINE. Finalized the V1 result contract, stable rule identifiers, and implemented `evaluateDecision()` with affordability/rationality separation, impulse-friction integration, exact precedence, missing-field completeness, and Indonesian reasons/next steps. Added initial verdict integration tests.
+- Current Bug / Blocker: All new protected-savings and verdict-engine changes await product-owner Termux validation. The authoritative 37-case inventory is not yet fully covered by a dedicated integrated test suite; existing calculation tests cover the relevant lower-level arithmetic cases. Broader payment-instrument mappings and non-monthly schedules remain unsupported/out of scope for the V1 engine input unless explicitly approved.
 - Remaining unresolved product/contract items (do not resolve by convenience):
   1. Broader payment-instrument mappings `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remain undefined; V1 engine accepts only its existing `cash` / `financed` classification.
   2. Non-monthly or irregular repayment schedules remain unsupported and are rejected.
@@ -13,10 +13,10 @@
   4. Optional work-hours cost and utility-per-use metrics are not required for V1 verdict calculation; omit until source inputs and UI are approved.
   5. Persistence fields `id` and `createdAt` remain storage-layer concerns, excluded from engine input.
   6. Monthly period only; no period normalization. Inputs must remain explicit monthly amounts.
-- Next Exact Step: Product owner validates this protected-savings change. Then finalize the minimum V1 result semantics and implement the canonical pure TypeScript verdict engine with exact precedence, protected-savings effective available cash, missing-data completeness, impulse-friction integration, and Indonesian explanations. Cover all applicable cases in the authoritative 37-case inventory. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, UI, optional metrics, payment-instrument mappings, or new dependencies.
+- Next Exact Step: Product owner runs `npm run typecheck`, `npm run test`, and `npm run build` on Termux. Fix only verified failures. Then expand tests to demonstrate coverage of every applicable case in the authoritative 37-case inventory, especially score boundaries and precedence collisions. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, UI, optional metrics, payment-instrument mappings, or new dependencies.
 - Tests Run: None this session. Previous product-owner validation at `9b3c633`: 10 files / 218 tests; typecheck and build passed. Current changes await validation.
-- Files Changed: `src/domain/financial-profile.ts`, `tests/domain/financial-profile.test.ts`, `SPEC.md`, `docs/product/DECISION_ENGINE.md`, `docs/decisions/ADR-0004-protected-savings-opt-in.md`, and `TASKS.md`.
-- Implementation Status: Protected-savings safeguards are implemented but await Termux validation. Canonical verdict engine, finalized result semantics, Indonesian reasons/next steps, authoritative edge-case integration, and UI remain outstanding.
+- Files Changed: `src/domain/financial-profile.ts`, `tests/domain/financial-profile.test.ts`, `src/domain/results.ts`, `src/domain/decision-engine.ts`, `src/domain/index.ts`, `tests/domain/decision-engine.test.ts`, `SPEC.md`, `docs/product/DECISION_ENGINE.md`, `docs/decisions/ADR-0004-protected-savings-opt-in.md`, and `TASKS.md`.
+- Implementation Status: Protected-savings safeguards and the first canonical verdict-engine implementation are authored but await Termux validation. Optional derived metrics and UI remain out of scope. Full authoritative edge-case inventory coverage remains in progress.
 
 ## Product Priorities
 
