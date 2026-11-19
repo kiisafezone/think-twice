@@ -410,6 +410,7 @@ This is the authoritative V1 edge-case test inventory. Implement and test every 
 34. For a cash purchase, derive upfront `U` exactly as `P + F`; no separate upfront input is accepted.
 35. If purchase price or additional fees are unknown for a cash purchase, derived `U` is unknown and cash-use checks cannot be calculated; do not substitute zero.
 36. A cash plan containing a separately supplied upfront amount is invalid; financed plans continue to require explicit upfront `U`.
+37. If adding known cash purchase price and additional fees exceeds the JavaScript safe-integer range, the derived upfront amount is reported as an overflow error and is never returned as an unsafe number.
 
 ## Implementation requirements
 
@@ -420,10 +421,10 @@ Before implementation:
 2. Implement explicit input, assessment, completeness, and result types.
 3. Derive cash upfront `U = P + F` with checked integer Rupiah addition; retain explicit `U` only for financed purchases.
 4. Implement exact integer Rupiah arithmetic and exact ratio-band comparisons.
-4. Implement the integer-only rationality formula.
-5. Implement verdict precedence exactly as documented.
-6. Add Vitest coverage for every required formula, boundary, missing-data case, and priority collision in the Required edge-case tests section above. That list is the authoritative test inventory; do not invent a replacement or narrower agent-specific list.
-7. Verify UI copy and completeness behavior against the Brand Foundation.
+5. Implement the integer-only rationality formula.
+6. Implement verdict precedence exactly as documented.
+7. Add Vitest coverage for every required formula, boundary, missing-data case, and priority collision in the Required edge-case tests section above. That list is the authoritative test inventory; do not invent a replacement or narrower agent-specific list.
+8. Verify UI copy and completeness behavior against the Brand Foundation.
 
 Do not port or duplicate the decision engine in Python. If a future service needs assessment results, expose a versioned contract and verify parity against the TypeScript engine.
 
