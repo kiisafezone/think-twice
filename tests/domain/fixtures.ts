@@ -4,8 +4,10 @@
  */
 
 import { rupiahSchema } from "@/domain/money";
+import { installmentCountSchema } from "@/domain/payment";
 
 const money = (value: number) => rupiahSchema.parse(value);
+const installmentCount = (value: number) => installmentCountSchema.parse(value);
 
 export const known = <T>(value: T) => ({ status: "known" as const, value });
 export const unknown = { status: "unknown" as const };
@@ -47,7 +49,7 @@ export function validFinancedPlan() {
     installment: {
       repaymentSchedule: "monthly" as const,
       monthlyInstallment: known(money(900_000)),
-      installmentCount: known(12),
+      installmentCount: known(installmentCount(12)),
       feeTreatment: known("installment_excludes_fees" as const),
     },
   };
