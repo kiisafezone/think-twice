@@ -74,7 +74,8 @@ Any account, cloud sync, bank connection, analytics provider, AI provider, or re
 - [ ] No credential collection.
 - [ ] No external transfer without disclosure and approval.
 - [x] Local storage limitations are disclosed in the history UI.
-- [x] Individual and all-history deletion controls are implemented; storage adapter tests cover deletion and failure behavior.
-- [x] Share preview excludes sensitive data by default and is tested.
+- [x] Individual and all-history deletion controls are implemented.
+- [x] Share preview excludes sensitive data by default.
+- [ ] Run the storage and share-summary tests on the product-owner's Termux environment.
 - [ ] Product owner manually verifies local history and share behavior on target browsers.
 - [ ] Logs and crash reports contain no financial payloads.
