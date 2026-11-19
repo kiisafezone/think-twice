@@ -64,8 +64,8 @@ Credit-card limits, PayLater limits, and other credit facilities are borrowing c
 
 The affordability formula requires all relevant inputs; no partial score or default-zero substitution is permitted.
 
-- **Cash purchase:** known upfront amount (`U`), available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`). `P_m = 0` for cash purchases.
-- **Financed purchase:** all of the above, plus the new monthly installment amount (`I`). Installment count and fee treatment are additionally required to calculate and disclose total cost, but cannot be used to infer a missing affordability input.
+- **Cash purchase:** derive `U = P + F`. Purchase price (`P`) and additional fees (`F`) must be known, as must available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), and other committed monthly expenses (`C`). Do not collect a separate upfront amount for cash purchases. `P_m = 0`.
+- **Financed purchase:** explicit upfront amount (`U`), available cash (`A`), net monthly income (`Y`), essential monthly expenses (`E`), existing monthly debt payments (`D`), other committed monthly expenses (`C`), and new monthly installment amount (`I`) must be known. Installment count and fee treatment are additionally required to calculate and disclose total cost, but cannot be used to infer a missing affordability input.
 
 If any required affordability input is unknown, `affordabilityScore = null`. Known facts may still establish an earlier verdict: for example, known `U > A` is Do Not Buy even if `M` is null. A known Financially Risky condition likewise remains effective unless a Hard Pass applies.
 
@@ -200,7 +200,7 @@ For a financed purchase adding a new installment:
 - If known `M = 0` or `M < 0`, set `P_m = 60` without calculating a ratio.
 - If `M = null`, `P_m` is unknown and the affordability score is `null`.
 
-For a cash purchase, `P_m = 0`; `P_f` still requires known `M`.
+For a cash purchase, derive `U = P + F`; if either `P` or `F` is unknown, `U` is unknown and cash-use checks cannot be calculated. Do not request a separate cash upfront input. `P_m = 0`; `P_f` still requires known `M`.
 
 ### Financial-pressure penalty: P_f
 
@@ -391,9 +391,6 @@ This is the authoritative V1 edge-case test inventory. Implement and test every 
 16. Cash purchase with negative monthly free cash applies `P_m = 0` and `P_f = 40`; it does not trigger the new-repayment Hard Pass rule.
 17. Zero available cash and positive upfront produce Do Not Buy without division by zero.
 18. Zero available cash and zero upfront produce `P_cash = 0` without division by zero.
-34. For a cash purchase, derive upfront `U` exactly as `P + F`; no separate upfront input is accepted.
-35. If purchase price or additional fees are unknown for a cash purchase, derived `U` is unknown and cash-use checks cannot be calculated; do not substitute zero.
-36. A cash plan containing a separately supplied upfront amount is invalid; financed plans continue to require explicit upfront `U`.
 19. Protected savings remain excluded without explicit opt-in; an opt-in includes only the explicitly designated amount and is visibly disclosed.
 20. Paying from protected savings without opt-in cannot silently increase available cash; if known available cash is insufficient, Do Not Buy applies.
 21. Every cash-impact and monthly-burden band is tested at its exact lower and upper boundaries using integer cross-multiplication.
@@ -409,6 +406,10 @@ This is the authoritative V1 edge-case test inventory. Implement and test every 
 31. Affordability and Rationality render as separate results; no combined health score is calculated or displayed.
 32. Every one of the five canonical outcomes includes a non-judgmental Indonesian reason tied to the actual matched rule and a proportionate next step.
 33. Do Not Buy explanation identifies the specific financial constraint and suggests a smaller installment, a longer tenor only after comparing total repayment and fees, or waiting for financial capacity to improve.
+
+34. For a cash purchase, derive upfront `U` exactly as `P + F`; no separate upfront input is accepted.
+35. If purchase price or additional fees are unknown for a cash purchase, derived `U` is unknown and cash-use checks cannot be calculated; do not substitute zero.
+36. A cash plan containing a separately supplied upfront amount is invalid; financed plans continue to require explicit upfront `U`.
 
 ## Implementation requirements
 
