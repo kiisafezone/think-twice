@@ -354,8 +354,6 @@ describe("calculateAffordabilityScore", () => {
       hardPass: false,
     });
   });
-});
-
   it("preserves an invalid derived cash upfront amount", () => {
     expect(
       calculateAffordabilityScore({
@@ -374,3 +372,4 @@ describe("calculateAffordabilityScore", () => {
       hardPass: false,
     });
   });
+});
