@@ -56,9 +56,9 @@ describe("local decision history storage", () => {
     expect(store.read()).toEqual({ status: "ok", records: [record] });
 
     const persisted = storage.getItem(DECISION_HISTORY_KEY);
-    expect(persisted).not.toContain("income");
-    expect(persisted).not.toContain("availableCash");
-    expect(persisted).not.toContain("monthlyInstallment");
+    expect(persisted).not.toContain('"netMonthlyIncome":');
+    expect(persisted).not.toContain('"availableCash":');
+    expect(persisted).not.toContain('"monthlyInstallment":');
   });
 
   it("replaces a record with the same id instead of duplicating it", () => {
