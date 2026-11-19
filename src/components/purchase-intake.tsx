@@ -13,7 +13,7 @@ type FormState = {
   category: string;
   purchasePrice: AmountField;
   additionalFees: AmountField;
-  financingClass: "cash" | "financed";
+  financingClass: "" | "cash" | "financed";
   upfrontPayment: AmountField;
   monthlyInstallment: AmountField;
   installmentCount: AmountField;
@@ -27,7 +27,7 @@ const initialForm: FormState = {
   category: "",
   purchasePrice: { value: "", unknown: false },
   additionalFees: { value: "", unknown: false },
-  financingClass: "cash",
+  financingClass: "",
   upfrontPayment: { value: "", unknown: false },
   monthlyInstallment: { value: "", unknown: false },
   installmentCount: { value: "", unknown: false },
@@ -130,27 +130,29 @@ export default function PurchaseIntake() {
     const paymentPlan =
       form.financingClass === "cash"
         ? { financingClass: "cash" as const }
-        : {
-            financingClass: "financed" as const,
-            upfrontPayment: amountInput(form.upfrontPayment),
-            installment: {
-              repaymentSchedule: "monthly" as const,
-              monthlyInstallment: amountInput(form.monthlyInstallment),
-              installmentCount: form.installmentCount.unknown
-                ? { status: "unknown" as const }
-                : {
-                    status: "known" as const,
-                    value:
-                      form.installmentCount.value.trim() === ""
-                        ? Number.NaN
-                        : Number(form.installmentCount.value),
-                  },
-              feeTreatment:
-                form.feeTreatment === "unknown"
+        : form.financingClass === "financed"
+          ? {
+              financingClass: "financed" as const,
+              upfrontPayment: amountInput(form.upfrontPayment),
+              installment: {
+                repaymentSchedule: "monthly" as const,
+                monthlyInstallment: amountInput(form.monthlyInstallment),
+                installmentCount: form.installmentCount.unknown
                   ? { status: "unknown" as const }
-                  : { status: "known" as const, value: form.feeTreatment },
-            },
-          };
+                  : {
+                      status: "known" as const,
+                      value:
+                        form.installmentCount.value.trim() === ""
+                          ? Number.NaN
+                          : Number(form.installmentCount.value),
+                    },
+                feeTreatment:
+                  form.feeTreatment === "unknown"
+                    ? { status: "unknown" as const }
+                    : { status: "known" as const, value: form.feeTreatment },
+              },
+            }
+          : { financingClass: "" };
 
     const result = purchaseInputSchema.safeParse({
       itemName: form.itemName,
@@ -384,6 +386,7 @@ export default function PurchaseIntake() {
               <span className="choice-description">Ada dana awal dan/atau kewajiban pembayaran bulanan baru.</span>
             </label>
           </div>
+          {fieldError(errors, "paymentPlan")}
         </fieldset>
 
         {form.financingClass === "financed" ? (
