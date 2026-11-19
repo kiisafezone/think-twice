@@ -126,4 +126,57 @@ describe("canonical decision engine", () => {
     expect(result.verdict.outcome).toBe("wait_and_reassess");
     expect(result.affordability.completeness.isComplete).toBe(false);
   });
+
+  it("activates impulse friction for social pressure combined with low Need", () => {
+    const input = cashInput();
+    Object.assign(input.purchaseAssessment, {
+      need: known(2),
+      impulseLevel: known(1),
+      socialPressure: known(true),
+    });
+    const result = evaluateDecision(input);
+    expect(result.impulseFriction.status).toBe("active");
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+  });
+
+  it("does not apply the new-repayment Hard Pass to a cash purchase with negative free cash", () => {
+    const input = cashInput();
+    input.financialProfile.netMonthlyIncome = known(3_000_000);
+    input.financialProfile.essentialMonthlyExpenses = known(4_000_000);
+    const result = evaluateDecision(input);
+    expect(result.verdict.outcome).not.toBe("do_not_buy");
+    expect(result.affordability.score).toBe(55);
+  });
+
+  it("returns Wait & Reassess for a financed purchase with unknown monthly free cash", () => {
+    const input = financedInput();
+    Object.assign(input.financialProfile, { existingMonthlyDebtPayments: unknown });
+    const result = evaluateDecision(input);
+    expect(result.affordability.score).toBe(null);
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+  });
+
+  it("does not turn low Need and strong impulse into Do Not Buy without a financial Hard Pass", () => {
+    const input = cashInput();
+    Object.assign(input.purchaseAssessment, {
+      need: known(1),
+      urgency: known("can_wait_one_month_or_longer"),
+      alternatives: known(1),
+      utility: known(1),
+      impulseLevel: known(5),
+      socialPressure: known(false),
+    });
+    const result = evaluateDecision(input);
+    expect(result.rationality.score).toBeLessThan(50);
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+  });
+
+  it("keeps Rationality calculated separately when only social pressure is missing", () => {
+    const input = cashInput();
+    Object.assign(input.purchaseAssessment, { socialPressure: unknown });
+    const result = evaluateDecision(input);
+    expect(result.rationality.status).toBe("calculated");
+    expect(result.rationality.completeness.isComplete).toBe(false);
+    expect(result.verdict.outcome).toBe("wait_and_reassess");
+  });
 });
