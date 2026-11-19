@@ -355,12 +355,12 @@ describe("canonical decision engine", () => {
   });
 
   it.each([
-    ["safe_to_buy", (input: DecisionInput) => input],
-    ["buy_with_caution", (input: DecisionInput) => {
+    ["safe_to_buy", "greenlight.affordability_at_least_80", (input: DecisionInput) => input],
+    ["buy_with_caution", "greenlight.affordability_60_to_79", (input: DecisionInput) => {
       input.purchase.purchasePrice = known(money(9_600_000));
       return input;
     }],
-    ["wait_and_reassess", (input: DecisionInput) => {
+    ["wait_and_reassess", "behavior.rationality_below_50", (input: DecisionInput) => {
       Object.assign(input.purchaseAssessment, {
         need: known(1), urgency: known("can_wait_one_month_or_longer"),
         alternatives: known(1), utility: known(1), impulseLevel: known(1),
@@ -368,19 +368,20 @@ describe("canonical decision engine", () => {
       });
       return input;
     }],
-    ["financially_risky", (input: DecisionInput) => {
+    ["financially_risky", "financial.cash_use_above_80_percent", (input: DecisionInput) => {
       input.purchase.purchasePrice = known(money(9_720_000));
       return input;
     }],
-    ["do_not_buy", (input: DecisionInput) => {
+    ["do_not_buy", "financial.new_repayment_with_negative_free_cash", (input: DecisionInput) => {
       const financed = financedInput();
       financed.financialProfile.netMonthlyIncome = known(money(3_000_000));
       financed.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
       return financed as unknown as DecisionInput;
     }],
-  ] as const)("provides an evidence-based Indonesian reason and next steps for %s", (outcome, prepare) => {
+  ] as const)("provides an evidence-based Indonesian reason and next steps for %s", (outcome, ruleId, prepare) => {
     const result = evaluateDecision(prepare(cashInput()));
     expect(result.verdict.outcome).toBe(outcome);
+    expect(result.verdictReasons[0]?.ruleId).toBe(ruleId);
     expect(result.verdictReasons.length).toBeGreaterThan(0);
     expect(result.explanation.decisiveReason).toBe(result.verdictReasons[0]?.explanation);
     expect(result.explanation.decisiveReason.length).toBeGreaterThan(20);
