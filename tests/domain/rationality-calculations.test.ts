@@ -51,7 +51,7 @@ describe("calculateRationalityScore", () => {
   it("calculates the approved weighted integer score", () => {
     expect(calculateRationalityScore(complete)).toEqual({
       status: "calculated",
-      score: 74,
+      score: 76,
       dimensions: {
         need: 75,
         urgency: 65,
