@@ -3,9 +3,9 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT
-- Completed: Product owner validated commit `10a3c4d` on Termux: typecheck passed, 11 files / 277 tests passed, and the Next.js 16.4.6 Webpack production build passed. The Vite native-config ESM warning remains non-blocking.
-- Completed this session: Expanded `tests/domain/decision-engine.test.ts` with integration coverage for required cash/financed missing affordability inputs, each required Rationality dimension, missing-data precedence, cash use above 100%, cash-use risk over behavioral concerns, positive cash impact with zero monthly free cash, protected-savings opt-in versus no opt-in, separate assessments, all five outcomes and their reason/next-step contracts, and reachable score boundaries 30/35, 55/60, and 75/80. Product owner approved replacing unreachable score examples 34/59/79 with these reachable boundary values; `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and `docs/quality/TEST_STRATEGY.md` now state the same rule.
-- Current Bug / Blocker: The unreachable affordability examples have been reconciled without changing the approved formula or verdict thresholds. No scoring blocker remains. Protected-savings visible disclosure and rendered separation of assessment results remain Phase 3 UI requirements. Broader payment-instrument mappings and non-monthly schedules remain unsupported/out of scope for the V1 engine input unless explicitly approved.
+- Completed: Product owner validated commit `10a3c4d` on Termux: typecheck passed, 11 files / 277 tests passed, and the Next.js 16.4.6 Webpack production build passed. The Vite native-config ESM warning remains non-blocking. The affordability score granularity reconciliation was committed as documentation-only changes (`3a9ec7c`, `3627e6e`, `f442a2e`, `15744b5`).
+- Completed this session: Reconciled unreachable affordability examples 34/59/79 to reachable boundary pairs 30/35, 55/60, and 75/80 across `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and `docs/quality/TEST_STRATEGY.md`, without changing scoring rules. Added the first Phase 3 purchase-details intake screen with Zod validation, explicit unknown states, cash/financed branches, monthly installment disclosure, and an in-memory validated summary.
+- Current Bug / Blocker: No known scoring blocker. The purchase-details intake UI has been authored on `main` but has not yet been validated on Termux. The current screen is intentionally limited to purchase details; it does not yet advance into Purchase Decision Assessment or Financial Reality Check. Protected-savings visible disclosure and separate rendered assessment results remain future Phase 3 requirements. Broader payment-instrument mappings and non-monthly schedules remain unsupported/out of scope for the V1 engine input unless explicitly approved.
 - Remaining unresolved product/contract items (do not resolve by convenience):
   1. Broader payment-instrument mappings `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remain undefined; V1 engine accepts only its existing `cash` / `financed` classification.
   2. Non-monthly or irregular repayment schedules remain unsupported and are rejected.
@@ -13,10 +13,10 @@
   4. Optional work-hours cost and utility-per-use metrics are not required for V1 verdict calculation; omit until source inputs and UI are approved.
   5. Persistence fields `id` and `createdAt` remain storage-layer concerns, excluded from engine input.
   6. Monthly period only; no period normalization. Inputs must remain explicit monthly amounts.
-- Next Exact Step: Continue Phase 3 with the assessment experience, beginning with the purchase input flow and preserving the approved domain contracts. Implement the visible protected-savings opt-in disclosure and separate assessment presentation when their UI steps are reached. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, optional metrics, payment-instrument mappings, or new dependencies.
-- Tests Run: Product owner ran `npm run typecheck`, `npm run test`, and `npm run build` at `10a3c4d` on Termux. Typecheck passed; 11 test files / 277 tests passed; Next.js 16.4.6 Webpack production build passed. Documentation reconciliation in this commit does not change executable code.
-- Files Changed this session: `tests/domain/decision-engine.test.ts` (commits `ccd6bc1`, `ab29877`, `9321083`, `213dffb`), `docs/product/DECISION_ENGINE.md`, `SPEC.md`, `docs/quality/TEST_STRATEGY.md`, and `TASKS.md`.
-- Implementation Status: The domain engine and expanded test suite passed product-owner validation at `10a3c4d` (277 tests). The 34/59/79 examples have been replaced with reachable boundary pairs 30/35, 55/60, and 75/80; the scoring formula and verdict thresholds are unchanged. UI-specific edge cases remain Phase 3. Optional derived metrics remain out of scope.
+- Next Exact Step: Product owner pulls the current `main` and runs `npm run typecheck && npm run test && npm run build` on Termux. If all pass, implement the Purchase Decision Assessment as the next wizard step, preserving the validated purchase details in React state. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, optional metrics, payment-instrument mappings, or new dependencies.
+- Tests Run: The existing domain suite was last validated by the product owner at `10a3c4d` (typecheck passed; 11 files / 277 tests passed; Next.js 16.4.6 Webpack production build passed). The new UI has not yet been run through typecheck, tests, or production build; validation is pending.
+- Files Changed this session: `src/components/purchase-intake.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `src/app/layout.tsx`, and `TASKS.md`.
+- Implementation Status: Domain engine and expanded tests remain validated at `10a3c4d` (277 tests). Purchase-details intake is implemented but awaits product-owner Termux validation. The 34/59/79 examples were replaced with reachable boundary pairs 30/35, 55/60, and 75/80; formula and verdict thresholds are unchanged. Optional derived metrics remain out of scope.
 
 ## Product Priorities
 
@@ -95,7 +95,7 @@
 
 ### Phase 3 — Assessment Experience
 
-- [ ] Build purchase input flow.
+- [x] Build the purchase-details intake step with schema validation, explicit unknown states, and an in-memory summary; continue the multi-step assessment flow in subsequent work.
 - [ ] Build Purchase Decision Assessment as a first-class experience.
 - [ ] Build Financial Reality Check separately.
 - [ ] Explain why each financial and behavioral input is requested.
