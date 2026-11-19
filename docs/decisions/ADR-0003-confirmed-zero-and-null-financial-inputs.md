@@ -12,7 +12,7 @@ The approved affordability penalties require a strict distinction between a conf
 ## Decisions
 
 1. Monthly free cash is `M = Y - E - D - C`. It is numeric only when net monthly income, essential monthly expenses, existing monthly debt payments, and other committed monthly expenses are all known. Explicitly confirmed zero expense values are valid. Any unknown component makes `M = null`.
-2. For a financed purchase with confirmed `M = 0`, set `P_m = 60` and `P_f = 30`. The resulting affordability score is 10, below 35, so the verdict is Do Not Buy. There is no exemption.
+2. For a financed purchase with confirmed `M = 0`, set `P_m = 60` and `P_f = 30`. When `P_cash = 0`, the affordability score is 10; if `P_cash` is positive, the final score is lower. In either case it remains below 35, so the verdict is Do Not Buy. There is no exemption.
 3. For a financed purchase with `M = null`, `P_m` and `P_f` are unknown and affordability is `null`. Return Wait & Reassess unless a Hard Pass or Financially Risky condition is independently provable from known inputs.
 4. A cash purchase requires known `U`, `A`, `Y`, `E`, `D`, and `C` for a numeric affordability score. A financed purchase requires those same inputs plus known installment amount `I`. Any unknown required input makes the score null. Known higher-priority verdict conditions remain eligible.
 5. Every canonical outcome must include a non-judgmental Indonesian reason tied to the actual rule. Do Not Buy guidance must suggest a smaller installment, a longer tenor only after comparing total repayment and fees, or waiting for financial capacity to improve.
