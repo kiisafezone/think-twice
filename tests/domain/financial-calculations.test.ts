@@ -202,3 +202,155 @@ describe("calculateFinancialPressurePenalty", () => {
     ).toEqual({ status: "invalid", reason: "unsafe_integer_overflow" });
   });
 });
+
+describe("calculateAffordabilityScore", () => {
+  it("aggregates the three penalties for a complete cash purchase", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "cash",
+        upfront: { status: "known", value: money(250) },
+        availableCash: known(money(1_000)),
+        monthlyFreeCash: { status: "known", value: signed(2_000) },
+      }),
+    ).toMatchObject({
+      status: "calculated",
+      score: 95,
+      hardPass: false,
+      penalties: {
+        cashImpact: { status: "known", penalty: 5, hardPass: false },
+        monthlyBurden: { status: "known", penalty: 0 },
+        financialPressure: { status: "known", penalty: 0 },
+      },
+    });
+  });
+
+  it("uses P_m = 0 for cash and still requires known monthly free cash", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "cash",
+        upfront: { status: "known", value: money(0) },
+        availableCash: known(money(0)),
+        monthlyFreeCash: { status: "unknown" },
+      }),
+    ).toMatchObject({
+      status: "unavailable",
+      score: null,
+      reason: "missing_required_input",
+      hardPass: false,
+      penalties: {
+        monthlyBurden: { status: "known", penalty: 0 },
+        financialPressure: { status: "unknown" },
+      },
+    });
+  });
+
+  it("calculates the approved zero-free-cash financed score of 10 when P_cash is zero", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "financed",
+        upfront: known(money(0)),
+        availableCash: known(money(0)),
+        monthlyInstallment: known(money(100)),
+        monthlyFreeCash: { status: "known", value: signed(0) },
+      }),
+    ).toMatchObject({
+      status: "calculated",
+      score: 10,
+      hardPass: false,
+      penalties: {
+        cashImpact: { status: "known", penalty: 0 },
+        monthlyBurden: { status: "known", penalty: 60 },
+        financialPressure: { status: "known", penalty: 30 },
+      },
+    });
+  });
+
+  it("applies the separate Hard Pass for a new installment with negative free cash", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "financed",
+        upfront: known(money(0)),
+        availableCash: known(money(1_000)),
+        monthlyInstallment: known(money(100)),
+        monthlyFreeCash: { status: "known", value: signed(-1) },
+      }),
+    ).toMatchObject({
+      status: "calculated",
+      score: 0,
+      hardPass: true,
+      penalties: {
+        monthlyBurden: { status: "known", penalty: 60 },
+        financialPressure: { status: "known", penalty: 40 },
+      },
+    });
+  });
+
+  it("keeps a known upfront Hard Pass when another required input is unknown", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "financed",
+        upfront: known(money(1_001)),
+        availableCash: known(money(1_000)),
+        monthlyInstallment: known(money(100)),
+        monthlyFreeCash: { status: "unknown" },
+      }),
+    ).toMatchObject({
+      status: "unavailable",
+      score: null,
+      reason: "missing_required_input",
+      hardPass: true,
+    });
+  });
+
+  it("returns the dedicated unavailable result for positive upfront against zero cash", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "cash",
+        upfront: { status: "known", value: money(1) },
+        availableCash: known(money(0)),
+        monthlyFreeCash: { status: "known", value: signed(1_000) },
+      }),
+    ).toMatchObject({
+      status: "unavailable",
+      score: null,
+      reason: "cash_impact_hard_pass",
+      hardPass: true,
+    });
+  });
+
+  it("does not calculate a partial score when financed monthly free cash is unknown", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "financed",
+        upfront: known(money(0)),
+        availableCash: known(money(1_000)),
+        monthlyInstallment: known(money(100)),
+        monthlyFreeCash: { status: "unknown" },
+      }),
+    ).toMatchObject({
+      status: "unavailable",
+      score: null,
+      reason: "missing_required_input",
+      hardPass: false,
+    });
+  });
+
+  it("preserves invalid arithmetic instead of returning a score", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "cash",
+        upfront: { status: "known", value: money(0) },
+        availableCash: known(money(1_000)),
+        monthlyFreeCash: {
+          status: "invalid",
+          reason: "unsafe_integer_overflow",
+        },
+      }),
+    ).toMatchObject({
+      status: "invalid",
+      score: null,
+      reason: "unsafe_integer_overflow",
+      hardPass: false,
+    });
+  });
+});
