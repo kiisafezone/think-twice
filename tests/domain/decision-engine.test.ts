@@ -45,12 +45,14 @@ describe("canonical decision engine", () => {
     const input = financedInput();
     input.purchase.paymentPlan.upfrontPayment = known(6_000_000);
     input.purchase.paymentPlan.installment.monthlyInstallment = known(2_100_000);
-    input.purchaseAssessment.need = known(1);
-    input.purchaseAssessment.urgency = known("can_wait_one_month_or_longer");
-    input.purchaseAssessment.alternatives = known(1);
-    input.purchaseAssessment.utility = known(1);
-    input.purchaseAssessment.impulseLevel = known(1);
-    input.purchaseAssessment.socialPressure = known(false);
+    Object.assign(input.purchaseAssessment, {
+      need: known(1),
+      urgency: known("can_wait_one_month_or_longer"),
+      alternatives: known(1),
+      utility: known(1),
+      impulseLevel: known(1),
+      socialPressure: known(false),
+    });
     const result = evaluateDecision(input);
     expect(result.affordability.score).toBe(40);
     expect(result.rationality.score).toBeLessThan(50);
@@ -73,7 +75,7 @@ describe("canonical decision engine", () => {
 
   it("returns Wait & Reassess when impulse friction is active", () => {
     const input = cashInput();
-    input.purchaseAssessment.impulseLevel = known(3);
+    Object.assign(input.purchaseAssessment, { impulseLevel: known(3) });
     const result = evaluateDecision(input);
     expect(result.impulseFriction.status).toBe("active");
     expect(result.verdict.outcome).toBe("wait_and_reassess");
@@ -81,7 +83,7 @@ describe("canonical decision engine", () => {
 
   it("returns Wait & Reassess when social pressure is unknown", () => {
     const input = cashInput();
-    input.purchaseAssessment.socialPressure = unknown;
+    Object.assign(input.purchaseAssessment, { socialPressure: unknown });
     const result = evaluateDecision(input);
     expect(result.impulseFriction.status).toBe("undetermined");
     expect(result.verdict.outcome).toBe("wait_and_reassess");
@@ -110,7 +112,7 @@ describe("canonical decision engine", () => {
   it("preserves known upfront-exceeds-cash Hard Pass when another required input is unknown", () => {
     const input = financedInput();
     input.purchase.paymentPlan.upfrontPayment = known(13_000_000);
-    input.financialProfile.netMonthlyIncome = unknown;
+    Object.assign(input.financialProfile, { netMonthlyIncome: unknown });
     const result = evaluateDecision(input);
     expect(result.affordability.score).toBe(null);
     expect(result.verdict.outcome).toBe("do_not_buy");
