@@ -3,9 +3,9 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT
-- Completed: Fetched and inspected the latest `main` state at Claude's Phase 2 domain-contract handoff. The product owner ran `npm ci && npm run typecheck && npm run test && npm run build` in Termux on 2026-11-19. All commands succeeded: npm ci installed 84 packages with 0 vulnerabilities; typecheck passed; Vitest passed 7 files / 132 tests; Next.js 16.4.6 production build completed with Webpack. Vite emitted a non-blocking warning about ESM syntax in `vitest.config.ts` under `configLoader: native`.
-- Completed this session: Accepted the cash-upfront rule: cash purchase `U = P + F`, derived from purchase price and additional fees with no separate upfront input; financed purchase `U` remains explicit. Updated `src/domain/payment.ts`, payment fixtures/tests, `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and recorded the decision in `docs/decisions/ADR-0003-derive-cash-upfront.md`. Implemented checked Rupiah addition (`addRupiah`) and `deriveCashUpfront`, which propagates unknown source values and returns an explicit overflow state; added focused derivation tests.
-- Current Bug / Blocker: No known blocker in the verified domain contracts. The Vite config warning is non-blocking and should be handled separately only if it becomes necessary. The cash-upfront helper and focused tests have been authored but are not yet re-validated in Termux after these latest commits.
+- Completed: Product owner validated the cash-upfront decision and helper changes on Termux after fetching commit `9aa7a99`. `npm run typecheck` passed; Vitest passed 8 files / 137 tests; `npm run build` completed successfully with Next.js 16.4.6 Webpack. Vite's `configLoader: native` ESM warning remains non-blocking.
+- Completed this session: Implemented `src/domain/financial-calculations.ts` with exact BigInt cross-multiplication for cash-use and monthly-burden bands; monthly free-cash derivation preserving negative/zero/unknown; financial-pressure penalty; and cash-impact Hard Pass signaling when upfront exceeds available cash. Added boundary, null, zero, negative, overflow, and maximum-safe-integer tests in `tests/domain/financial-calculations.test.ts`. Exported the helpers from `src/domain/index.ts`.
+- Current Bug / Blocker: No known defect from static inspection. The financial-calculation module and its new tests have NOT yet been run in Termux. Do not claim they pass until the product owner supplies fresh command output.
 - Remaining unresolved product/contract items (do not resolve by convenience):
   1. Mapping broader payment variants `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remains undefined.
   2. Non-monthly or irregular repayment schedules remain unsupported in V1 and are rejected.
@@ -14,10 +14,10 @@
   5. `results.ts` shapes remain provisional: rule identifiers, explanation vocabulary, the `MetricUnit` set, metric keys, and `undetermined` impulse-friction status need to be finalized when engine behavior is implemented.
   6. Persistence fields (`id`, `createdAt`) remain excluded from engine input and belong to the storage layer.
   7. Monthly period only: no period normalization; `DOMAIN_MODEL.md` expects explicit periods.
-- Next Exact Step: Fetch the latest `main` in Termux, then run `npm run typecheck && npm run test && npm run build` and provide the full output. The new helper/tests have not yet been validated locally. Fix only failures shown by actual output. Once verified, implement exact integer ratio comparisons and cash-impact/monthly-burden penalties, preserving all approved null and precedence rules. Use the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md`; do not invent a narrower list. Continue on `main`, with no CI, deployment configuration, FastAPI, PostgreSQL, or new dependencies.
-- Tests Run: Product-owner-reported Termux output: `npm ci` passed (84 packages, 0 vulnerabilities); `npm run typecheck` passed; `npm run test` passed (7 files, 132 tests); `npm run build` passed (Next.js 16.4.6, Webpack). ChatGPT did not run these commands independently.
-- Files Changed: `src/domain/payment.ts`, `tests/domain/fixtures.ts`, `tests/domain/payment.test.ts`, `src/domain/money.ts`, `src/domain/purchase.ts`, `tests/domain/cash-upfront.test.ts`, `SPEC.md`, `docs/product/DECISION_ENGINE.md`, `docs/decisions/ADR-0003-derive-cash-upfront.md`, and `TASKS.md`.
-- Implementation Status: Base domain contracts were verified by the product owner on Termux. The cash-upfront schema, checked addition helper, derivation helper, and focused tests are now authored but await a fresh Termux validation. Ratio penalties, rationality scoring, verdict engine, authoritative edge-case tests, and UI remain unimplemented.
+- Next Exact Step: Fetch latest `main` in Termux and run `npm run typecheck && npm run test && npm run build`; provide full output. Fix only actual failures. After these helpers pass, implement the aggregate affordability score with strict null propagation and then the approved rationality dimension mappings/formula. Keep the authoritative 37-case inventory in `docs/product/DECISION_ENGINE.md` as the required engine test list. Continue on `main`, with no CI, deployment configuration, FastAPI, PostgreSQL, or new dependencies.
+- Tests Run: Product-owner-reported Termux validation at commit `9aa7a99`: `npm run typecheck` passed; `npm run test` passed (8 files / 137 tests); `npm run build` passed. ChatGPT did not run Termux commands. New financial-calculation tests in this handoff have not yet been executed.
+- Files Changed: `src/domain/financial-calculations.ts`, `src/domain/index.ts`, `tests/domain/financial-calculations.test.ts`, and `TASKS.md`.
+- Implementation Status: Cash-upfront derivation and contract changes are verified by the product owner. Exact monthly free-cash derivation, cash-impact/monthly-burden/financial-pressure penalties are now authored with tests but await local validation. Aggregate affordability score, rationality score, impulse-friction evaluation, canonical verdict engine, authoritative edge-case suite, and UI remain unimplemented.
 
 ## Product Priorities
 
@@ -78,8 +78,8 @@
 - [x] Author contract tests for input states, money, payment plans, assessment input, financial profile, outcomes, and validation. (Authored; not yet run. These are contract tests, not scoring tests.)
 - [x] Run and verify `npm run typecheck`, `npm run test`, and `npm run build` for the contracts; product owner validated all three on Termux (132 tests passed, production build passed).
 - [x] Resolve cash `U` versus `P + F`: cash derives `U = P + F`; financed retains explicit `U` (ADR-0003). Other unresolved items remain explicitly documented in the handoff.
-- [ ] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic.
-- [ ] Implement cash-impact and monthly-burden penalties with cross-multiplication only.
+- [x] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic. (Cash helper verified by product owner; new monthly/ratio helpers await Termux validation.)
+- [x] Implement cash-impact and monthly-burden penalties with BigInt cross-multiplication only. (New tests authored; await Termux validation.)
 - [ ] Implement protected-savings opt-in and visible disclosure behavior.
 - [ ] Implement integer rationality dimension mappings and weighted formula.
 - [ ] Implement required social-pressure input and impulse-friction rules.
