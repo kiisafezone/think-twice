@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { purchaseInputSchema, type PurchaseInput } from "../domain/purchase";
+import { purchaseInputSchema, type PurchaseInput } from "../../../domain/purchase";
 import PurchaseAssessmentForm from "./purchase-assessment-form";
-import type { PurchaseAssessmentInput } from "../domain/purchase-assessment";
+import type { PurchaseAssessmentInput } from "../../../domain/purchase-assessment";
 
 type AmountField = {
   value: string;
@@ -41,6 +41,15 @@ const currency = new Intl.NumberFormat("id-ID", {
   currency: "IDR",
   maximumFractionDigits: 0,
 });
+
+const assessmentFieldInfo = [
+  { key: "need", label: "Kebutuhan", purpose: "Dimensi pembentuk skor rasionalitas." },
+  { key: "urgency", label: "Urgensi", purpose: "Membedakan kebutuhan mendesak dari dorongan sesaat." },
+  { key: "alternatives", label: "Alternatif", purpose: "Menilai apakah pilihan lain sudah dipertimbangkan." },
+  { key: "utility", label: "Manfaat", purpose: "Menilai manfaat yang diharapkan dari pembelian." },
+  { key: "impulseLevel", label: "Dorongan membeli", purpose: "Menilai kontrol terhadap dorongan pembelian." },
+  { key: "socialPressure", label: "Tekanan sosial", purpose: "Menentukan apakah tekanan sosial memicu impulse friction." },
+] as const;
 
 function amountInput(field: AmountField) {
   if (field.unknown) return { status: "unknown" as const };
@@ -211,6 +220,11 @@ export default function PurchaseIntake() {
 
   if (validatedPurchase) {
     const isCash = validatedPurchase.paymentPlan.financingClass === "cash";
+    const unknownAssessmentFields = validatedAssessment
+      ? assessmentFieldInfo.filter(({ key }) => validatedAssessment[key].status === "unknown")
+      : [];
+    const unknownScoredDimensions = unknownAssessmentFields.filter(({ key }) => key !== "socialPressure");
+    const socialPressureUnknown = unknownAssessmentFields.some(({ key }) => key === "socialPressure");
     return (
       <main className="page-shell">
         <header className="site-header">
@@ -277,8 +291,28 @@ export default function PurchaseIntake() {
           <PurchaseAssessmentForm onComplete={setValidatedAssessment} />
           {validatedAssessment ? (
             <div className="assessment-complete" role="status">
-              <strong>Purchase Decision Assessment tersimpan.</strong>
-              <p>Jawaban refleksi sudah divalidasi. Belum ada rekomendasi akhir; kondisi keuangan masih perlu dinilai secara terpisah.</p>
+              <strong>Jawaban Purchase Decision Assessment tersimpan.</strong>
+              {unknownScoredDimensions.length > 0 ? (
+                <p>
+                  Skor rasionalitas belum dapat dihitung karena ada dimensi wajib yang belum diketahui.
+                  Sistem tidak membuat skor parsial atau memberi nilai netral otomatis.
+                </p>
+              ) : (
+                <p>
+                  Semua dimensi pembentuk skor rasionalitas sudah diketahui. Penilaian ini tetap terpisah
+                  dari kondisi keuangan dan belum menghasilkan rekomendasi akhir.
+                </p>
+              )}
+              {socialPressureUnknown ? (
+                <p>Status impulse friction belum dapat ditentukan karena jawaban tekanan sosial belum diketahui.</p>
+              ) : null}
+              {unknownAssessmentFields.length > 0 ? (
+                <ul className="assessment-unknown-fields">
+                  {unknownAssessmentFields.map(({ key, label, purpose }) => (
+                    <li key={key}><strong>{label}:</strong> {purpose}</li>
+                  ))}
+                </ul>
+              ) : null}
               <button className="button-secondary" type="button" onClick={() => setValidatedAssessment(null)}>Ubah jawaban penilaian</button>
             </div>
           ) : null}

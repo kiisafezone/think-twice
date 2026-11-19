@@ -1,4 +1,4 @@
-# ADR-0004: Enforce Protected-Savings Opt-In
+# ADR-0005: Enforce Protected-Savings Opt-In
 
 - Status: Accepted
 - Date: 2026-11-19

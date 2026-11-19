@@ -10,12 +10,12 @@ import {
 type ScaleAnswer = 1 | 2 | 3 | 4 | 5;
 
 type AssessmentForm = {
-  need: ScaleAnswer | null;
-  urgency: UrgencyAnswer | "";
-  alternatives: ScaleAnswer | null;
-  utility: ScaleAnswer | null;
-  impulseLevel: ScaleAnswer | null;
-  socialPressure: boolean | null;
+  need: ScaleAnswer | "unknown" | null;
+  urgency: UrgencyAnswer | "unknown" | "";
+  alternatives: ScaleAnswer | "unknown" | null;
+  utility: ScaleAnswer | "unknown" | null;
+  impulseLevel: ScaleAnswer | "unknown" | null;
+  socialPressure: boolean | "unknown" | null;
   potentialRegret: string;
 };
 
@@ -75,8 +75,8 @@ function ScaleQuestion({
   description: string;
   low: string;
   high: string;
-  value: ScaleAnswer | null;
-  onChange: (value: ScaleAnswer) => void;
+  value: ScaleAnswer | "unknown" | null;
+  onChange: (value: ScaleAnswer | "unknown") => void;
   error?: string;
 }) {
   return (
@@ -98,9 +98,37 @@ function ScaleQuestion({
         ))}
       </div>
       <div className="scale-anchors"><span>{low}</span><span>{high}</span></div>
+      <UnknownChoice name={name} selected={value === "unknown"} onSelect={() => onChange("unknown")} />
       {error ? <p className="field-error" role="alert">{error}</p> : null}
     </fieldset>
   );
+}
+
+function UnknownChoice({
+  name,
+  selected,
+  onSelect,
+}: {
+  name: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <label className={`assessment-choice assessment-unknown-choice${selected ? " is-selected" : ""}`}>
+      <input type="radio" name={name} value="unknown" checked={selected} onChange={onSelect} />
+      <span>
+        <strong>Belum tahu</strong>
+        <small>Saya belum bisa memastikan jawaban ini.</small>
+      </span>
+    </label>
+  );
+}
+
+function requiredInput<T>(value: T | "unknown" | null | "") {
+  if (value === "unknown" || value === null || (typeof value === "string" && value === "")) {
+    return { status: "unknown" as const };
+  }
+  return { status: "known" as const, value };
 }
 
 export default function PurchaseAssessmentForm({
@@ -131,12 +159,12 @@ export default function PurchaseAssessmentForm({
       return;
     }
     const candidate = {
-      need: form.need === null ? { status: "unknown" as const } : { status: "known" as const, value: form.need },
-      urgency: form.urgency === "" ? { status: "unknown" as const } : { status: "known" as const, value: form.urgency },
-      alternatives: form.alternatives === null ? { status: "unknown" as const } : { status: "known" as const, value: form.alternatives },
-      utility: form.utility === null ? { status: "unknown" as const } : { status: "known" as const, value: form.utility },
-      impulseLevel: form.impulseLevel === null ? { status: "unknown" as const } : { status: "known" as const, value: form.impulseLevel },
-      socialPressure: form.socialPressure === null ? { status: "unknown" as const } : { status: "known" as const, value: form.socialPressure },
+      need: requiredInput(form.need),
+      urgency: requiredInput(form.urgency),
+      alternatives: requiredInput(form.alternatives),
+      utility: requiredInput(form.utility),
+      impulseLevel: requiredInput(form.impulseLevel),
+      socialPressure: requiredInput(form.socialPressure),
       ...(form.potentialRegret.trim()
         ? { potentialRegret: { status: "known" as const, value: form.potentialRegret.trim() } }
         : {}),
@@ -163,7 +191,7 @@ export default function PurchaseAssessmentForm({
         <h2 id="assessment-title">Sebelum membeli, apa yang sebenarnya kamu butuhkan?</h2>
         <p className="section-description">
           Tidak ada jawaban yang dinilai baik atau buruk. Jawab sesuai keadaanmu saat ini.
-          Jawaban ini menilai pertimbangan pembelian, bukan kemampuan finansial.
+          Jika belum bisa memastikan, pilih “Belum tahu”. Jawaban ini menilai pertimbangan pembelian, bukan kemampuan finansial.
         </p>
       </div>
 
@@ -195,6 +223,7 @@ export default function PurchaseAssessmentForm({
                 <span><strong>{option.label}</strong><small>{option.detail}</small></span>
               </label>
             ))}
+            <UnknownChoice name="urgency" selected={form.urgency === "unknown"} onSelect={() => update("urgency", "unknown")} />
           </div>
           {errors.urgency ? <p className="field-error" role="alert">{errors.urgency}</p> : null}
         </fieldset>
@@ -237,6 +266,7 @@ export default function PurchaseAssessmentForm({
                 <span><strong>{option.value}. {option.label}</strong><small>{option.detail}</small></span>
               </label>
             ))}
+            <UnknownChoice name="impulseLevel" selected={form.impulseLevel === "unknown"} onSelect={() => update("impulseLevel", "unknown")} />
           </div>
           {errors.impulseLevel ? <p className="field-error" role="alert">{errors.impulseLevel}</p> : null}
         </fieldset>
@@ -252,6 +282,10 @@ export default function PurchaseAssessmentForm({
             <label className={`binary-option${form.socialPressure === true ? " is-selected" : ""}`}>
               <input type="radio" name="socialPressure" checked={form.socialPressure === true} onChange={() => update("socialPressure", true)} />
               <span>Ada</span>
+            </label>
+            <label className={`binary-option${form.socialPressure === "unknown" ? " is-selected" : ""}`}>
+              <input type="radio" name="socialPressure" value="unknown" checked={form.socialPressure === "unknown"} onChange={() => update("socialPressure", "unknown")} />
+              <span>Belum tahu</span>
             </label>
           </div>
           {errors.socialPressure ? <p className="field-error" role="alert">{errors.socialPressure}</p> : null}
@@ -270,7 +304,7 @@ export default function PurchaseAssessmentForm({
         </div>
 
         {Object.values(errors).some(Boolean) ? (
-          <p className="form-error-summary" role="alert">Lengkapi semua pertanyaan wajib. Jika belum dapat menjawab, sistem tidak akan mengarang jawaban untukmu.</p>
+          <p className="form-error-summary" role="alert">Pilih jawaban atau tandai “Belum tahu” pada setiap pertanyaan wajib. Data yang belum diketahui tidak akan diberi nilai netral atau dianggap sebagai jawaban tertentu.</p>
         ) : null}
 
         <div className="assessment-actions">

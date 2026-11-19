@@ -4,7 +4,7 @@
 
 THINK TWICE. is a **Personal Financial Decision Companion** that helps people evaluate not only whether they can afford a purchase, but whether the purchase makes sense in the first place.
 
-This repository contains the brand system, product specifications, architecture decisions, security and privacy guidance, quality standards, and project governance for the product.
+This repository contains the THINK TWICE. web application, deterministic TypeScript domain engine, brand system, product specifications, architecture decisions, security and privacy guidance, quality standards, and project governance.
 
 ## Documentation
 
@@ -30,6 +30,11 @@ This repository contains the brand system, product specifications, architecture 
 - [ADR-0001: Polyglot Architecture](docs/decisions/ADR-0001-polyglot-architecture.md) — technology choices by responsibility.
 - [ADR-0002: Local-First V1 Data](docs/decisions/ADR-0002-v1-local-first-data.md) — anonymous V1 persistence and privacy trade-offs.
 
+- [Decision Records Index](docs/decisions/README.md) — chronological product and architecture decisions.
+- [ADR-0003: Confirmed Zero and Null Financial Inputs](docs/decisions/ADR-0003-confirmed-zero-and-null-financial-inputs.md) — explicit financial input states and explanation requirements.
+- [ADR-0004: Derive Cash-Purchase Upfront Amount](docs/decisions/ADR-0004-derive-cash-upfront.md) — cash upfront is derived from purchase price and fees.
+- [ADR-0005: Protected-Savings Opt-In](docs/decisions/ADR-0005-protected-savings-opt-in.md) — explicit designation and disclosure for protected funds.
+
 ### Security, privacy, and quality
 
 - [Privacy & Data Handling](docs/security/PRIVACY_AND_DATA_HANDLING.md) — collection, storage, retention, deletion, and sharing rules.
@@ -49,6 +54,23 @@ This repository contains the brand system, product specifications, architecture 
 - [Changelog](CHANGELOG.md) — notable project changes.
 - [Sponsorship Policy](docs/community/SPONSORSHIP.md) — sponsorship principles, transparency, and recognition.
 - [Sponsor Acknowledgements](SPONSORS.md) — supporters acknowledged with their permission.
+
+## Repository structure
+
+```text
+.github/                  GitHub workflow and contribution templates
+docs/                     Product, brand, architecture, security, and quality docs
+src/
+  app/                    Next.js routes, layout, and global styles
+  domain/                 Pure TypeScript contracts and decision engine
+  features/
+    purchase/
+      components/         Purchase intake and behavioral assessment UI
+tests/
+  domain/                 Domain and decision-engine tests
+```
+
+Keep route entrypoints thin, feature UI inside its feature folder, and deterministic business rules inside `src/domain/`. Add directories only when they contain real files.
 
 ## Core product architecture
 
@@ -72,7 +94,7 @@ Sponsorship is voluntary. It does not buy influence over product decisions, fina
 
 ## Project status
 
-This is currently a documentation-led repository. The documents describe the approved product and target architecture; they do not prove that an application, API, test suite, deployment, security audit, or production service exists. See [TASKS.md](TASKS.md) for the current handoff and unresolved release blockers.
+The repository now includes a Next.js application scaffold, a deterministic TypeScript domain engine, and initial purchase-intake and Purchase Decision Assessment screens. The current UI keeps data in page memory only. Financial Reality Check, protected-savings disclosure UI, Decision Intelligence result presentation, local history, and production deployment are not yet complete. See [TASKS.md](TASKS.md) for the validated state, current handoff, and remaining work.
 
 ## Official brand identity
 

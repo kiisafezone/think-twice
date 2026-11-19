@@ -1,4 +1,4 @@
-# ADR-0005: Derive Cash-Purchase Upfront Amount
+# ADR-0004: Derive Cash-Purchase Upfront Amount
 
 - Status: Accepted
 - Date: 2026-11-19

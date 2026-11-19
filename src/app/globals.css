@@ -602,3 +602,18 @@ input:focus-visible, select:focus-visible {
   outline: 2px solid var(--forest);
   outline-offset: 3px;
 }
+
+
+/* Explicit unknown answers in Purchase Decision Assessment */
+.assessment-unknown-choice {
+  max-width: 340px;
+  margin-top: 12px;
+}
+.assessment-unknown-fields {
+  margin: 10px 0 16px;
+  padding-left: 20px;
+  color: #626961;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.assessment-unknown-fields strong { color: var(--obsidian); }

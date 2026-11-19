@@ -2,21 +2,14 @@
 
 ## Last Session Handoff
 
-- Last Agent Used: ChatGPT
-- Completed: Product owner validated commit `10a3c4d` on Termux: typecheck passed, 11 files / 277 tests passed, and the Next.js 16.4.6 Webpack production build passed. The Vite native-config ESM warning remains non-blocking. The affordability score granularity reconciliation was committed as documentation-only changes (`3a9ec7c`, `3627e6e`, `f442a2e`, `15744b5`).
-- Completed this session: Reconciled unreachable affordability examples 34/59/79 to reachable boundary pairs 30/35, 55/60, and 75/80 across `SPEC.md`, `docs/product/DECISION_ENGINE.md`, and `docs/quality/TEST_STRATEGY.md`, without changing scoring rules. Added the first Phase 3 purchase-details intake screen with Zod validation, explicit unknown states, required explicit payment-pattern selection, cash/financed branches, monthly installment disclosure, and an in-memory validated summary (latest UI correction `be0d701`).
-- Current Bug / Blocker: No known scoring blocker. The purchase-details intake UI has been authored on `main` but has not yet been validated on Termux. The current screen is intentionally limited to purchase details; it does not yet advance into Purchase Decision Assessment or Financial Reality Check. Protected-savings visible disclosure and separate rendered assessment results remain future Phase 3 requirements. Broader payment-instrument mappings and non-monthly schedules remain unsupported/out of scope for the V1 engine input unless explicitly approved.
-- Remaining unresolved product/contract items (do not resolve by convenience):
-  1. Broader payment-instrument mappings `savings`, `credit_card`, `pay_later`, `installment`, `loan`, and `mixed` to `cash` or `financed` remain undefined; V1 engine accepts only its existing `cash` / `financed` classification.
-  2. Non-monthly or irregular repayment schedules remain unsupported and are rejected.
-  3. Product confirmation is still needed for installment count >= 1, monthly installment >= 0, and text maximum lengths. Existing schema constraints are validation behavior, not newly approved scoring rules.
-  4. Optional work-hours cost and utility-per-use metrics are not required for V1 verdict calculation; omit until source inputs and UI are approved.
-  5. Persistence fields `id` and `createdAt` remain storage-layer concerns, excluded from engine input.
-  6. Monthly period only; no period normalization. Inputs must remain explicit monthly amounts.
-- Next Exact Step: Product owner pulls the current `main` and runs `npm run typecheck && npm run test && npm run build` on Termux. If all pass, implement the Purchase Decision Assessment as the next wizard step, preserving the validated purchase details in React state. Continue on `main`; no CI, deployment configuration, FastAPI, PostgreSQL, optional metrics, payment-instrument mappings, or new dependencies.
-- Tests Run: The existing domain suite was last validated by the product owner at `10a3c4d` (typecheck passed; 11 files / 277 tests passed; Next.js 16.4.6 Webpack production build passed). The new UI has not yet been run through typecheck, tests, or production build; validation is pending.
-- Files Changed this session: `src/components/purchase-intake.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `src/app/layout.tsx`, and `TASKS.md`.
-- Implementation Status: Domain engine and expanded tests remain validated at `10a3c4d` (277 tests). Purchase-details intake is implemented but awaits product-owner Termux validation. The 34/59/79 examples were replaced with reachable boundary pairs 30/35, 55/60, and 75/80; formula and verdict thresholds are unchanged. Optional derived metrics remain out of scope.
+- Last Agent Used: ChatGPT (GitHub direct edits on `main`).
+- Last Product-Owner Validation: Commit `6316dc2` passed `npm run typecheck`, 277/277 Vitest tests, and `npm run build` on Termux. The Vite native-config ESM warning remained non-blocking.
+- Completed This Session: Added explicit “Belum tahu” options to every required Purchase Decision Assessment question. Unanswered questions still block submission; explicitly unknown answers are stored as `{ status: "unknown" }`. The confirmation state explains unavailable Rationality dimensions and undetermined impulse friction without partial or neutral-default scores. Restructured feature UI under `src/features/purchase/components/`, kept pure domain logic in `src/domain/`, removed empty placeholders and duplicate community/ADR files, corrected ADR numbering, and added repository/decision-record navigation.
+- Current Blocker: These latest UI and repository-structure changes have not yet been validated on Termux. No component-testing dependency is installed; existing automated tests remain domain-level. Financial Reality Check, protected-savings disclosure UI, rendered Decision Intelligence results, and local history remain unimplemented.
+- Remaining Unresolved Product/Contract Items: Broader payment-instrument mappings remain undefined; non-monthly schedules remain unsupported; installment and text constraints still require product confirmation; optional work-hours and utility-per-use metrics remain out of scope; persistence metadata remains a storage-layer concern.
+- Next Exact Step: Pull `main` in Termux and run `npm run typecheck && npm run test && npm run build`. Fix only reported failures. After validation, continue with the separate Financial Reality Check, including the approved protected-savings disclosure. Do not change unresolved mappings, scoring rules, dependencies, or service architecture without approval.
+- Tests Run This Session: No tests run after the latest UI and structure changes. The prior baseline at `6316dc2` passed typecheck, 277/277 tests, and production build on Termux.
+- Files Changed This Session: `src/features/purchase/components/purchase-assessment-form.tsx`, `src/features/purchase/components/purchase-intake.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `README.md`, `AGENTS.md`, `TASKS.md`, `docs/decisions/README.md`, and ADR filenames/content. Removed duplicate policy files and obsolete `.gitkeep` placeholders.
 
 ## Product Priorities
 
@@ -35,7 +28,7 @@
 - A known Hard Pass condition wins even if affordability score is null. A known Financially Risky condition wins over missing data but never over Hard Pass.
 - Affordability starts at 100 and subtracts P_cash, P_m, and P_f with a floor of zero. Cash-impact and monthly-burden bands and penalties are specified in both scoring documents.
 - Monthly free cash is numeric only when net income and every expense component are explicitly known; unknown income or expenses make it null, never zero. For a new financed installment with confirmed free cash exactly zero, P_m is 60 and P_f is 30. With P_cash = 0, affordability is 10; any positive P_cash makes it lower. Either way, affordability is below 35 and the verdict is Do Not Buy; no exemption applies. For negative free cash, P_m is 60 and P_f is 40, with the separate negative-free-cash Hard Pass rule. For null free cash, financed affordability is null and the outcome is Wait & Reassess unless a higher-priority financial condition is provable.
-- Available cash excludes emergency, earmarked, and protected savings by default. Opt-in requires an exact designation no greater than the known protected balance and an affirmative disclosure acknowledgement (ADR-0004).
+- Available cash excludes emergency, earmarked, and protected savings by default. Opt-in requires an exact designation no greater than the known protected balance and an affirmative disclosure acknowledgement (ADR-0005).
 - Ratio bands use integer cross-multiplication and safe exact-integer intermediate arithmetic; no float or division for band classification.
 - Rationality uses integer dimension scores and integer weights 30/15/15/25/15, with the approved integer formula and half-up adjustment.
 - The two low-urgency bands are merged into one neutral answer, "Can wait one month or longer", scored 50.
@@ -76,10 +69,10 @@
 - [x] Author typed purchase, financial-profile, assessment, completeness, and decision-result contracts. (Authored; typecheck, tests, and build not yet run. Output shapes in `results.ts` are provisional.)
 - [x] Author contract tests for input states, money, payment plans, assessment input, financial profile, outcomes, and validation. (Authored; not yet run. These are contract tests, not scoring tests.)
 - [x] Run and verify `npm run typecheck`, `npm run test`, and `npm run build` for the contracts; product owner validated all three on Termux (132 tests passed, production build passed).
-- [x] Resolve cash `U` versus `P + F`: cash derives `U = P + F`; financed retains explicit `U` (ADR-0003). Other unresolved items remain explicitly documented in the handoff.
+- [x] Resolve cash `U` versus `P + F`: cash derives `U = P + F`; financed retains explicit `U` (ADR-0004). Other unresolved items remain explicitly documented in the handoff.
 - [x] Implement checked integer-Rupiah addition, including derived cash upfront `U = P + F`, and safe exact-integer intermediate arithmetic. (Validated by product owner on Termux.)
 - [x] Implement cash-impact and monthly-burden penalties with BigInt cross-multiplication only. (Validated by product owner on Termux.)
-- [x] Enforce protected-savings opt-in cap, disclosure acknowledgement, and checked effective available cash (ADR-0004); UI disclosure remains Phase 3.
+- [x] Enforce protected-savings opt-in cap, disclosure acknowledgement, and checked effective available cash (ADR-0005); UI disclosure remains Phase 3.
 - [x] Implement integer rationality dimension mappings and weighted formula. (Validated by product owner on Termux.)
 - [x] Implement required social-pressure input and impulse-friction rules as pure domain helpers. (Validated by product owner on Termux.)
 - [x] Implement strict null behavior, confirmed-zero handling, and display-only completeness details in the domain engine.
@@ -101,7 +94,7 @@
 - [x] Explain the purpose of the behavioral questions in the assessment UI.
 - [ ] Add explicit protected-savings opt-in with visible amount and consequence.
 - [x] Add the separate social-pressure question and optional potential-regret reflection prompt; potential regret remains qualitative and has no score/verdict effect.
-- [ ] Handle incomplete data without fabricating scores or certainty.
+- [x] Handle incomplete Purchase Decision Assessment data with explicit unknown states; never fabricate partial or neutral-default scores.
 - [ ] Meet accessibility requirements in `docs/quality/ACCESSIBILITY.md`.
 
 ### Phase 4 — Decision Results and Local History
@@ -141,15 +134,6 @@
 - UI follows `docs/brand/STYLE_GUIDE.md`.
 - Privacy, security, and accessibility requirements are respected.
 - `TASKS.md` contains an accurate handoff.
-
-## Current Handoff — 2026-11-19
-
-- Last Agent Used: ChatGPT (GitHub direct edits on `main`).
-- Completed: Added the first Purchase Decision Assessment UI slice and connected it below the validated purchase summary. Behavioral questions remain distinct from financial assessment. Potential regret is optional and qualitative. Data remains in React memory only; nothing is sent to a server or persisted.
-- Current Bug / Blocker: UI changes have not yet been validated by the product owner. The assessment currently requires an answer for every scored dimension and social pressure; explicit unknown-answer controls and incomplete-data continuation are not implemented yet. Financial Reality Check and protected-savings disclosure remain unbuilt.
-- Next Exact Step: Pull `main` in Termux and run `npm run typecheck && npm run test && npm run build`. Fix only reported failures. After validation, add explicit unknown-answer controls and completeness handling before starting Financial Reality Check.
-- Tests Run: None after the UI commits. The product owner previously validated the pre-UI baseline at `2f69a11` with typecheck passed, 277/277 tests passed, and production build passed.
-- Files Changed: `src/components/purchase-assessment-form.tsx` (new), `src/components/purchase-intake.tsx`, `src/app/globals.css`, `TASKS.md`.
 
 ## Multi-Agent Handoff Protocol
 

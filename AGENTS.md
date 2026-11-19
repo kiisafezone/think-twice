@@ -60,6 +60,15 @@ Choose technologies by responsibility. Do not force the product into one languag
 - Keep pure domain logic independent of UI, network, and persistence.
 - Never invent scoring coefficients, answer mappings, thresholds, or rounding rules.
 
+## Repository Layout
+
+- Keep Next.js route entrypoints, layouts, and global styles in `src/app/`.
+- Keep feature-specific UI in `src/features/<feature>/components/`; do not accumulate product components in a generic root components folder.
+- Keep pure contracts, calculations, scoring, and decision logic in `src/domain/`. Domain code must not import React, Next.js, browser APIs, storage, or network clients.
+- Keep tests grouped by domain or feature under `tests/`, mirroring the responsibility they verify.
+- Keep project-wide manifests and tool configuration at the repository root; keep product documentation under `docs/`.
+- Do not commit empty `.gitkeep` placeholders. Create a directory when its first real file is ready.
+
 ## Product and UX Guardrails
 
 - Never remove or dilute Purchase Decision Assessment.
