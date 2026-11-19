@@ -5,7 +5,7 @@ import {
   purchaseAssessmentInputSchema,
   type PurchaseAssessmentInput,
   type UrgencyAnswer,
-} from "../domain/purchase-assessment";
+} from "../../../domain/purchase-assessment";
 
 type ScaleAnswer = 1 | 2 | 3 | 4 | 5;
 
