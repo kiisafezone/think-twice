@@ -96,11 +96,11 @@
 ### Phase 3 — Assessment Experience
 
 - [x] Build the purchase-details intake step with schema validation, explicit unknown states, and an in-memory summary; continue the multi-step assessment flow in subsequent work.
-- [ ] Build Purchase Decision Assessment as a first-class experience.
+- [x] Build the first Purchase Decision Assessment UI slice with required need, urgency, alternatives, utility, impulse, and social-pressure questions; keep it separate from financial assessment.
 - [ ] Build Financial Reality Check separately.
-- [ ] Explain why each financial and behavioral input is requested.
+- [x] Explain the purpose of the behavioral questions in the assessment UI.
 - [ ] Add explicit protected-savings opt-in with visible amount and consequence.
-- [ ] Add social-pressure question and separate potential-regret reflection prompt.
+- [x] Add the separate social-pressure question and optional potential-regret reflection prompt; potential regret remains qualitative and has no score/verdict effect.
 - [ ] Handle incomplete data without fabricating scores or certainty.
 - [ ] Meet accessibility requirements in `docs/quality/ACCESSIBILITY.md`.
 
@@ -141,6 +141,15 @@
 - UI follows `docs/brand/STYLE_GUIDE.md`.
 - Privacy, security, and accessibility requirements are respected.
 - `TASKS.md` contains an accurate handoff.
+
+## Current Handoff — 2026-11-19
+
+- Last Agent Used: ChatGPT (GitHub direct edits on `main`).
+- Completed: Added the first Purchase Decision Assessment UI slice and connected it below the validated purchase summary. Behavioral questions remain distinct from financial assessment. Potential regret is optional and qualitative. Data remains in React memory only; nothing is sent to a server or persisted.
+- Current Bug / Blocker: UI changes have not yet been validated by the product owner. The assessment currently requires an answer for every scored dimension and social pressure; explicit unknown-answer controls and incomplete-data continuation are not implemented yet. Financial Reality Check and protected-savings disclosure remain unbuilt.
+- Next Exact Step: Pull `main` in Termux and run `npm run typecheck && npm run test && npm run build`. Fix only reported failures. After validation, add explicit unknown-answer controls and completeness handling before starting Financial Reality Check.
+- Tests Run: None after the UI commits. The product owner previously validated the pre-UI baseline at `2f69a11` with typecheck passed, 277/277 tests passed, and production build passed.
+- Files Changed: `src/components/purchase-assessment-form.tsx` (new), `src/components/purchase-intake.tsx`, `src/app/globals.css`, `TASKS.md`.
 
 ## Multi-Agent Handoff Protocol
 
