@@ -372,7 +372,7 @@ describe("canonical decision engine", () => {
       input.purchase.purchasePrice = known(money(9_720_000));
       return input;
     }],
-    ["do_not_buy", "financial.new_repayment_with_negative_free_cash", (input: DecisionInput) => {
+    ["do_not_buy", "financial.affordability_below_35", (input: DecisionInput) => {
       const financed = financedInput();
       financed.financialProfile.netMonthlyIncome = known(money(3_000_000));
       financed.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
