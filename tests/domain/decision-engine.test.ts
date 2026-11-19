@@ -1,14 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { evaluateDecision } from "@/domain";
+import { evaluateDecision, rupiahSchema, type DecisionInput } from "@/domain";
 import { known, unknown, validCashDecisionInput, validFinancedDecisionInput } from "./fixtures";
 
-function cashInput() {
+const money = (value: number) => rupiahSchema.parse(value);
+
+function cashInput(): DecisionInput {
   const input = validCashDecisionInput();
-  input.purchase.purchasePrice = known(2_000_000);
+  input.purchase.purchasePrice = known(money(2_000_000));
   return input;
 }
 
-function financedInput() {
+function financedInput(): DecisionInput {
   return validFinancedDecisionInput();
 }
 
@@ -26,7 +28,7 @@ describe("canonical decision engine", () => {
 
   it("returns Buy with Caution at the 80-percent cash-use boundary", () => {
     const input = cashInput();
-    input.purchase.purchasePrice = known(9_600_000);
+    input.purchase.purchasePrice = known(money(9_600_000));
     const result = evaluateDecision(input);
     expect(result.affordability.score).toBe(70);
     expect(result.verdict.outcome).toBe("buy_with_caution");
@@ -34,7 +36,7 @@ describe("canonical decision engine", () => {
 
   it("returns Financially Risky above 80-percent cash use", () => {
     const input = cashInput();
-    input.purchase.purchasePrice = known(9_720_000);
+    input.purchase.purchasePrice = known(money(9_720_000));
     const result = evaluateDecision(input);
     expect(result.affordability.score).toBe(60);
     expect(result.verdict.outcome).toBe("financially_risky");
@@ -43,8 +45,8 @@ describe("canonical decision engine", () => {
 
   it("gives Financially Risky precedence over low Rationality", () => {
     const input = financedInput();
-    input.purchase.paymentPlan.upfrontPayment = known(6_000_000);
-    input.purchase.paymentPlan.installment.monthlyInstallment = known(2_100_000);
+    input.purchase.paymentPlan.upfrontPayment = known(money(6_000_000));
+    input.purchase.paymentPlan.installment.monthlyInstallment = known(money(2_100_000));
     Object.assign(input.purchaseAssessment, {
       need: known(1),
       urgency: known("can_wait_one_month_or_longer"),
@@ -92,8 +94,8 @@ describe("canonical decision engine", () => {
 
   it("returns Do Not Buy for a new installment when monthly free cash is negative", () => {
     const input = financedInput();
-    input.financialProfile.netMonthlyIncome = known(3_000_000);
-    input.financialProfile.essentialMonthlyExpenses = known(4_000_000);
+    input.financialProfile.netMonthlyIncome = known(money(3_000_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
     const result = evaluateDecision(input);
     expect(result.verdict.outcome).toBe("do_not_buy");
     expect(result.verdictReasons.some((reason) => reason.ruleId === "financial.new_repayment_with_negative_free_cash")).toBe(true);
@@ -101,9 +103,9 @@ describe("canonical decision engine", () => {
 
   it("returns Do Not Buy for a financed purchase with confirmed zero monthly free cash", () => {
     const input = financedInput();
-    input.financialProfile.netMonthlyIncome = known(4_500_000);
-    input.financialProfile.essentialMonthlyExpenses = known(4_000_000);
-    input.financialProfile.otherCommittedMonthlyExpenses = known(500_000);
+    input.financialProfile.netMonthlyIncome = known(money(4_500_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
+    input.financialProfile.otherCommittedMonthlyExpenses = known(money(500_000));
     const result = evaluateDecision(input);
     expect(result.affordability.score).toBe(10);
     expect(result.verdict.outcome).toBe("do_not_buy");
@@ -111,7 +113,7 @@ describe("canonical decision engine", () => {
 
   it("preserves known upfront-exceeds-cash Hard Pass when another required input is unknown", () => {
     const input = financedInput();
-    input.purchase.paymentPlan.upfrontPayment = known(13_000_000);
+    input.purchase.paymentPlan.upfrontPayment = known(money(13_000_000));
     Object.assign(input.financialProfile, { netMonthlyIncome: unknown });
     const result = evaluateDecision(input);
     expect(result.affordability.score).toBe(null);
@@ -141,8 +143,8 @@ describe("canonical decision engine", () => {
 
   it("does not apply the new-repayment Hard Pass to a cash purchase with negative free cash", () => {
     const input = cashInput();
-    input.financialProfile.netMonthlyIncome = known(3_000_000);
-    input.financialProfile.essentialMonthlyExpenses = known(4_000_000);
+    input.financialProfile.netMonthlyIncome = known(money(3_000_000));
+    input.financialProfile.essentialMonthlyExpenses = known(money(4_000_000));
     const result = evaluateDecision(input);
     expect(result.verdict.outcome).not.toBe("do_not_buy");
     expect(result.affordability.score).toBe(55);
