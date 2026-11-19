@@ -68,8 +68,14 @@ src/
       components/         Purchase intake and behavioral assessment UI
     financial/
       components/         Financial Reality Check and protected-savings UI
+    decision/
+      components/         Decision Intelligence result, sharing, and history UI
+      lib/                 Privacy-safe share-summary builder
+    history/
+      storage/             Replaceable local decision-history adapter
 tests/
   domain/                 Domain and decision-engine tests
+  features/               Local-history and share-summary tests
 ```
 
 Keep route entrypoints thin, feature UI inside its feature folder, and deterministic business rules inside `src/domain/`. Add directories only when they contain real files.
