@@ -23,6 +23,19 @@ The product keeps three connected systems distinct:
 
 **Purchase Decision Assessment remains a core product feature.** Financial calculations complement the assessment; they do not replace it.
 
+## Project status
+
+This repository currently maintains the product's brand, product direction, and development documentation. Application implementation, production deployment, and independent security certification should not be assumed unless explicitly documented.
+
+## Community and project governance
+
+- [Contributing](CONTRIBUTING.md) — contribution workflow and documentation standards.
+- [Security Policy](SECURITY.md) — responsible vulnerability reporting.
+- [Code of Conduct](CODE_OF_CONDUCT.md) — community expectations.
+- [Changelog](CHANGELOG.md) — notable project changes.
+
+Bug reports and feature proposals can be submitted through the repository's issue templates.
+
 ## Official brand identity
 
 - **Brand:** THINK TWICE.
