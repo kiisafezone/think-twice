@@ -36,7 +36,7 @@ Do not add a test dependency until the application scaffold is inspected and the
 - Unresolved or unavailable scores never produce Greenlight.
 - Reasons and missing-field identifiers match the rule that fired.
 
-Scoring tests must not be implemented against invented coefficients or answer scales. Those remain release blockers until explicitly approved and synchronized in SPEC.md and DECISION_ENGINE.md.
+Scoring coefficients, penalty bands, rationality weights and answer mappings, and verdict precedence are approved and synchronized in `SPEC.md` and `docs/product/DECISION_ENGINE.md` (see ADR-0003). Tests must use those documented values and must not invent or alter coefficients, scales, thresholds, or rounding rules. The "Required edge-case tests" section of `DECISION_ENGINE.md` is the authoritative edge-case inventory; the coverage list in this document adds layer-level requirements and must never be used to reduce or replace it. Any change to an approved value must be made in `SPEC.md` and `DECISION_ENGINE.md` first.
 
 ## Property and invariant tests
 
