@@ -377,7 +377,7 @@ This is the authoritative V1 edge-case test inventory. Implement and test every 
 6. Cash use above 100% produces Do Not Buy, not Financially Risky.
 7. Upfront exceeds available cash while affordability is null due to another missing field: Do Not Buy still wins.
 8. New installment with negative monthly free cash produces Do Not Buy; when inputs are known, the score calculation also applies `P_m = 60` and `P_f = 40`.
-9. New installment with confirmed zero monthly free cash applies `P_m = 60` and `P_f = 30`, producing affordability 10 and therefore Do Not Buy through the below-35 Hard Pass rule. No exemption applies. Zero is valid only when income and every expense component are known.
+9. New installment with confirmed zero monthly free cash applies `P_m = 60` and `P_f = 30`. When `P_cash = 0`, affordability is 10; if `P_cash` is also positive, the final score is lower. In either case the score is below 35 and the verdict is Do Not Buy. No exemption applies. Zero is valid only when income and every expense component are known.
 10. Missing net monthly income makes monthly free cash null, never zero; a financed purchase has null affordability and returns Wait & Reassess unless a Hard Pass or Financially Risky condition is independently provable.
 11. Missing essential monthly expenses makes monthly free cash null, never zero; a financed purchase has null affordability and returns Wait & Reassess unless a higher-priority condition is provable.
 12. Missing existing monthly debt payments makes monthly free cash null, never zero; do not silently substitute zero.
