@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 import { purchaseInputSchema, type PurchaseInput } from "../domain/purchase";
+import PurchaseAssessmentForm from "./purchase-assessment-form";
+import type { PurchaseAssessmentInput } from "../domain/purchase-assessment";
 
 type AmountField = {
   value: string;
@@ -117,6 +119,7 @@ export default function PurchaseIntake() {
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
   const [validatedPurchase, setValidatedPurchase] = useState<PurchaseInput | null>(null);
+  const [validatedAssessment, setValidatedAssessment] = useState<PurchaseAssessmentInput | null>(null);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -203,6 +206,7 @@ export default function PurchaseIntake() {
     setForm(initialForm);
     setErrors({});
     setValidatedPurchase(null);
+    setValidatedAssessment(null);
   }
 
   if (validatedPurchase) {
@@ -270,12 +274,20 @@ export default function PurchaseIntake() {
               ) : null}
             </dl>
           </div>
+          <PurchaseAssessmentForm onComplete={setValidatedAssessment} />
+          {validatedAssessment ? (
+            <div className="assessment-complete" role="status">
+              <strong>Purchase Decision Assessment tersimpan.</strong>
+              <p>Jawaban refleksi sudah divalidasi. Belum ada rekomendasi akhir; kondisi keuangan masih perlu dinilai secara terpisah.</p>
+              <button className="button-secondary" type="button" onClick={() => setValidatedAssessment(null)}>Ubah jawaban penilaian</button>
+            </div>
+          ) : null}
           <p className="privacy-note">
             <strong>Privasi:</strong> detail ini tidak dikirim ke server dan akan hilang
             ketika halaman dimuat ulang atau ditutup.
           </p>
           <div className="confirmation-actions">
-            <button className="button-primary" type="button" onClick={() => setValidatedPurchase(null)}>
+            <button className="button-primary" type="button" onClick={() => { setValidatedPurchase(null); setValidatedAssessment(null); }}>
               Ubah detail
             </button>
             <button className="button-secondary" type="button" onClick={resetForm}>
