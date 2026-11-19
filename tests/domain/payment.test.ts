@@ -8,8 +8,13 @@ import {
 } from "./fixtures";
 
 describe("payment plan", () => {
-  it("accepts a cash plan", () => {
+  it("accepts a cash plan without a separately entered upfront amount", () => {
     expect(validateWith(paymentPlanSchema, validCashPlan()).ok).toBe(true);
+  });
+
+  it("rejects a separately supplied upfront amount for a cash plan", () => {
+    const plan = { ...validCashPlan(), upfrontPayment: known(10_000_000) };
+    expect(validateWith(paymentPlanSchema, plan).ok).toBe(false);
   });
 
   it("accepts a financed plan with monthly installments", () => {
