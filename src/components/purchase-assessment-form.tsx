@@ -118,6 +118,18 @@ export default function PurchaseAssessmentForm({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const unanswered = [
+      ["need", form.need],
+      ["urgency", form.urgency],
+      ["alternatives", form.alternatives],
+      ["utility", form.utility],
+      ["impulseLevel", form.impulseLevel],
+      ["socialPressure", form.socialPressure],
+    ].filter((entry) => entry[1] === null || entry[1] === "");
+    if (unanswered.length > 0) {
+      setErrors(Object.fromEntries(unanswered.map((entry) => [entry[0] as string, "Pilih jawaban untuk melanjutkan."] )));
+      return;
+    }
     const candidate = {
       need: form.need === null ? { status: "unknown" as const } : { status: "known" as const, value: form.need },
       urgency: form.urgency === "" ? { status: "unknown" as const } : { status: "known" as const, value: form.urgency },
