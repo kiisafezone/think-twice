@@ -2,14 +2,14 @@
 
 ## Last Session Handoff
 
-- Last Agent Used: ChatGPT (GitHub direct edits on \`main\`).
-- Last Product-Owner Validation: Commit \`3fdfeba\` passed \`npm run typecheck\`, 277/277 Vitest tests across 11 files, and \`npm run build\` on Termux. The Vite native-config ESM warning remained non-blocking.
-- Completed This Session: Built the first separate Financial Reality Check UI under \`src/features/financial/components/\`. It collects net monthly income, essential expenses, existing debt payments, other committed expenses, and available cash with explicit unknown states. Added protected-savings status and an opt-in flow that requires a known balance, an exact capped designation, a visible consequence disclosure, and affirmative acknowledgement. The validated summary shows monthly free cash and effective available cash separately. Purchase, behavioral, and financial inputs remain in page memory only; no verdict or affordability score is shown at this stage.
-- Current Blocker: The Financial Reality Check UI and its integration have not yet been validated on Termux. No component-testing dependency is installed; automated tests remain domain-level. Decision Intelligence result presentation, local history, and production deployment remain unimplemented.
-- Remaining Unresolved Product/Contract Items: Broader payment-instrument mappings remain undefined; non-monthly schedules remain unsupported; installment and text constraints still require product confirmation; optional work-hours and utility-per-use metrics remain out of scope; persistence metadata remains a storage-layer concern.
-- Next Exact Step: Pull \`main\` in Termux and run \`npm run typecheck && npm run test && npm run build\`. Fix only reported failures. After validation, review Financial Reality Check usability and accessibility, then connect the three validated inputs to the existing deterministic decision engine and build the separate Decision Intelligence result presentation. Do not change unresolved mappings, scoring rules, dependencies, or service architecture without approval.
-- Tests Run This Session: No tests run after the Financial Reality Check UI changes. The prior baseline at \`3fdfeba\` passed typecheck, 277/277 tests, and production build on Termux.
-- Files Changed This Session: \`src/features/financial/components/financial-reality-check-form.tsx\`, \`src/features/purchase/components/purchase-intake.tsx\`, \`src/app/globals.css\`, \`README.md\`, \`TASKS.md\`, and \`CHANGELOG.md\`.
+- Last Agent Used: ChatGPT (GitHub direct edits on main).
+- Last Product-Owner Validation: Commit ac3bd45 passed npm run typecheck, 277/277 Vitest tests across 11 files, and npm run build on Termux. The Vite native-config ESM warning remained non-blocking. This validation predates the Decision Intelligence, history, and sharing changes listed below.
+- Completed This Session: Connected the three validated assessment inputs to the existing deterministic evaluateDecision() engine and added the Decision Intelligence result experience. It displays the five canonical outcomes, separate Affordability and Rationality results, matched reasons, impulse-friction status, missing fields and their purpose, assumptions, and next steps. Added an opt-in local history adapter that stores only a limited result summary (not raw financial amounts or raw assessment answers), plus review, individual deletion, and clear-all controls. Added a preview-first share summary containing only the outcome, decisive reason, and next steps; it excludes item identity, scores, raw answers, and financial inputs. Added storage and share-privacy tests and reconciled the relevant product/privacy documentation.
+- Current Blocker: All changes after ac3bd45 are committed to main but have not yet been run through Termux typecheck, Vitest, or production build. Manual browser, keyboard, screen-reader, mobile-reflow, share-sheet, clipboard, and localStorage behavior checks also remain. Do not call V1 complete until these checks and the release checklist are addressed.
+- Remaining Unresolved Product/Contract Items: Broader payment-instrument mappings remain undefined; non-monthly schedules remain unsupported; installment and text constraints still require product confirmation; optional work-hours and utility-per-use metrics remain out of scope. Do not expand these items during V1 stabilization without product-owner approval.
+- Next Exact Step: In Termux, pull main with git pull --ff-only origin main, then run npm run typecheck && npm run test && npm run build. Fix only errors reproduced by those commands. After automated validation, manually exercise a cash purchase, a financed purchase, incomplete/unknown data, all five outcome paths where feasible, saving/reviewing/deleting history, share preview, native share or clipboard fallback, and keyboard/mobile accessibility. Then complete the release checklist.
+- Tests Run This Session: No commands were executed in a local project runtime. Added tests/features/local-decision-history.test.ts and tests/features/share-summary.test.ts; both are authored but unexecuted. The previous owner-validated baseline at ac3bd45 remains 277/277 tests.
+- Files Changed This Session: src/features/history/storage/local-decision-history.ts, src/features/decision/components/decision-result-panel.tsx, src/features/decision/lib/share-summary.ts, src/features/purchase/components/purchase-intake.tsx, src/app/globals.css, tests/features/local-decision-history.test.ts, tests/features/share-summary.test.ts, SPEC.md, README.md, TASKS.md, CHANGELOG.md, docs/security/PRIVACY_AND_DATA_HANDLING.md, and docs/product/USER_JOURNEYS.md.
 
 ## Product Priorities
 
@@ -95,23 +95,28 @@
 - [x] Add explicit protected-savings opt-in with visible amount, consequence disclosure, exact cap, and acknowledgement.
 - [x] Add the separate social-pressure question and optional potential-regret reflection prompt; potential regret remains qualitative and has no score/verdict effect.
 - [x] Handle incomplete Purchase Decision Assessment data with explicit unknown states; never fabricate partial or neutral-default scores.
-- [ ] Meet accessibility requirements in `docs/quality/ACCESSIBILITY.md`.
+- [ ] Complete manual accessibility verification against docs/quality/ACCESSIBILITY.md (keyboard, screen reader, focus, zoom/reflow, contrast, and small-screen use). Automated checks alone are not a compliance claim.
 
 ### Phase 4 — Decision Results and Local History
 
-- [ ] Build Decision Intelligence result card using canonical five-outcome labels.
-- [ ] Show Affordability and Rationality as separate results; never combine their scores.
-- [ ] Show completeness indicator with missing answers and why they matter.
-- [ ] Explain verdict, factors, assumptions, and next steps.
-- [ ] Add local history behind a replaceable storage abstraction.
-- [ ] Implement review and deletion controls.
-- [ ] Implement privacy-safe sharing with a preview and sensitive fields excluded by default.
+- [x] Connect the validated purchase, behavioral, and financial inputs to the existing deterministic evaluateDecision() engine.
+- [x] Build Decision Intelligence result presentation using the canonical five-outcome labels.
+- [x] Show Affordability and Rationality separately; never combine their scores.
+- [x] Show missing fields and why they matter; preserve unavailable/invalid states without partial scores.
+- [x] Explain matched verdict reasons, impulse-friction status, assumptions, and next steps.
+- [x] Add opt-in local history behind a replaceable localStorage abstraction; persist only a result summary, not raw financial inputs or raw answers.
+- [x] Implement saved-summary review, individual deletion, and clear-all controls.
+- [x] Implement preview-first sharing through the device share sheet or clipboard, excluding item identity, scores, and sensitive inputs by default.
+- [ ] Run new feature tests and the complete suite on Termux; current implementation is awaiting owner validation.
 
 ### Phase 5 — Quality and Future Services
 
-- [ ] Follow `docs/quality/TEST_STRATEGY.md`.
-- [ ] Review privacy and threat model before public release.
-- [ ] Complete release checklist in `docs/operations/RELEASE_CHECKLIST.md`.
+- [ ] Run the complete test strategy on the product-owner's Termux environment and resolve only reproduced failures.
+- [ ] Manually verify the full user journey, all relevant outcome/unknown-data paths, local history, and share handoff.
+- [ ] Complete keyboard, screen-reader, focus, contrast, zoom/reflow, reduced-motion, and mobile accessibility review.
+- [x] Reconcile privacy policy and user journeys with the implemented local-history and sharing data boundaries.
+- [ ] Review the threat model against the implemented browser-local storage and sharing behavior before public release.
+- [ ] Complete release checklist in docs/operations/RELEASE_CHECKLIST.md.
 - [ ] Introduce FastAPI/Python only for an approved, concrete server-side workload.
 - [ ] Introduce PostgreSQL only when persistent server-side storage is justified.
 - [ ] Add Pytest and cross-service contract tests if Python is introduced.
