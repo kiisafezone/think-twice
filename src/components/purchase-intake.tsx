@@ -26,7 +26,7 @@ const initialForm: FormState = {
   itemName: "",
   category: "",
   purchasePrice: { value: "", unknown: false },
-  additionalFees: { value: "0", unknown: false },
+  additionalFees: { value: "", unknown: false },
   financingClass: "cash",
   upfrontPayment: { value: "", unknown: false },
   monthlyInstallment: { value: "", unknown: false },
@@ -112,19 +112,6 @@ function AmountFieldInput({
   );
 }
 
-function readableField(path: string) {
-  const labels: Record<string, string> = {
-    itemName: "Nama barang atau layanan",
-    category: "Kategori",
-    purchasePrice: "Harga pembelian",
-    additionalFees: "Biaya tambahan",
-    upfrontPayment: "Dana awal",
-    monthlyInstallment: "Cicilan per bulan",
-    installmentCount: "Jumlah cicilan",
-    feeTreatment: "Perlakuan biaya pada cicilan",
-  };
-  return labels[path] ?? "Data pembelian";
-}
 
 export default function PurchaseIntake() {
   const [form, setForm] = useState<FormState>(initialForm);
@@ -326,7 +313,6 @@ export default function PurchaseIntake() {
             <input
               id="itemName"
               type="text"
-              maxLength={120}
               placeholder="Contoh: Laptop untuk bekerja"
               value={form.itemName}
               aria-invalid={Boolean(errors.itemName)}
@@ -340,7 +326,6 @@ export default function PurchaseIntake() {
             <input
               id="category"
               type="text"
-              maxLength={80}
               placeholder="Contoh: Elektronik"
               value={form.category}
               aria-invalid={Boolean(errors.category)}
