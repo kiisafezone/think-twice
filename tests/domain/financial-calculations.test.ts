@@ -355,3 +355,22 @@ describe("calculateAffordabilityScore", () => {
     });
   });
 });
+
+  it("preserves an invalid derived cash upfront amount", () => {
+    expect(
+      calculateAffordabilityScore({
+        financingClass: "cash",
+        upfront: {
+          status: "invalid",
+          reason: "unsafe_integer_overflow",
+        },
+        availableCash: known(money(1_000)),
+        monthlyFreeCash: { status: "known", value: signed(1_000) },
+      }),
+    ).toMatchObject({
+      status: "invalid",
+      score: null,
+      reason: "unsafe_integer_overflow",
+      hardPass: false,
+    });
+  });
