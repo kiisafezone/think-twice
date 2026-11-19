@@ -22,9 +22,11 @@ Do not collect bank passwords, PINs, OTPs, full card credentials, or banking log
 - No bank/e-wallet connection or automatic transaction import.
 - No third-party analytics SDK by default.
 - No server-side financial data store by default.
-- Optional local history uses a replaceable storage abstraction over browser localStorage.
+- Optional local history uses a replaceable storage abstraction over browser localStorage and is written only after an explicit Save action.
+- V1 history stores item name, category, timestamp, rule version, outcome, separate assessment scores/statuses, reasons, next steps, and missing-field explanations. It does not store raw financial amounts, the financial profile, or raw behavioral answers.
+- Users can review saved summaries, delete one record, or delete all records. Records remain until deleted or browser data is cleared; no automatic retention period is promised.
 - Explain that localStorage is browser-local but not encrypted secure storage; other users or software with access to the browser profile/device may access it.
-- Provide a clear way to review and delete local history before release.
+- If storage is unavailable or corrupt, do not claim success or overwrite the existing content.
 - Do not store more raw answers than needed to reproduce or explain a saved result.
 
 ## Purpose limitation
@@ -48,8 +50,9 @@ V1 should default to no external transfer.
 ## Sharing
 
 - Sharing is opt-in and initiated by the user.
-- Default share output excludes income, balances, debt-provider details, due dates, and raw assessment answers.
-- Preview the exact content before sharing.
+- Default share output contains only the canonical outcome, decisive reason, and next steps. It excludes item identity, category, scores, raw answers, income, expenses, balances, debt-provider details, installment amounts, and due dates.
+- Preview the exact content before sharing; the user initiates the device share sheet or clipboard handoff.
+- V1 does not create public share URLs or transmit result data to a THINK TWICE. server.
 - Never put sensitive values into URL query strings or public share links by default.
 - Do not claim that a share is private after the user sends it to another service.
 
@@ -59,7 +62,7 @@ Never log raw financial inputs, assessment answers, credentials, access tokens, 
 
 ## User rights and controls
 
-Before public release, provide clear in-product controls and policy language for viewing, correcting, exporting, and deleting locally stored data. Explain limitations of browser storage and that clearing browser data may remove history.
+V1 provides in-product review and deletion for locally saved decision summaries. Editing or exporting history is not part of the current V1 scope; users can delete a record and create a new assessment. Explain limitations of browser storage and that clearing browser data may remove history.
 
 ## Future integrations
 
@@ -70,7 +73,8 @@ Any account, cloud sync, bank connection, analytics provider, AI provider, or re
 - [ ] Every collected field has a documented purpose.
 - [ ] No credential collection.
 - [ ] No external transfer without disclosure and approval.
-- [ ] Local storage limitations are visible.
-- [ ] Delete and export behavior is tested.
-- [ ] Share preview excludes sensitive data by default.
+- [x] Local storage limitations are disclosed in the history UI.
+- [x] Individual and all-history deletion controls are implemented; storage adapter tests cover deletion and failure behavior.
+- [x] Share preview excludes sensitive data by default and is tested.
+- [ ] Product owner manually verifies local history and share behavior on target browsers.
 - [ ] Logs and crash reports contain no financial payloads.
