@@ -38,14 +38,27 @@ jobs:
 
       - name: Run Custom Bug & Unfinished Scanner
         id: scanner
+        shell: bash
         run: |
+          set -o pipefail
+          FAIL_FLAG=""
+          if [ "${{ inputs.fail_on_findings }}" == "true" ]; then
+            FAIL_FLAG="--fail"
+          fi
+
           echo "## 🔍 Hasil Scan Bugs & Unfinished Features" >> $GITHUB_STEP_SUMMARY
           echo '```text' >> $GITHUB_STEP_SUMMARY
-          node scripts/audit-bugs.mjs | tee audit-report.txt >> $GITHUB_STEP_SUMMARY
+
+          set +e
+          node scripts/audit-bugs.mjs $FAIL_FLAG 2>&1 | tee audit-report.txt >> $GITHUB_STEP_SUMMARY
+          EXIT_CODE=$?
+          set -e
+
           echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $EXIT_CODE
 
       - name: Run TypeScript Type & Unused Check
-        if: ${{ inputs.audit_mode == 'full' }}
+        if: ${{ always() && inputs.audit_mode == 'full' }}
         continue-on-error: true
         run: |
           echo "## 📘 TypeScript Compiler Check" >> $GITHUB_STEP_SUMMARY
@@ -54,7 +67,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Run Knip (Dead Files, Exports & CSS Check)
-        if: ${{ inputs.audit_mode == 'full' }}
+        if: ${{ always() && inputs.audit_mode == 'full' }}
         continue-on-error: true
         run: |
           echo "## 🧹 Knip Dead Code & Orphan Files" >> $GITHUB_STEP_SUMMARY
@@ -63,6 +76,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Audit Report Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: audit-report
