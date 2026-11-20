@@ -1,14 +1,12 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT (GitHub direct edits on main).
-- Last Product-Owner Validation: The owner previously passed `npm run typecheck`, `npm run test` (14 files, 288 tests), and `npm run build` on Termux before the landing-page route changes in this session.
-- Completed This Session: Inspected `AGENTS.md`, `SPEC.md`, `TASKS.md`, `package.json`, current app routes, Purchase Intake, and the brand/user-journey references. Confirmed `src/app/page.tsx` previously rendered Purchase Intake directly, which caused the missing dedicated homepage. Replaced the root route with a dedicated Indonesian editorial landing page, added its CSS module, and moved the existing Purchase Intake experience to `/assess`. All changes were made directly on `main`; no dependencies, workflows, backend services, or deployment configuration were added.
-- Relevant Commits: `e879ca5` (homepage route), `e53f061` (homepage styles), `35bd610` (assessment route).
-- Domain / Hosting Status: Product owner confirmed `kiisafezone.web.id` is already managed through Cloudflare DNS. Target subdomain is `thinktwice.kiisafezone.web.id`. Cloudflare Workers is the proposed hosting target, but deployment tooling, compatibility, and DNS records are not configured. Do not modify DNS until the app is validated and the owner explicitly approves deployment.
-- Current Blocker: The landing-page and route changes have not yet been validated in the owner's Termux environment or browser. The earlier local dev server was started with Turbopack and failed on Android ARM64; use Webpack (`npx next dev --webpack`). Existing manual acceptance tests for the assessment flow also remain incomplete.
-- Next Exact Step: In Termux, run `git pull --ff-only origin main && npm run typecheck && npm run test && npm run build`. If all pass, start the app with `npx next dev --webpack`, inspect `http://localhost:3000` as the new landing page, then open `http://localhost:3000/assess` to confirm the existing Purchase Intake still works. Fix only reproduced issues.
-- Tests Run This Session: No local project commands were run after the three homepage/route commits. Do not claim these changes are validated yet.
-- Files Changed This Session: `src/app/page.tsx`, `src/app/home.module.css`, `src/app/assess/page.tsx`, and this handoff section in `TASKS.md`.
+- Completed: Reviewed the user's mobile screenshots of `/` and `/assess`. The landing page's existing mobile CSS was not being reflected in the screenshots: its three-card desktop grid and two-column sections remained visible. Made the viewport declaration explicit in the App Router layout and strengthened tablet/mobile layout rules for the homepage and assessment intake. The assessment progress row now allows its labels to wrap within equal-width steps on narrow screens; very narrow devices receive tighter spacing and typography.
+- Current Bug / Blocker: Responsive behavior has not yet been rechecked in the owner's mobile browser. The screenshots may also be affected by Chrome's "Desktop site" setting; if the page still renders desktop sizing after this update, verify that setting is disabled before changing more CSS.
+- Next Exact Step: In Termux run `git pull --ff-only origin main && npm run typecheck && npm run test && npm run build`. If all pass, restart with `npx next dev --webpack`, then inspect `/` and `/assess` in Chrome with "Desktop site" disabled. Send updated mobile screenshots if any section still overflows or is too small.
+- Tests Run: No project tests or build were run by this agent; the product owner must validate on Termux.
+- Files Changed: `src/app/layout.tsx`, `src/app/home.module.css`, `src/app/globals.css`, and `TASKS.md`.
+- Deployment: No deployment, DNS, workflow, dependency, or backend changes were made.
 
 ## Product Priorities
 
