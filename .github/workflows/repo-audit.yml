@@ -1,0 +1,70 @@
+name: Manual Repo Audit (Bugs & Unfinished)
+
+on:
+  workflow_dispatch:
+    inputs:
+      audit_mode:
+        description: 'Pilih kedalaman pemeriksaan'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - quick-script-only
+      fail_on_findings:
+        description: 'Gagalkan workflow (merah) jika ditemukan bug/unfinished tag?'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  audit:
+    name: TypeScript & CSS Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies (Full Mode)
+        if: ${{ inputs.audit_mode == 'full' }}
+        run: npm ci
+
+      - name: Run Custom Bug & Unfinished Scanner
+        id: scanner
+        run: |
+          echo "## 🔍 Hasil Scan Bugs & Unfinished Features" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          node scripts/audit-bugs.mjs | tee audit-report.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Run TypeScript Type & Unused Check
+        if: ${{ inputs.audit_mode == 'full' }}
+        continue-on-error: true
+        run: |
+          echo "## 📘 TypeScript Compiler Check" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          npx tsc --noEmit --noUnusedLocals --noUnusedParameters >> $GITHUB_STEP_SUMMARY 2>&1 || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Run Knip (Dead Files, Exports & CSS Check)
+        if: ${{ inputs.audit_mode == 'full' }}
+        continue-on-error: true
+        run: |
+          echo "## 🧹 Knip Dead Code & Orphan Files" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          npx knip >> $GITHUB_STEP_SUMMARY 2>&1 || true
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Audit Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-report
+          path: audit-report.txt
+          retention-days: 7
