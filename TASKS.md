@@ -1,11 +1,11 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT (GitHub direct edits on main).
-- Completed: Reviewed the user's mobile screenshots of `/` and `/assess`. The landing page's existing mobile CSS was not being reflected in the screenshots: its three-card desktop grid and two-column sections remained visible. Made the viewport declaration explicit in the App Router layout and strengthened tablet/mobile layout rules for the homepage and assessment intake. The assessment progress row now allows its labels to wrap within equal-width steps on narrow screens; very narrow devices receive tighter spacing and typography.
-- Current Bug / Blocker: Responsive behavior has not yet been rechecked in the owner's mobile browser. The screenshots may also be affected by Chrome's "Desktop site" setting; if the page still renders desktop sizing after this update, verify that setting is disabled before changing more CSS.
-- Next Exact Step: In Termux run `git pull --ff-only origin main && npm run typecheck && npm run test && npm run build`. If all pass, restart with `npx next dev --webpack`, then inspect `/` and `/assess` in Chrome with "Desktop site" disabled. Send updated mobile screenshots if any section still overflows or is too small.
-- Tests Run: No project tests or build were run by this agent; the product owner must validate on Termux.
-- Files Changed: `src/app/layout.tsx`, `src/app/home.module.css`, `src/app/globals.css`, and `TASKS.md`.
+- Completed: Product owner pulled the responsive layout changes and confirmed the development server was started. Reviewed the accessibility requirements and current assessment components. Linked Purchase Decision Assessment validation errors to their corresponding fieldsets, while preserving each question's existing description and live alert.
+- Current Bug / Blocker: The accessibility work is not yet manually verified with keyboard-only navigation, a screen reader, browser zoom/reflow, contrast checks, and small-screen use. No WCAG conformance claim is made.
+- Next Exact Step: In Termux run `git pull --ff-only origin main && npm run typecheck && npm run test && npm run build`. If checks pass, manually test the Purchase Decision Assessment with keyboard-only navigation and verify that an unanswered question's error is announced and associated with that question.
+- Tests Run: No tests or build were run by this agent.
+- Files Changed: `src/features/purchase/components/purchase-assessment-form.tsx`, `TASKS.md`.
 - Deployment: No deployment, DNS, workflow, dependency, or backend changes were made.
 
 ## Product Priorities
