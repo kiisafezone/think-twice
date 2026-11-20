@@ -80,7 +80,7 @@ function ScaleQuestion({
   error?: string;
 }) {
   return (
-    <fieldset className="assessment-question" aria-describedby={`${name}-description`}>
+    <fieldset className="assessment-question" aria-describedby={error ? `${name}-description ${name}-error` : `${name}-description`}>
       <legend>{title}</legend>
       <p className="assessment-description" id={`${name}-description`}>{description}</p>
       <div className="scale-options">
@@ -99,7 +99,7 @@ function ScaleQuestion({
       </div>
       <div className="scale-anchors"><span>{low}</span><span>{high}</span></div>
       <UnknownChoice name={name} selected={value === "unknown"} onSelect={() => onChange("unknown")} />
-      {error ? <p className="field-error" role="alert">{error}</p> : null}
+      {error ? <p className="field-error" id={`${name}-error`} role="alert">{error}</p> : null}
     </fieldset>
   );
 }
@@ -207,9 +207,9 @@ export default function PurchaseAssessmentForm({
           error={errors.need}
         />
 
-        <fieldset className="assessment-question">
+        <fieldset className="assessment-question" aria-describedby={errors.urgency ? "urgency-description urgency-error" : "urgency-description"}>
           <legend>2. Seberapa mendesak pembelian ini?</legend>
-          <p className="assessment-description">Pilih berdasarkan konsekuensi nyata jika kamu menunda pembelian.</p>
+          <p className="assessment-description" id="urgency-description">Pilih berdasarkan konsekuensi nyata jika kamu menunda pembelian.</p>
           <div className="assessment-choice-list">
             {urgencyOptions.map((option) => (
               <label className={`assessment-choice${form.urgency === option.value ? " is-selected" : ""}`} key={option.value}>
@@ -225,7 +225,7 @@ export default function PurchaseAssessmentForm({
             ))}
             <UnknownChoice name="urgency" selected={form.urgency === "unknown"} onSelect={() => update("urgency", "unknown")} />
           </div>
-          {errors.urgency ? <p className="field-error" role="alert">{errors.urgency}</p> : null}
+          {errors.urgency ? <p className="field-error" id="urgency-error" role="alert">{errors.urgency}</p> : null}
         </fieldset>
 
         <ScaleQuestion
@@ -250,9 +250,9 @@ export default function PurchaseAssessmentForm({
           error={errors.utility}
         />
 
-        <fieldset className="assessment-question">
+        <fieldset className="assessment-question" aria-describedby={errors.impulseLevel ? "impulseLevel-description impulseLevel-error" : "impulseLevel-description"}>
           <legend>5. Seberapa kuat dorongan untuk membeli saat ini?</legend>
-          <p className="assessment-description">Pilih kondisi yang paling mendekati alasan dan perasaanmu sekarang.</p>
+          <p className="assessment-description" id="impulseLevel-description">Pilih kondisi yang paling mendekati alasan dan perasaanmu sekarang.</p>
           <div className="assessment-choice-list">
             {impulseOptions.map((option) => (
               <label className={`assessment-choice${form.impulseLevel === option.value ? " is-selected" : ""}`} key={option.value}>
@@ -268,12 +268,12 @@ export default function PurchaseAssessmentForm({
             ))}
             <UnknownChoice name="impulseLevel" selected={form.impulseLevel === "unknown"} onSelect={() => update("impulseLevel", "unknown")} />
           </div>
-          {errors.impulseLevel ? <p className="field-error" role="alert">{errors.impulseLevel}</p> : null}
+          {errors.impulseLevel ? <p className="field-error" id="impulseLevel-error" role="alert">{errors.impulseLevel}</p> : null}
         </fieldset>
 
-        <fieldset className="assessment-question">
+        <fieldset className="assessment-question" aria-describedby={errors.socialPressure ? "socialPressure-description socialPressure-error" : "socialPressure-description"}>
           <legend>6. Apakah ada tekanan atau ekspektasi dari orang lain?</legend>
-          <p className="assessment-description">Contohnya ajakan teman, tuntutan keluarga, tren kelompok, atau keinginan mendapat pengakuan.</p>
+          <p className="assessment-description" id="socialPressure-description">Contohnya ajakan teman, tuntutan keluarga, tren kelompok, atau keinginan mendapat pengakuan.</p>
           <div className="binary-options">
             <label className={`binary-option${form.socialPressure === false ? " is-selected" : ""}`}>
               <input type="radio" name="socialPressure" checked={form.socialPressure === false} onChange={() => update("socialPressure", false)} />
@@ -288,7 +288,7 @@ export default function PurchaseAssessmentForm({
               <span>Belum tahu</span>
             </label>
           </div>
-          {errors.socialPressure ? <p className="field-error" role="alert">{errors.socialPressure}</p> : null}
+          {errors.socialPressure ? <p className="field-error" id="socialPressure-error" role="alert">{errors.socialPressure}</p> : null}
         </fieldset>
 
         <div className="assessment-question">
