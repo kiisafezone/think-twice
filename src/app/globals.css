@@ -415,9 +415,9 @@ input:focus-visible, select:focus-visible {
   .intro-section { padding: 55px 0 32px; }
   .intro-section h1 { font-size: clamp(42px, 12vw, 58px); }
   .lead-copy { font-size: 14px; }
-  .progress-row { gap: 7px; }
-  .progress-step { gap: 5px; }
-  .progress-step strong { max-width: 72px; white-space: normal; font-size: 9px; line-height: 1.25; }
+  .progress-row { align-items: stretch; gap: 6px; }
+  .progress-step { min-width: 0; flex: 1 1 0; gap: 5px; }
+  .progress-step strong { max-width: none; white-space: normal; font-size: 9px; line-height: 1.25; }
   .progress-step span { width: 22px; height: 22px; flex: 0 0 22px; font-size: 9px; }
   .progress-line { min-width: 5px; }
   .form-card { padding: 22px 18px; }
@@ -428,6 +428,12 @@ input:focus-visible, select:focus-visible {
   .form-actions .button-primary { width: 100%; }
   .site-footer { flex-direction: column; gap: 5px; }
   .confirmation-panel { padding: 54px 0 64px; }
+  .form-heading { gap: 10px; }
+  .form-heading > div { min-width: 0; }
+  .section-number { flex: 0 0 auto; font-size: 46px; }
+  .form-heading h2 { overflow-wrap: anywhere; }
+  .field-heading { align-items: flex-start; }
+  .field-hint { max-width: 48%; text-align: right; }
   .summary-card { padding: 18px; }
   .summary-list > div { gap: 10px; }
 }
@@ -1032,3 +1038,17 @@ input:focus-visible, select:focus-visible {
   padding-left: 19px;
 }
 .decision-history-details > strong { display: block; margin-top: 12px; color: var(--obsidian); }
+
+
+@media (max-width: 380px) {
+  .page-shell { width: calc(100% - 28px); }
+  .header-note { max-width: 125px; font-size: 7px; }
+  .intro-section { padding-top: 46px; }
+  .intro-section h1 { font-size: 40px; }
+  .progress-row { gap: 4px; }
+  .progress-line { min-width: 4px; }
+  .progress-step { gap: 4px; }
+  .progress-step span { width: 20px; height: 20px; flex-basis: 20px; }
+  .progress-step strong { font-size: 8px; }
+  .form-card { padding: 20px 15px; }
+}
