@@ -108,11 +108,11 @@
 
 ### Phase 5 — Quality and Future Services
 
-- [ ] Run the complete test strategy on the product-owner's Termux environment and resolve only reproduced failures.
+- [x] Run the complete automated test strategy on the product-owner's Termux environment; `typecheck`, all 288 Vitest tests, and production build passed after the security review changes (2026-11-21). No reproduced failures.
 - [ ] Manually verify the full user journey, all relevant outcome/unknown-data paths, local history, and share handoff.
 - [ ] Complete keyboard, screen-reader, focus, contrast, zoom/reflow, reduced-motion, and mobile accessibility review.
 - [x] Reconcile privacy policy and user journeys with the implemented local-history and sharing data boundaries.
-- [ ] Review the threat model against the implemented browser-local storage and sharing behavior before public release.
+- [x] Review the threat model against the implemented browser-local storage and sharing behavior; scoped implementation review and residual risks recorded in `docs/security/THREAT_MODEL.md` (2026-11-21).
 - [ ] Complete release checklist in docs/operations/RELEASE_CHECKLIST.md.
 - [ ] Introduce FastAPI/Python only for an approved, concrete server-side workload.
 - [ ] Introduce PostgreSQL only when persistent server-side storage is justified.
@@ -141,11 +141,9 @@
 
 Every agent updates this section before ending a session:
 
-- Last Agent Used:
-- Completed:
-- Current Bug / Blocker:
-- Next Exact Step:
-- Tests Run:
-- Files Changed:
-
-Agents must inspect current files before editing, preserve approved decisions, avoid duplicating work, and never invent unresolved product or scoring rules.
+- Last Agent Used: GPT-6
+- Completed: Product owner validated `npm run typecheck`, `npm run test` (14 files, 288 tests), and `npm run build` on Termux; `npm audit` reported 0 vulnerabilities. Threat model implementation review is documented. Privacy storage/share automated tests are included in the validated suite.
+- Current Bug / Blocker: Manual end-to-end verification remains open. Accessibility review is partial; keyboard, zoom/reflow, contrast, reduced motion, and full screen-reader coverage still need evidence. Release checklist is not complete.
+- Next Exact Step: Product owner manually verify the full journey in mobile Chrome: landing page → purchase details → Purchase Decision Assessment → Financial Reality Check → Decision Intelligence result. Record the observed outcome and any missing/unknown-data behavior; do not change scoring rules.
+- Tests Run: Product-owner reported Termux validation on 2026-11-21: `npm run typecheck` passed; `npm run test` passed (14 files, 288 tests); `npm run build` passed; `npm audit` found 0 vulnerabilities.
+- Files Changed: `TASKS.md` handoff/status only; no application code changed in this handoff update.
