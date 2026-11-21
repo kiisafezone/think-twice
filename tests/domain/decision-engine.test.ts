@@ -32,6 +32,21 @@ describe("canonical decision engine", () => {
     expect(result.verdictReasons[0]?.priority).toBe(4);
   });
 
+  it("explains the Hard Pass when available cash is zero and upfront is positive", () => {
+    const input = cashInput();
+    input.financialProfile.availableCash = known(money(0));
+
+    const result = evaluateDecision(input);
+
+    expect(result.verdict.outcome).toBe("do_not_buy");
+    expect(result.affordability.status).toBe("unavailable");
+    expect(result.affordability.score).toBe(null);
+    expect(result.affordability.reasons).toContain(
+      "Dana awal yang dibutuhkan melebihi kas yang tersedia, sehingga skor keterjangkauan tidak dapat dihitung.",
+    );
+    expect(result.affordability.completeness.missingFields).toEqual([]);
+  });
+
   it("returns Buy with Caution at the 80-percent cash-use boundary", () => {
     const input = cashInput();
     input.purchase.purchasePrice = known(money(9_600_000));
