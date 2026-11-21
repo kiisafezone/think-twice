@@ -186,7 +186,9 @@ export function evaluateDecision(input: DecisionInput): DecisionResult {
     ? [`Penilaian keterjangkauan dihitung dari penalti dampak kas, beban cicilan, dan tekanan keuangan.`]
     : affordabilityCalculation.status === "invalid"
       ? ["Perhitungan kas melewati batas angka aman sehingga skor belum dapat ditentukan."]
-      : ["Skor keterjangkauan belum dapat dihitung karena ada data keuangan yang belum diketahui."];
+      : affordabilityCalculation.reason === "cash_impact_hard_pass"
+        ? ["Dana awal yang dibutuhkan melebihi kas yang tersedia, sehingga skor keterjangkauan tidak dapat dihitung."]
+        : ["Skor keterjangkauan belum dapat dihitung karena ada data keuangan yang belum diketahui."];
   const affordability = asAssessment(
     "affordability",
     affordabilityCalculation.score,
