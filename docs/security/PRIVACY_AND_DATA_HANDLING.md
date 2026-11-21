@@ -76,6 +76,6 @@ Any account, cloud sync, bank connection, analytics provider, AI provider, or re
 - [x] Local storage limitations are disclosed in the history UI.
 - [x] Individual and all-history deletion controls are implemented.
 - [x] Share preview excludes sensitive data by default.
-- [ ] Run the storage and share-summary tests on the product-owner's Termux environment.
+- [x] Run the storage and share-summary tests on the product-owner's Termux environment; included in the full 288-test suite validated on 2026-11-21.
 - [ ] Product owner manually verifies local history and share behavior on target browsers.
 - [ ] Logs and crash reports contain no financial payloads.
