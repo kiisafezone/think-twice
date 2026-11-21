@@ -1,12 +1,12 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT (GitHub direct edits on main).
-- Completed: Product owner validated the scoped threat-model documentation update with typecheck, all 288 tests, and production build. The pull also revealed an unapproved `.github/workflows/repo-audit.yml`, contrary to explicit repository policy. Removed that workflow from `main`; retained `scripts/audit-bugs.mjs` as a standalone, unverified local helper pending review.
-- Current Bug / Blocker: The custom audit script has not been run or validated and must not be treated as a security scanner or proof of no bugs. Dependency/secret scanning options have not yet been reviewed. Production security headers/CSP remain open before deployment. Accessibility review remains incomplete beyond the reported TalkBack check.
-- Next Exact Step: In Termux run `git pull --ff-only origin main` to receive the workflow removal. Then inspect the dependency inventory and lockfile using npm's built-in audit commands; do not install dependencies, add workflows, or deploy. Review findings before applying any package changes.
-- Tests Run: Product owner reported typecheck passed, 288/288 tests passed, and `next build --webpack` passed on the commit containing the threat-model documentation and the unapproved workflow. No tests were run after removing the workflow (workflow-only deletion plus handoff update).
-- Files Changed: `.github/workflows/repo-audit.yml` deleted; `TASKS.md` updated. The pre-existing `scripts/audit-bugs.mjs` was not modified.
-- Deployment: No deployment, DNS, dependency, or backend changes were made. No CI/build workflow remains from this audit addition.
+- Completed: Product owner confirmed that `.github/workflows/repo-audit.yml` was intentionally added by them. The assistant's deletion was mistaken and unauthorized. Restored the exact workflow content from commit `6907537` to `main`. Retained `scripts/audit-bugs.mjs`.
+- Current Bug / Blocker: The manual repository audit workflow and custom scanner have not yet been run or independently validated in this session. Do not remove or modify owner-added workflows without explicit approval. Dependency/secret scanning review remains pending. Production security headers/CSP and remaining accessibility checks are still release-readiness items.
+- Next Exact Step: Product owner should pull `main`. Then continue dependency review with `npm audit` if still desired. Do not alter the audit workflow unless the owner asks.
+- Tests Run: No tests/build were run for this restoration. This restores the exact workflow source from commit `6907537`.
+- Files Changed: `.github/workflows/repo-audit.yml` restored; `TASKS.md` corrected.
+- Deployment: No deployment, DNS, dependency, or backend changes were made.
 
 ## Product Priorities
 
