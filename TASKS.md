@@ -1,11 +1,11 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT (GitHub direct edits on main).
-- Completed: Product owner pulled the responsive layout changes and confirmed the development server was started. Reviewed the accessibility requirements and current assessment components. Linked Purchase Decision Assessment validation errors to their corresponding fieldsets, while preserving each question's existing description and live alert.
-- Current Bug / Blocker: The accessibility work is not yet manually verified with keyboard-only navigation, a screen reader, browser zoom/reflow, contrast checks, and small-screen use. No WCAG conformance claim is made.
-- Next Exact Step: In Termux run `git pull --ff-only origin main && npm run typecheck && npm run test && npm run build`. If checks pass, manually test the Purchase Decision Assessment with keyboard-only navigation and verify that an unanswered question's error is announced and associated with that question.
-- Tests Run: No tests or build were run by this agent.
-- Files Changed: `src/features/purchase/components/purchase-assessment-form.tsx`, `TASKS.md`.
+- Completed: Product owner reports completing the TalkBack check. Conducted a scoped static security review of the V1 local-history adapter, result/share flow, share-summary builder, privacy documentation, Next.js config, and SECURITY.md. Updated the threat model with observed controls, residual risks, and production release actions. Confirmed that history is opt-in and summary-only (but includes item identity and scores), and share output excludes raw purchase/financial data.
+- Current Bug / Blocker: This was not a penetration test, dependency audit, or full repository security audit. localStorage remains plaintext and accessible to software or people with browser-profile/device access. The inspected Next.js config has no production security headers/CSP configured; these remain required before public deployment. Accessibility verification also remains incomplete for zoom/reflow, contrast, reduced motion, and keyboard/focus checks.
+- Next Exact Step: In Termux run `git pull --ff-only origin main && npm run typecheck && npm run test && npm run build`. If checks pass, continue the Phase 5 release-readiness work by reviewing dependency and secret scanning options without adding CI/workflows or dependencies, then manually verify local-history save/review/delete and share preview/handoff on the target browser.
+- Tests Run: No tests or build were run by this agent. The owner previously reported 288/288 tests and production build passing before this documentation-only security review.
+- Files Changed: `docs/security/THREAT_MODEL.md`, `TASKS.md`.
 - Deployment: No deployment, DNS, workflow, dependency, or backend changes were made.
 
 ## Product Priorities
