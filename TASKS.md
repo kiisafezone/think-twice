@@ -1,12 +1,12 @@
 ## Last Session Handoff
 
 - Last Agent Used: ChatGPT (GitHub direct edits on main).
-- Completed: Product owner reports completing the TalkBack check. Conducted a scoped static security review of the V1 local-history adapter, result/share flow, share-summary builder, privacy documentation, Next.js config, and SECURITY.md. Updated the threat model with observed controls, residual risks, and production release actions. Confirmed that history is opt-in and summary-only (but includes item identity and scores), and share output excludes raw purchase/financial data.
-- Current Bug / Blocker: This was not a penetration test, dependency audit, or full repository security audit. localStorage remains plaintext and accessible to software or people with browser-profile/device access. The inspected Next.js config has no production security headers/CSP configured; these remain required before public deployment. Accessibility verification also remains incomplete for zoom/reflow, contrast, reduced motion, and keyboard/focus checks.
-- Next Exact Step: In Termux run `git pull --ff-only origin main && npm run typecheck && npm run test && npm run build`. If checks pass, continue the Phase 5 release-readiness work by reviewing dependency and secret scanning options without adding CI/workflows or dependencies, then manually verify local-history save/review/delete and share preview/handoff on the target browser.
-- Tests Run: No tests or build were run by this agent. The owner previously reported 288/288 tests and production build passing before this documentation-only security review.
-- Files Changed: `docs/security/THREAT_MODEL.md`, `TASKS.md`.
-- Deployment: No deployment, DNS, workflow, dependency, or backend changes were made.
+- Completed: Product owner validated the scoped threat-model documentation update with typecheck, all 288 tests, and production build. The pull also revealed an unapproved `.github/workflows/repo-audit.yml`, contrary to explicit repository policy. Removed that workflow from `main`; retained `scripts/audit-bugs.mjs` as a standalone, unverified local helper pending review.
+- Current Bug / Blocker: The custom audit script has not been run or validated and must not be treated as a security scanner or proof of no bugs. Dependency/secret scanning options have not yet been reviewed. Production security headers/CSP remain open before deployment. Accessibility review remains incomplete beyond the reported TalkBack check.
+- Next Exact Step: In Termux run `git pull --ff-only origin main` to receive the workflow removal. Then inspect the dependency inventory and lockfile using npm's built-in audit commands; do not install dependencies, add workflows, or deploy. Review findings before applying any package changes.
+- Tests Run: Product owner reported typecheck passed, 288/288 tests passed, and `next build --webpack` passed on the commit containing the threat-model documentation and the unapproved workflow. No tests were run after removing the workflow (workflow-only deletion plus handoff update).
+- Files Changed: `.github/workflows/repo-audit.yml` deleted; `TASKS.md` updated. The pre-existing `scripts/audit-bugs.mjs` was not modified.
+- Deployment: No deployment, DNS, dependency, or backend changes were made. No CI/build workflow remains from this audit addition.
 
 ## Product Priorities
 
