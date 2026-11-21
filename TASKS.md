@@ -1,12 +1,12 @@
 ## Last Session Handoff
 
-- Last Agent Used: ChatGPT (GitHub direct edits on main).
-- Completed: Product owner confirmed that `.github/workflows/repo-audit.yml` was intentionally added by them. The assistant's deletion was mistaken and unauthorized. Restored the exact workflow content from commit `6907537` to `main`. Retained `scripts/audit-bugs.mjs`.
-- Current Bug / Blocker: The manual repository audit workflow and custom scanner have not yet been run or independently validated in this session. Do not remove or modify owner-added workflows without explicit approval. Dependency/secret scanning review remains pending. Production security headers/CSP and remaining accessibility checks are still release-readiness items.
-- Next Exact Step: Product owner should pull `main`. Then continue dependency review with `npm audit` if still desired. Do not alter the audit workflow unless the owner asks.
-- Tests Run: No tests/build were run for this restoration. This restores the exact workflow source from commit `6907537`.
-- Files Changed: `.github/workflows/repo-audit.yml` restored; `TASKS.md` corrected.
-- Deployment: No deployment, DNS, dependency, or backend changes were made.
+- Last Agent Used: GPT-6 (GitHub direct edits on main).
+- Completed: Product owner validated `npm run typecheck`, `npm run test` (14 files, 288 tests), `npm run build`, and `npm audit` (0 vulnerabilities) on Termux. Scoped threat-model review and privacy reconciliation are documented. Repository review report dated 2026-11-21 identified a zero-available-cash explanation defect; regression fix and test have now been added.
+- Current Bug / Blocker: The new regression test and fix have not yet been run by the product owner. Remaining Phase 5 work: full manual journey and outcome/unknown-data paths, local history/share handoff, complete accessibility review, and release checklist. The owner-added `.github/workflows/repo-audit.yml` must not be removed or modified without explicit approval.
+- Next Exact Step: Pull `main` and run `npm run typecheck && npm run test && npm run build` on Termux. Confirm the zero-available-cash regression passes before proceeding to the next review finding.
+- Tests Run: Previous owner-reported Termux run: typecheck passed; 288 tests passed; production build passed; npm audit reported 0 vulnerabilities. No tests were run during this GitHub-only edit.
+- Files Changed: `src/domain/decision-engine.ts`, `tests/domain/decision-engine.test.ts`, and `TASKS.md`.
+- Deployment: No deployment, DNS, dependency, or backend changes.
 
 ## Product Priorities
 
