@@ -2,9 +2,9 @@
 
 - Last Agent Used: GPT-6 (GitHub direct edits on main).
 - Completed: Product owner validated `npm run typecheck`, `npm run test` (14 files, 288 tests), `npm run build`, and `npm audit` (0 vulnerabilities) on Termux. Scoped threat-model review and privacy reconciliation are documented. Repository review report dated 2026-11-21 identified a zero-available-cash explanation defect; regression fix and test have now been added.
-- Current Bug / Blocker: The new regression test and fix have not yet been run by the product owner. Remaining Phase 5 work: full manual journey and outcome/unknown-data paths, local history/share handoff, complete accessibility review, and release checklist. The owner-added `.github/workflows/repo-audit.yml` must not be removed or modified without explicit approval.
-- Next Exact Step: Pull `main` and run `npm run typecheck && npm run test && npm run build` on Termux. Confirm the zero-available-cash regression passes before proceeding to the next review finding.
-- Tests Run: Previous owner-reported Termux run: typecheck passed; 288 tests passed; production build passed; npm audit reported 0 vulnerabilities. No tests were run during this GitHub-only edit.
+- Current Bug / Blocker: The zero-available-cash regression test has been added but still needs owner execution. Manual journey, accessibility, moderated usability, and release checklist remain open. The owner-added `.github/workflows/repo-audit.yml` must not be removed or modified without explicit approval.
+- Next Exact Step: On Termux, pull `main` and run `npm run test -- tests/domain/decision-engine.test.ts -t \"available cash is zero\"`. Confirm the new zero-available-cash regression passes; then run the full typecheck, test suite, and production build.
+- Tests Run: Previous owner-reported Termux run before the zero-cash fix: typecheck passed; 288 tests passed; production build passed; npm audit reported 0 vulnerabilities. The new regression test has not yet been run. No tests were run during this GitHub-only edit.
 - Files Changed: `src/domain/decision-engine.ts`, `tests/domain/decision-engine.test.ts`, and `TASKS.md`.
 - Deployment: No deployment, DNS, dependency, or backend changes.
 
@@ -118,6 +118,46 @@
 - [ ] Introduce PostgreSQL only when persistent server-side storage is justified.
 - [ ] Add Pytest and cross-service contract tests if Python is introduced.
 - [ ] Document deployment, secrets, monitoring, rollback, and incident ownership before deployment work.
+
+## THINK TWICE. Refinement Roadmap
+
+Basis: source, tests, documentation, and workflow review dated 2026-11-22. The automated suite was not executed during that review; the last owner-reported full run was 288 tests passing before the zero-available-cash regression fix.
+
+### Phase 1 — Release Readiness (Critical)
+
+- [x] Adopt CI workflow for typecheck, test, and build on push and pull request.
+- [ ] Run the zero-available-cash regression test. The regression test was added in commit `3b21519`; owner execution is still pending.
+- [ ] Complete manual accessibility verification: keyboard, screen reader, contrast, zoom/reflow, and low-end Android. Target: WCAG 2.2 AA; do not claim conformance without evidence.
+- [ ] Run moderated usability tests with 5–10 users on real purchase scenarios. Record whether questions and verdicts are clear and fair.
+
+### Phase 2 — Decision Logic (requires SPEC.md update before implementation)
+
+- [ ] Calculate total repayment for financed purchases; `installmentCount` and `feeTreatment` are collected but currently unused.
+- [ ] Reassess cash purchases when monthly free cash is negative; current score cap can still yield Buy with Caution.
+- [ ] Define and implement an approved penalty band for marginal positive monthly free cash.
+- [ ] Surface behavioral signals as supporting factors beyond the winning rule tier.
+
+### Phase 3 — Code Quality
+
+- [ ] Move Indonesian copy out of the domain engine to separate decision logic from presentation and support localization.
+- [ ] Replace non-null assertions with narrowed types.
+- [ ] Enforce the `src/domain/` boundary through tooling; approach requires approval before adding tooling or dependencies.
+- [ ] Correct the `NOT_IMPLEMENTED` pattern in `audit-bugs.mjs`; the current rule does not match.
+
+### Phase 4 — User Experience
+
+- [ ] Format currency inputs with thousand separators.
+- [ ] Introduce a quick mode for small purchases.
+- [ ] Show plain-language reasons beside the verdict.
+- [ ] Evaluate cost-per-use, hours-of-work, and 30-day reminder features.
+
+### Phase 5 — Presentation
+
+- [ ] Add a demo GIF, screenshot, and live link to the README.
+- [ ] Provide an English summary.
+- [ ] Consolidate documentation that is not actively used.
+
+**Execution order:** validate item 2 first; complete accessibility verification before moderated usability sessions. Use the findings from items 3–4 to prioritize Phase 2 and Phase 4. Do not change decision thresholds, coefficients, or verdict precedence without an approved SPEC.md update.
 
 ## Definition of Done
 
