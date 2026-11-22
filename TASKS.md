@@ -1,10 +1,10 @@
 ## Last Session Handoff
 
 - Last Agent Used: GPT-6 (GitHub direct edits on main).
-- Completed: Product owner validated `npm run typecheck`, `npm run test` (14 files, 288 tests), `npm run build`, and `npm audit` (0 vulnerabilities) on Termux. Scoped threat-model review and privacy reconciliation are documented. Repository review report dated 2026-11-21 identified a zero-available-cash explanation defect; regression fix and test have now been added.
-- Current Bug / Blocker: The zero-available-cash regression test has been added but still needs owner execution. Manual journey, accessibility, moderated usability, and release checklist remain open. The owner-added `.github/workflows/repo-audit.yml` must not be removed or modified without explicit approval.
-- Next Exact Step: On Termux, pull `main` and run `npm run test -- tests/domain/decision-engine.test.ts -t \"available cash is zero\"`. Confirm the new zero-available-cash regression passes; then run the full typecheck, test suite, and production build.
-- Tests Run: Previous owner-reported Termux run before the zero-cash fix: typecheck passed; 288 tests passed; production build passed; npm audit reported 0 vulnerabilities. The new regression test has not yet been run. No tests were run during this GitHub-only edit.
+- Completed: Product owner validated `npm run typecheck`, `npm run test` (14 files, 289 tests), and `npm run build` on Termux. The zero-available-cash regression test passed. Scoped threat-model review and privacy reconciliation are documented. `npm audit` previously reported 0 vulnerabilities.
+- Current Bug / Blocker: Manual journey, accessibility, moderated usability, and release checklist remain open. The owner-added `.github/workflows/repo-audit.yml` must not be removed or modified without explicit approval.
+- Next Exact Step: Manually verify the full user journey in mobile Chrome: landing page → purchase details → Purchase Decision Assessment → Financial Reality Check → Decision Intelligence result. Record observed outcome and missing/unknown-data behavior; do not change scoring rules.
+- Tests Run: Product-owner reported Termux validation on 2026-11-22: `npm run typecheck` passed; targeted zero-available-cash regression passed; `npm run test` passed (14 files, 289 tests); `npm run build` passed. Vite emitted a non-fatal `configLoader: 'native'` warning for `vitest.config.ts`.
 - Files Changed: `src/domain/decision-engine.ts`, `tests/domain/decision-engine.test.ts`, and `TASKS.md`.
 - Deployment: No deployment, DNS, dependency, or backend changes.
 
@@ -108,7 +108,7 @@
 
 ### Phase 5 — Quality and Future Services
 
-- [x] Run the complete automated test strategy on the product-owner's Termux environment; `typecheck`, all 288 Vitest tests, and production build passed after the security review changes (2026-11-21). No reproduced failures.
+- [x] Run the complete automated test strategy on the product-owner's Termux environment; `typecheck`, all 289 Vitest tests, and production build passed (2026-11-22). No reproduced failures.
 - [ ] Manually verify the full user journey, all relevant outcome/unknown-data paths, local history, and share handoff.
 - [ ] Complete keyboard, screen-reader, focus, contrast, zoom/reflow, reduced-motion, and mobile accessibility review.
 - [x] Reconcile privacy policy and user journeys with the implemented local-history and sharing data boundaries.
@@ -121,12 +121,12 @@
 
 ## THINK TWICE. Refinement Roadmap
 
-Basis: source, tests, documentation, and workflow review dated 2026-11-22. The automated suite was not executed during that review; the last owner-reported full run was 288 tests passing before the zero-available-cash regression fix.
+Basis: source, tests, documentation, and workflow review dated 2026-11-22. Product owner subsequently validated the targeted zero-available-cash regression, full typecheck, 289-test suite, and production build on Termux.
 
 ### Phase 1 — Release Readiness (Critical)
 
 - [x] Adopt CI workflow for typecheck, test, and build on push and pull request.
-- [ ] Run the zero-available-cash regression test. The regression test was added in commit `3b21519`; owner execution is still pending.
+- [x] Run the zero-available-cash regression test and confirm it passes on Termux (2026-11-22; 1 passed, 54 skipped).
 - [ ] Complete manual accessibility verification: keyboard, screen reader, contrast, zoom/reflow, and low-end Android. Target: WCAG 2.2 AA; do not claim conformance without evidence.
 - [ ] Run moderated usability tests with 5–10 users on real purchase scenarios. Record whether questions and verdicts are clear and fair.
 
@@ -182,8 +182,8 @@ Basis: source, tests, documentation, and workflow review dated 2026-11-22. The a
 Every agent updates this section before ending a session:
 
 - Last Agent Used: GPT-6
-- Completed: Product owner validated `npm run typecheck`, `npm run test` (14 files, 288 tests), and `npm run build` on Termux; `npm audit` reported 0 vulnerabilities. Threat model implementation review is documented. Privacy storage/share automated tests are included in the validated suite.
+- Completed: Product owner validated `npm run typecheck`, `npm run test` (14 files, 289 tests), and `npm run build` on Termux (2026-11-22). The targeted zero-available-cash regression also passed. Threat model implementation review is documented. Privacy storage/share automated tests are included in the validated suite.
 - Current Bug / Blocker: Manual end-to-end verification remains open. Accessibility review is partial; keyboard, zoom/reflow, contrast, reduced motion, and full screen-reader coverage still need evidence. Release checklist is not complete.
 - Next Exact Step: Product owner manually verify the full journey in mobile Chrome: landing page → purchase details → Purchase Decision Assessment → Financial Reality Check → Decision Intelligence result. Record the observed outcome and any missing/unknown-data behavior; do not change scoring rules.
-- Tests Run: Product-owner reported Termux validation on 2026-11-21: `npm run typecheck` passed; `npm run test` passed (14 files, 288 tests); `npm run build` passed; `npm audit` found 0 vulnerabilities.
+- Tests Run: Product-owner reported Termux validation on 2026-11-22: `npm run typecheck` passed; targeted zero-available-cash regression passed; `npm run test` passed (14 files, 289 tests); `npm run build` passed. Vite's native config-loader warning is non-fatal.
 - Files Changed: `TASKS.md` handoff/status only; no application code changed in this handoff update.
